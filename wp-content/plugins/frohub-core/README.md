@@ -1,4 +1,16 @@
-# Frohub CLI Commands
+# Read it First
+
+To clone this repo, please follow this:
+
+- Go to your Local WordPress install root.
+- Open Terminal (Mac) or Command Line (Windows)
+- Run ```git init```
+- Then run ```git remote add origin https://github.com/pixable-co/fp-server.git```
+- Then run ```git pull origin main```
+- Then open your Github desktop and on top click 'Add Existing Repository'. Then select your Local WordPress Root.
+- Done
+
+# CLI Commands
 
 Please check the CLI commands.
 
