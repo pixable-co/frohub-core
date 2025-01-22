@@ -64,10 +64,10 @@ final class FrohubCore {
 
 	public function dispatch_hooks() {
 		FECore\Autoload::init();
-		// FECore\Enqueue::init();
+		FECore\Enqueue::init();
 		FECore\Shortcodes::init();
-		// FECore\Ajax::init();
 		FECore\API::init();
+		// FECore\Ajax::init();
 	}
 
 	public function load_textdomain() {
@@ -80,7 +80,6 @@ final class FrohubCore {
 
 	public function load_dependency() {
 		require_once FHCORE_INCLUDES_DIR_PATH . 'class-autoload.php';
-// 		require_once 'class-cli.php';
 	}
 
 	public function activate() {
