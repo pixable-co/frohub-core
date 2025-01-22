@@ -1,0 +1,16 @@
+# Ignore everything
+/*
+
+# But not wp-content/plugins/frohub-partner-core
+!wp-content/
+!wp-content/plugins/
+!wp-content/plugins/frohub-partner-core/
+wp-content/themes
+wp-content/uploads
+wp-content/index.php
+wp-content/debug.log
+wp-content/.DS_Store
+
+# Ignore everything inside wp-content/plugins except frohub-partner-core
+wp-content/plugins/*
+!wp-content/plugins/frohub-partner-core/
