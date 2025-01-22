@@ -9,7 +9,7 @@
 	 * @wordpress-plugin
 	 * Plugin Name:       Frohub Ecommerce Core Plugin
 	 * Plugin URI:        https://pixable.co/
-	 * Description:       Core Plugin & Functions Fro Frohub Ecommerce
+	 * Description:       Core Plugin & Functions For Frohub Ecommerce
 	 * Version:           0.0.1
 	 * Author:            Pixable
 	 * Author URI:        https://pixable.co/
@@ -63,10 +63,11 @@ final class FrohubCore {
 	}
 
 	public function dispatch_hooks() {
-		// FPServer\Autoload::init();
-		// FPServer\Enqueue::init();
-		// FPServer\Shortcodes::init();
-		// FPServer\Ajax::init();
+		FECore\Autoload::init();
+		// FECore\Enqueue::init();
+		FECore\Shortcodes::init();
+		// FECore\Ajax::init();
+		FECore\API::init();
 	}
 
 	public function load_textdomain() {
@@ -79,6 +80,7 @@ final class FrohubCore {
 
 	public function load_dependency() {
 		require_once FHCORE_INCLUDES_DIR_PATH . 'class-autoload.php';
+// 		require_once 'class-cli.php';
 	}
 
 	public function activate() {
