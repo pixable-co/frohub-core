@@ -50,4 +50,11 @@ php cli.php wp-shaper:make-api UserManagement/user_login method:GET
 php cli.php wp-shaper:make-api UserManagement/user_login method:POST
 ```
 
+# CSS & JS
 
+To write custom css and js for shortcodes, please use this files:
+
+```bash
+includes/assets/shortcode/style.css
+includes/assets/shortcode/scripts.js
+```
