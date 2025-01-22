@@ -12,7 +12,6 @@ class MakeShortcodeCommand extends Command
 
     public function __construct()
     {
-        // Explicitly set the name for standalone usage
         parent::__construct(self::$defaultName);
     }
 
@@ -30,7 +29,7 @@ class MakeShortcodeCommand extends Command
         // Extract directory and filename
         $parts = explode('/', $name);
         $fileName = array_pop($parts); // Get the last part as the file name
-        $directoryPath = implode('/', $parts); // Remaining parts form the directory path
+        $directoryPath = implode(DIRECTORY_SEPARATOR, $parts); // Convert to OS-specific directory separator
 
         // Ensure the file name is all lowercase
         $fileName = strtolower($fileName);
@@ -38,10 +37,12 @@ class MakeShortcodeCommand extends Command
         // Generate the class name in PascalCase
         $className = implode('', array_map('ucfirst', explode('_', $fileName)));
 
+        // Define the base directory
+        $baseDirectory = realpath(__DIR__ . '/../includes/shortcodes') . DIRECTORY_SEPARATOR;
+
         // Define the full file path
-        $baseDirectory = __DIR__ . '/../includes/shortcodes/';
         $fullDirectoryPath = $baseDirectory . strtolower($directoryPath);
-        $phpFilePath = rtrim($fullDirectoryPath, '/') . "/{$fileName}.php";
+        $phpFilePath = rtrim($fullDirectoryPath, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . "{$fileName}.php";
 
         // Ensure the directory exists
         if (!is_dir($fullDirectoryPath)) {
@@ -75,7 +76,7 @@ PHP;
         file_put_contents($phpFilePath, $phpContent);
 
         // Update class-shortcode.php
-        $shortcodeFilePath = __DIR__ . '/../includes/shortcodes/class-shortcode.php';
+        $shortcodeFilePath = realpath(__DIR__ . '/../includes/shortcodes') . DIRECTORY_SEPARATOR . 'class-shortcode.php';
 
         if (file_exists($shortcodeFilePath)) {
             $shortcodeContent = file_get_contents($shortcodeFilePath);
