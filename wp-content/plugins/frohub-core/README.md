@@ -32,17 +32,44 @@ To create Shortcode use this:
 php cli.php wp-shaper:make-shortcode <namespace/shortcode_name>
 ```
 
+To create Shortcode using React:
+
+```bash
+php cli.php wp-shaper:make-shortcode-react <namespace/shortcode_name>
+```
+
 To create API Endpoints use this:
 
 ```bash
 php cli.php wp-shaper:make-api <namespace/endpoint_name> [method]
 ```
 
+To delete shortcode use this:
+
+```bash
+php cli.php delete:shortcode <namespace/shortcode_name>
+```
+
+To delete react shortcode use this:
+
+```bash
+php cli.php delete:shortcode-react <namespace/shortcode_name>
+```
+
+To delete API endpoint use this:
+
+```bash
+php cli.php wp-shaper:delete-api <namespace/endpoint_name>
+```
 
 ### Examples
 
 ```bash
 php cli.php wp-shaper:make-shortcode BookingForm/fh_submit_form
+```
+
+```bash
+php cli.php make:shortcode-react BookingForm/fh_booking_calender
 ```
 
 ```bash
