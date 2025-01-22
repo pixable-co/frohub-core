@@ -45,7 +45,7 @@ class MakeApiCommand extends Command
         // Extract directory and filename
         $parts = explode('/', $name);
         $fileName = array_pop($parts); // Get the last part as the file name
-        $directoryPath = implode('/', $parts); // Remaining parts form the directory path
+        $directoryPath = implode(DIRECTORY_SEPARATOR, $parts); // Convert to OS-specific directory separator
 
         // Ensure the file name is all lowercase
         $fileName = strtolower($fileName);
@@ -56,10 +56,12 @@ class MakeApiCommand extends Command
         // REST path based on the file name
         $restPath = str_replace('_', '-', $fileName); // Convert underscores to hyphens for REST paths
 
+        // Define the base directory
+        $baseDirectory = realpath(__DIR__ . '/../includes/api') . DIRECTORY_SEPARATOR;
+
         // Define the full file path
-        $baseDirectory = __DIR__ . '/../includes/api/';
         $fullDirectoryPath = $baseDirectory . strtolower($directoryPath);
-        $phpFilePath = rtrim($fullDirectoryPath, '/') . "/{$fileName}.php";
+        $phpFilePath = rtrim($fullDirectoryPath, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . "{$fileName}.php";
 
         // Ensure the directory exists
         if (!is_dir($fullDirectoryPath)) {
@@ -101,7 +103,7 @@ PHP;
         file_put_contents($phpFilePath, $phpContent);
 
         // Update class-api.php
-        $apiFilePath = __DIR__ . '/../includes/api/class-api.php';
+        $apiFilePath = realpath(__DIR__ . '/../includes/api') . DIRECTORY_SEPARATOR . 'class-api.php';
 
         if (file_exists($apiFilePath)) {
             $apiContent = file_get_contents($apiFilePath);
