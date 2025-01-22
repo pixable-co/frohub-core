@@ -18,7 +18,7 @@ Please check the CLI commands.
 
 Ensure Composer is installed on your system. You can download it from getcomposer.org.
 
-Then after have the repository in your Local WP. Run This:
+Then after have the repository in your Local WP(wp-content/plugins/plugin-name/). Run This:
 
 ```bash
 composer install
