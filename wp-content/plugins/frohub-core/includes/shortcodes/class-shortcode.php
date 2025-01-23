@@ -12,6 +12,5 @@ class Shortcodes {
 	public static function init() {
 		$self = new self();
 		RenderProductAddOns::init();
-
 	}
 }

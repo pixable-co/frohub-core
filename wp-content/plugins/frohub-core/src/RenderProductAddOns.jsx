@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import ProceedToPaymentButton from './ProceedToPaymentButton';
 
 export default function RenderProductAddOns() {
     const [productId, setProductId] = useState(null);
@@ -27,7 +28,6 @@ export default function RenderProductAddOns() {
                     }
                     const data = await response.json();
                     console.log(data);
-                    setPartner(data.partner);
                     setAddOns(data.add_ons || []);
                     setProductPrice(parseFloat(data.product_price) || 0);
                 } catch (error) {
@@ -83,6 +83,7 @@ export default function RenderProductAddOns() {
                                     ))}
                                 </ul>
                             )}
+                            <ProceedToPaymentButton selectedAddOns={selectedAddOns} productPrice={productPrice} />
                         </>
                     )}
                 </>
