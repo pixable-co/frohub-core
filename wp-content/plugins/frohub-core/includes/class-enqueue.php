@@ -23,8 +23,7 @@ class Enqueue {
 				'frohub_settings',
 				array(
 					'ajax_url'        => admin_url( 'admin-ajax.php' ),
-					'nonce'           => wp_create_nonce( 'fpserver_nonce' ),
-					'rest_url'        => esc_url_raw( rest_url() ),
+					'nonce'           => wp_create_nonce( 'frohub_nonce' ),
 				)
 			);
 

@@ -44,6 +44,18 @@ To create API Endpoints use this:
 php cli.php wp-shaper:make-api <namespace/endpoint_name> [method]
 ```
 
+To create Ajax use this:
+
+```bash
+php cli.php wp-shaper:make-ajax <namespace/ajax_name>
+```
+
+To create Ajax with Noprive support use this:
+
+```bash
+php cli.php wp-shaper:make-ajax <namespace/ajax_name> --noprive
+```
+
 To delete shortcode use this:
 
 ```bash
@@ -60,6 +72,12 @@ To delete API endpoint use this:
 
 ```bash
 php cli.php wp-shaper:delete-api <namespace/endpoint_name>
+```
+
+To delete Ajax use this:
+
+```bash
+php cli.php wp-shaper:delete-ajax <namespace/ajax_name>
 ```
 
 ### Examples

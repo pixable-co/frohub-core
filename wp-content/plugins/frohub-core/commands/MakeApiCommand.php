@@ -80,16 +80,28 @@ if ( ! defined( 'ABSPATH' ) ) {
 class {$className} {
 
     public static function init() {
-        add_action('rest_api_init', function () {
-            register_rest_route('frohub/v1', '/{$restPath}', array(
-                'methods'             => '{$method}',
-                'callback'            => array(__CLASS__, 'handle_request'),
-                'permission_callback' => '__return_true',
-            ));
-        });
+        \$self = new self();
+        add_action('rest_api_init', array(\$self, 'register_rest_routes'));
     }
 
-    public static function handle_request(\WP_REST_Request \$request) {
+    /**
+     * Registers the REST API routes.
+     */
+    public function register_rest_routes() {
+        register_rest_route('frohub/v1', '/{$restPath}', array(
+            'methods'             => '{$method}',
+            'callback'            => array(\$this, 'handle_request'),
+            'permission_callback' => '__return_true',
+        ));
+    }
+
+    /**
+     * Handles the API request.
+     *
+     * @param \WP_REST_Request \$request
+     * @return \WP_REST_Response
+     */
+    public function handle_request(\WP_REST_Request \$request) {
         // Example logic
         return new \WP_REST_Response(array(
             'success' => true,
@@ -97,7 +109,6 @@ class {$className} {
         ), 200);
     }
 }
-
 PHP;
 
         file_put_contents($phpFilePath, $phpContent);
