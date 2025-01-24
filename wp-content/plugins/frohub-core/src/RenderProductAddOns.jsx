@@ -83,7 +83,7 @@ export default function RenderProductAddOns() {
                                     ))}
                                 </ul>
                             )}
-                            <ProceedToPaymentButton selectedAddOns={selectedAddOns} productPrice={productPrice} />
+                            <ProceedToPaymentButton selectedAddOns={selectedAddOns} productPrice={productPrice} productId={productId} />
                         </>
                     )}
                 </>
