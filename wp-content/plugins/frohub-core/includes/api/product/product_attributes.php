@@ -8,13 +8,19 @@ if ( ! defined( 'ABSPATH' ) ) {
 class ProductAttributes {
 
     public static function init() {
-        add_action('rest_api_init', function () {
-            register_rest_route('frohub/v1', '/product-attributes', array(
-                'methods'             => 'GET',
-                'callback'            => array(__CLASS__, 'get_product_id'),
-                'permission_callback' => '__return_true',
-            ));
-        });
+        $self = new self();
+        add_action('rest_api_init', array($self, 'register_rest_routes'));
+    }
+
+    /**
+     * Registers the REST API routes.
+     */
+    public function register_rest_routes() {
+        register_rest_route('frohub/v1', '/product-attributes', array(
+            'methods'             => 'GET',
+            'callback'            => array($this, 'get_product_id'),
+            'permission_callback' => '__return_true',
+        ));
     }
 
     public static function get_product_id(\WP_REST_Request $request) {

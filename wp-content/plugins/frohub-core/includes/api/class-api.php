@@ -10,7 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 class API {
 
 	public static function init() {
-		add_action( 'rest_api_init', array( __CLASS__, 'register_routes' ) );
+		$self = new self();
 		ProductAttributes::init();
 	}
 }
