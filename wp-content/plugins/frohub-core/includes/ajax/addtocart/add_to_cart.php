@@ -34,7 +34,14 @@ class AddToCart {
 
         // Get data from the request
         $product_id = isset($_POST['productId']) ? sanitize_text_field($_POST['productId']) : '';
-        $selected_add_ons = isset($_POST['selectedAddOns']) ? $_POST['selectedAddOns'] : array();
+        $selected_add_ons = isset($_POST['selectedAddOns']) ? array_map(function($add_on) {
+            return array(
+                'id' => sanitize_text_field($add_on['id']),
+                'name' => sanitize_text_field($add_on['name']),
+                'price' => sanitize_text_field($add_on['price']),
+                'duration_minutes' => sanitize_text_field($add_on['duration_minutes']),
+            );
+        }, $_POST['selectedAddOns']) : array();
         $product_price = isset($_POST['productPrice']) ? sanitize_text_field($_POST['productPrice']) : 0;
 
         // Add product to cart with custom meta
@@ -43,9 +50,11 @@ class AddToCart {
             'custom_price' => $product_price,
         );
 
+        // Add product to WooCommerce cart
         $cart_item_key = WC()->cart->add_to_cart($product_id, 1, 0, array(), $cart_item_data);
 
         if ($cart_item_key) {
+            // Prepare response data
             $response = array(
                 'message' => 'Product added to cart successfully.',
                 'product_id' => $product_id,
@@ -53,13 +62,16 @@ class AddToCart {
                 'product_price' => $product_price,
             );
 
+            // Send success response
             wp_send_json_success($response);
         } else {
+            // Send error response
             wp_send_json_error(array('message' => 'Failed to add product to cart.'));
         }
     }
 
     public function apply_custom_price($cart_item) {
+        // Apply custom price to cart item
         if (isset($cart_item['custom_price'])) {
             $cart_item['data']->set_price($cart_item['custom_price']);
         }
@@ -67,10 +79,12 @@ class AddToCart {
     }
 
     public function get_cart_item_from_session($cart_item, $values) {
+        // Restore custom price from session
         if (isset($values['custom_price'])) {
             $cart_item['custom_price'] = $values['custom_price'];
             $cart_item['data']->set_price($values['custom_price']);
         }
+        // Restore selected add-ons from session
         if (isset($values['selected_add_ons'])) {
             $cart_item['selected_add_ons'] = $values['selected_add_ons'];
         }
@@ -78,18 +92,29 @@ class AddToCart {
     }
 
     public function display_selected_add_ons($item_data, $cart_item) {
+        // Display selected add-ons in cart and checkout
         if (isset($cart_item['selected_add_ons']) && ! empty($cart_item['selected_add_ons'])) {
+            $add_ons = array_map(function($add_on) {
+                return $add_on['name'];
+            }, $cart_item['selected_add_ons']);
+            
+            // Convert array to comma-separated string
+            $add_ons_string = implode(', ', $add_ons);
             $item_data[] = array(
                 'name' => __('Selected Add-Ons', 'frohub'),
-                'value' => implode(', ', $cart_item['selected_add_ons']),
+                'value' => $add_ons_string,
             );
         }
         return $item_data;
     }
 
     public function add_order_item_meta($item_id, $values) {
+        // Save selected add-ons to order meta
         if (isset($values['selected_add_ons'])) {
-            wc_add_order_item_meta($item_id, 'Selected Add-Ons', implode(', ', $values['selected_add_ons']));
+            $add_ons = array_map(function($add_on) {
+                return $add_on['name'];
+            }, $values['selected_add_ons']);
+            wc_add_order_item_meta($item_id, 'Selected Add-Ons', implode(', ', $add_ons));
         }
     }
 }
