@@ -18,12 +18,12 @@ class ProductAttributes {
     public function register_rest_routes() {
         register_rest_route('frohub/v1', '/product-attributes', array(
             'methods'             => 'GET',
-            'callback'            => array($this, 'get_product_id'),
+            'callback'            => array($this, 'get_product_attributes'),
             'permission_callback' => '__return_true',
         ));
     }
 
-    public static function get_product_id(\WP_REST_Request $request) {
+    public static function get_product_attributes(\WP_REST_Request $request) {
         $product_id = $request->get_param( 'product_id' );
 		$product = wc_get_product( $product_id );
 		$partner = null;

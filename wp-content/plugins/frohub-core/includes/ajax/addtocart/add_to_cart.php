@@ -43,11 +43,13 @@ class AddToCart {
             );
         }, $_POST['selectedAddOns']) : array();
         $product_price = isset($_POST['productPrice']) ? sanitize_text_field($_POST['productPrice']) : 0;
+        $selected_service_type = isset($_POST['selectedServiceType']) ? sanitize_text_field($_POST['selectedServiceType']) : '';
 
         // Add product to cart with custom meta
         $cart_item_data = array(
             'selected_add_ons' => $selected_add_ons,
             'custom_price' => $product_price,
+            'selected_service_type' => $selected_service_type, // Add service type to cart item data
         );
 
         // Add product to WooCommerce cart
@@ -60,6 +62,7 @@ class AddToCart {
                 'product_id' => $product_id,
                 'selected_add_ons' => $selected_add_ons,
                 'product_price' => $product_price,
+                'selected_service_type' => $selected_service_type,
             );
 
             // Send success response
@@ -88,6 +91,10 @@ class AddToCart {
         if (isset($values['selected_add_ons'])) {
             $cart_item['selected_add_ons'] = $values['selected_add_ons'];
         }
+        // Restore selected service type from session
+        if (isset($values['selected_service_type'])) {
+            $cart_item['selected_service_type'] = $values['selected_service_type'];
+        }
         return $cart_item;
     }
 
@@ -105,6 +112,13 @@ class AddToCart {
                 'value' => $add_ons_string,
             );
         }
+        // Display selected service type in cart and checkout
+        if (isset($cart_item['selected_service_type']) && ! empty($cart_item['selected_service_type'])) {
+            $item_data[] = array(
+                'name' => __('Service Type', 'frohub'),
+                'value' => $cart_item['selected_service_type'],
+            );
+        }
         return $item_data;
     }
 
@@ -115,6 +129,10 @@ class AddToCart {
                 return $add_on['name'];
             }, $values['selected_add_ons']);
             wc_add_order_item_meta($item_id, 'Selected Add-Ons', implode(', ', $add_ons));
+        }
+        // Save selected service type to order meta
+        if (isset($values['selected_service_type'])) {
+            wc_add_order_item_meta($item_id, 'Service Type', $values['selected_service_type']);
         }
     }
 }

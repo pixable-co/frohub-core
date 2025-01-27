@@ -1,11 +1,8 @@
 import React from 'react';
 import { useEffect, useState } from 'react';
 
-export default function ProceedToPaymentButton({ selectedAddOns, productPrice, productId}) {
+export default function ProceedToPaymentButton({ selectedAddOns, productPrice, productId, selectedServiceType }) {
     const handleProceedToPayment = () => {
-        // Implement the logic to proceed to payment
-        console.log('Proceeding to payment with:', selectedAddOns, productPrice);
-
         // Call the AJAX function
         jQuery.ajax({
             url: frohubCoreAjax.ajax_url,
@@ -15,13 +12,15 @@ export default function ProceedToPaymentButton({ selectedAddOns, productPrice, p
                 nonce: frohubCoreAjax.nonce,
                 productId: productId,
                 selectedAddOns: selectedAddOns,
-                productPrice: productPrice
+                productPrice: productPrice,
+                selectedServiceType: selectedServiceType
             },
             success: function(response) {
                 console.log('AJAX call successful:', response.data.message);
                 console.log('Product ID:', response.data.product_id);
                 console.log('Selected Add-Ons:', response.data.selected_add_ons);
                 console.log('Product Price:', response.data.product_price);
+                console.log('Selected Service Type:', response.data.selected_service_type);
             },
             error: function(error) {
                 console.log('AJAX call failed:', error);
@@ -30,8 +29,11 @@ export default function ProceedToPaymentButton({ selectedAddOns, productPrice, p
     };
 
     return (
-        <button onClick={handleProceedToPayment}>
-            Proceed to Payment
-        </button>
+        <div>
+            <p>Total Price: £{productPrice.toFixed(2)}</p>
+            <button onClick={handleProceedToPayment}>
+                Proceed to Payment
+            </button>
+        </div>
     );
 }

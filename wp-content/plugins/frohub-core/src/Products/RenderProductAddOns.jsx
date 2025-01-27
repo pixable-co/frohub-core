@@ -1,21 +1,17 @@
 import { useEffect, useState } from 'react';
-import ProceedToPaymentButton from './ProceedToPaymentButton';
 
-export default function RenderProductAddOns() {
-    const [productId, setProductId] = useState(null);
+export default function RenderProductAddOns({ productId, setProductId, selectedAddOns, setSelectedAddOns, setProductPrice }) {
     const [addOns, setAddOns] = useState([]);
     const [error, setError] = useState(null);
-    const [selectedAddOns, setSelectedAddOns] = useState([]);
-    const [productPrice, setProductPrice] = useState(0);
 
     useEffect(() => {
         const fetchProductId = () => {
-            const productId = document.querySelector('.render_product_add_ons').dataset.productId;
+            const productId = document.querySelector('.frohub_add_to_cart').dataset.productId;
             setProductId(productId);
         };
 
         fetchProductId();
-    }, []);
+    }, [setProductId]);
 
     useEffect(() => {
         const fetchProductData = async () => {
@@ -38,7 +34,7 @@ export default function RenderProductAddOns() {
         };
 
         fetchProductData();
-    }, [productId]);
+    }, [productId, setAddOns, setProductPrice]);
 
     const handleSelectAddOn = (addOn) => {
         setSelectedAddOns((prevSelectedAddOns) => {
@@ -56,13 +52,11 @@ export default function RenderProductAddOns() {
         <div>
             {productId ? (
                 <>
-                    <p>Product ID: {productId}</p>
-                    <p>Product Price: £{productPrice.toFixed(2)}</p>
                     {error ? (
                         <p>Error: {error}</p>
                     ) : (
                         <>
-                            {addOns.length > 0 && (
+                            {Array.isArray(addOns) && addOns.length > 0 && (
                                 <ul>
                                     {addOns.map((addOn, index) => (
                                         <li key={index}>
@@ -77,18 +71,16 @@ export default function RenderProductAddOns() {
                                                     data-duration={addOn.duration_minutes}
                                                 />
                                                 {addOn.name} £{addOn.price} <br />
-
                                             </label>
                                         </li>
                                     ))}
                                 </ul>
                             )}
-                            <ProceedToPaymentButton selectedAddOns={selectedAddOns} productPrice={productPrice} productId={productId} />
                         </>
                     )}
                 </>
             ) : (
-                <p>Loading product ID...</p>
+                <p>Loading add-ons...</p>
             )}
         </div>
     );

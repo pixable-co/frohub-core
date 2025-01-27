@@ -1,7 +1,7 @@
 <?php
 namespace FECore;
 
-use FECore\RenderProductAddOns;
+use FECore\RenderAddToCart;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -11,6 +11,6 @@ class Shortcodes {
 
 	public static function init() {
 		$self = new self();
-		RenderProductAddOns::init();
+		RenderAddToCart::init();
 	}
 }
