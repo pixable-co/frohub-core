@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 export default function RenderProductAddOns({ productId, setProductId, selectedAddOns, setSelectedAddOns, setProductPrice }) {
     const [addOns, setAddOns] = useState([]);
     const [error, setError] = useState(null);
+    const [isFetched, setIsFetched] = useState(false);
 
     useEffect(() => {
         const fetchProductId = () => {
@@ -14,8 +15,8 @@ export default function RenderProductAddOns({ productId, setProductId, selectedA
     }, [setProductId]);
 
     useEffect(() => {
-        const fetchProductData = async () => {
-            if (productId) {
+        if (!isFetched && productId) {
+            const fetchProductData = async () => {
                 try {
                     const response = await fetch(`/wp-json/frohub/v1/product-attributes?product_id=${productId}`);
                     if (!response.ok) {
@@ -23,18 +24,20 @@ export default function RenderProductAddOns({ productId, setProductId, selectedA
                         throw new Error(`Network response was not ok: ${errorText}`);
                     }
                     const data = await response.json();
-                    console.log(data);
+                    console.log('API Response:', data); // Log the API response
                     setAddOns(data.add_ons || []);
                     setProductPrice(parseFloat(data.product_price) || 0);
+                    setIsFetched(true);
                 } catch (error) {
                     console.error('Error fetching product data:', error);
                     setError(error.message);
                 }
-            }
-        };
+            };
 
-        fetchProductData();
-    }, [productId, setAddOns, setProductPrice]);
+            fetchProductData();
+        }
+        return () => setIsFetched(false); // Cleanup function to reset isFetched
+    }, [productId, isFetched, setAddOns, setProductPrice]);
 
     const handleSelectAddOn = (addOn) => {
         setSelectedAddOns((prevSelectedAddOns) => {

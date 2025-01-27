@@ -1,17 +1,21 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 
 export default function RenderServiceTypes({ productId, onServiceTypeChange }) {
     const [serviceTypes, setServiceTypes] = useState([]);
+    const isFetchedRef = useRef(false);
 
     useEffect(() => {
-        fetch(`/wp-json/frohub/v1/product-service-type?product_id=${productId}`)
-            .then(response => response.json())
-            .then(data => {
-                console.log('API Response:', data); // Log the API response
-                if (data.success) {
-                    setServiceTypes(data.data);
-                }
-            });
+        if (!isFetchedRef.current && productId) {
+            fetch(`/wp-json/frohub/v1/product-service-type?product_id=${productId}`)
+                .then(response => response.json())
+                .then(data => {
+                    console.log('API Response:', data); // Log the API response
+                    if (data.success) {
+                        setServiceTypes(data.data);
+                    }
+                    isFetchedRef.current = true;
+                });
+        }
     }, [productId]);
 
     return (
