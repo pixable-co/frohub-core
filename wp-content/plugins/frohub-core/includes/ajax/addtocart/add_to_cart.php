@@ -26,11 +26,7 @@ class AddToCart {
     }
 
     public function add_to_cart() {
-        // Verify nonce
-        if ( ! isset($_POST['nonce']) || ! wp_verify_nonce($_POST['nonce'], 'frohub_nonce') ) {
-            wp_send_json_error(array('message' => 'Invalid nonce'));
-            return;
-        }
+        check_ajax_referer( 'frohub_nonce' );
 
         // Get data from the request
         $product_id = isset($_POST['productId']) ? sanitize_text_field($_POST['productId']) : '';
