@@ -1,5 +1,6 @@
 <?php
 namespace FECore;
+use FECore\AddToCart;
 
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -10,5 +11,6 @@ class Ajax {
 
 	public static function init() {
 		$self = new self();
+		AddToCart::init();
 	}
 }

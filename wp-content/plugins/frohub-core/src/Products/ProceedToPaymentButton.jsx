@@ -1,31 +1,25 @@
 import React from 'react';
 import { useEffect, useState } from 'react';
+import {createData} from "../services/createData.js";
 
 export default function ProceedToPaymentButton({ selectedAddOns, productPrice, productId, selectedServiceType }) {
-    const handleProceedToPayment = () => {
-        // Call the AJAX function
-        jQuery.ajax({
-            url: frohubCoreAjax.ajax_url,
-            type: 'POST',
-            data: {
-                action: 'frohub_add_to_cart',
-                nonce: frohubCoreAjax.nonce,
+    const handleProceedToPayment = async () => {
+        try {
+            const response = await createData('frohub_add_to_cart', {
                 productId: productId,
                 selectedAddOns: selectedAddOns,
                 productPrice: productPrice,
-                selectedServiceType: selectedServiceType
-            },
-            success: function(response) {
-                console.log('AJAX call successful:', response.data.message);
-                console.log('Product ID:', response.data.product_id);
-                console.log('Selected Add-Ons:', response.data.selected_add_ons);
-                console.log('Product Price:', response.data.product_price);
-                console.log('Selected Service Type:', response.data.selected_service_type);
-            },
-            error: function(error) {
-                console.log('AJAX call failed:', error);
-            }
-        });
+                selectedServiceType: selectedServiceType,
+            });
+
+            console.log('AJAX call successful:', response.data.message);
+            console.log('Product ID:', response.data.product_id);
+            console.log('Selected Add-Ons:', response.data.selected_add_ons);
+            console.log('Product Price:', response.data.product_price);
+            console.log('Selected Service Type:', response.data.selected_service_type);
+        } catch (error) {
+            console.error('AJAX call failed:', error);
+        }
     };
 
     return (
