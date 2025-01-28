@@ -93,13 +93,5 @@ function frohub_start() {
 	return FrohubCore::init();
 }
 
-// function frohub_core_enqueue_scripts() {
-//     wp_enqueue_script('frohub-core-ajax', plugins_url('/js/frohub-core-ajax.js', __FILE__), array('jquery'), null, true);
-//     wp_localize_script('frohub-core-ajax', 'frohubCoreAjax', array(
-//         'ajax_url' => admin_url('admin-ajax.php'),
-//         'nonce' => wp_create_nonce('frohub_nonce')
-//     ));
-// }
-// add_action('wp_enqueue_scripts', 'frohub_core_enqueue_scripts');
 
 frohub_start();
