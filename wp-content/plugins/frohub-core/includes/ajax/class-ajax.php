@@ -1,5 +1,8 @@
 <?php
 namespace FECore;
+
+use FECore\GetAvailibility;
+
 use FECore\AddToCart;
 
 
@@ -12,5 +15,6 @@ class Ajax {
 	public static function init() {
 		$self = new self();
 		AddToCart::init();
+		GetAvailibility::init();
 	}
 }
