@@ -1,3 +1,4 @@
+import FrohubCalender from './shortcodes/producttemplate/frohub_calender';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import './index.css';
@@ -12,3 +13,12 @@ if (element) {
         <AddToCartProduct dataKey={key} />
     );
 }
+
+
+const frohubCalenderElements = document.querySelectorAll('.frohub_calender');
+frohubCalenderElements.forEach(element => {
+    const key = element.getAttribute('data-key');
+    createRoot(element).render(
+        <FrohubCalender dataKey={key} />
+    );
+});
