@@ -15,8 +15,6 @@ wp-content/.DS_Store
 wp-content/plugins/frohub-core/vendor
 wp-content/mu-plugins
 wp-content/wpvividbackups
-
-
 # Ignore everything inside wp-content/plugins except frohub-core
 wp-content/plugins/*
 !wp-content/plugins/frohub-core/
