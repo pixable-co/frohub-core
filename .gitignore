@@ -1,17 +1,22 @@
 # Ignore everything
 /*
 
-# But not wp-content/plugins/frohub-core
+# But allow wp-content folder
 !wp-content/
-!wp-content/plugins/
+
+# Ignore everything inside wp-content
+wp-content/*
+
+# Allow only frohub-core plugin
 !wp-content/plugins/frohub-core/
-wp-content/themes
-wp-content/uploads
+
+# Ignore everything inside frohub-core/vendor
+wp-content/plugins/frohub-core/vendor/
+
+# Ignore themes, uploads, and unwanted files
+wp-content/themes/
+wp-content/plugins/
+wp-content/uploads/
 wp-content/index.php
 wp-content/debug.log
 wp-content/.DS_Store
-wp-content/plugins/frohub-core/vendor
-
-# Ignore everything inside wp-content/plugins except frohub-core
-wp-content/plugins/*
-!wp-content/plugins/frohub-core/
