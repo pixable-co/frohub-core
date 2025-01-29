@@ -27,5 +27,6 @@ class RenderAddToCart {
 }
 
 
+
 // Initialize the shortcode
 RenderAddToCart::init();
