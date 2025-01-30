@@ -21,6 +21,7 @@ class FrohubGetPartnerLocation {
         } else {
             return '';
         }
+        
         // return '<div class="frohub_get_partner_location" data-key="' . esc_attr($unique_key) . '"></div>';
     }
 }
