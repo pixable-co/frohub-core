@@ -34,9 +34,8 @@ class FrohubProductPartnerPage {
         $product_ids = $query->posts;
         $imploded_ids = implode(',', $product_ids);
 
-
-        echo do_shortcode('[us_grid post_type="ids" ids="'.$imploded_ids.'" items_layout="197" columns="4" overriding_link="%7B%22url%22%3A%22%22%7D"]'); 
-        // return $output;
+        return do_shortcode('[us_grid post_type="ids" ids="'.$imploded_ids.'" items_layout="197" columns="4" overriding_link="%7B%22url%22%3A%22%22%7D"]'); 
+        
         // return '<div class="frohub_product_partner_page" data-key="' . esc_attr($unique_key) . '"></div>';
     }
 }
