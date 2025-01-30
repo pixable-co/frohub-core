@@ -28,15 +28,13 @@ class FrohubProductPartnerPage {
         );
 
         // Perform the query
-        $query = new WP_Query($args);
+        $query = new \WP_Query($args);
 
         // Get the post IDs
         $product_ids = $query->posts;
         $imploded_ids = implode(',', $product_ids); 
         $grid='[us_grid post_type="ids" ids="'.$imploded_ids.'" items_layout="197" columns="4" overriding_link="%7B%22url%22%3A%22%22%7D"]';
 
-        return do_shortcode($grid); 
-                
-        // return '<div class="frohub_product_partner_page" data-key="' . esc_attr($unique_key) . '"></div>';
+        return do_shortcode($grid);
     }
 }
