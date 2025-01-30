@@ -136,7 +136,9 @@ const FhCalender = ({ data = [] }) => {
             </div>
 
             {/* Hidden div to store extra charge */}
-            <div id="extra-charge-container" data-extra-charge="0" style={{ display: "none" }}></div>
+            <div id="extra-charge-container" data-extra-charge="0" style={{display: "none"}}></div>
+            <input type="hidden" value={selectedDate} name="selectedDate"/>
+            <input type="hidden" value={selectedTime} name="selectedTime"/>
         </div>
     );
 };

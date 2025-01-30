@@ -40,12 +40,16 @@ class AddToCart {
         }, $_POST['selectedAddOns']) : array();
         $product_price = isset($_POST['productPrice']) ? sanitize_text_field($_POST['productPrice']) : 0;
         $selected_service_type = isset($_POST['selectedServiceType']) ? sanitize_text_field($_POST['selectedServiceType']) : '';
+        $selected_date = isset($_POST['selectedDate']) ? sanitize_text_field($_POST['selectedDate']) : '';
+        $selected_time = isset($_POST['selectedTime']) ? sanitize_text_field($_POST['selectedTime']) : '';
 
         // Add product to cart with custom meta
         $cart_item_data = array(
             'selected_add_ons' => $selected_add_ons,
             'custom_price' => $product_price,
             'selected_service_type' => $selected_service_type, // Add service type to cart item data
+            'booking_date' => $selected_date,
+            'booking_time' => $selected_time,
         );
 
         // Add product to WooCommerce cart
@@ -59,6 +63,8 @@ class AddToCart {
                 'selected_add_ons' => $selected_add_ons,
                 'product_price' => $product_price,
                 'selected_service_type' => $selected_service_type,
+                'booking_date' => $selected_date,
+                'booking_time' => $selected_time,
             );
 
             // Send success response
@@ -91,6 +97,12 @@ class AddToCart {
         if (isset($values['selected_service_type'])) {
             $cart_item['selected_service_type'] = $values['selected_service_type'];
         }
+        if (isset($values['booking_date'])) { // Restore date
+                $cart_item['booking_date'] = $values['booking_date'];
+        }
+        if (isset($values['booking_time'])) { // Restore time
+            $cart_item['booking_time'] = $values['booking_time'];
+        }
         return $cart_item;
     }
 
@@ -115,10 +127,25 @@ class AddToCart {
                 'value' => $cart_item['selected_service_type'],
             );
         }
+
+        if (isset($cart_item['booking_date']) && !empty($cart_item['booking_date'])) {
+                $item_data[] = array(
+                    'name' => __('Selected Date', 'frohub'),
+                    'value' => $cart_item['booking_date'],
+                );
+        }
+        if (isset($cart_item['booking_time']) && !empty($cart_item['booking_time'])) { // Display time
+                $item_data[] = array(
+                    'name' => __('Selected Time', 'frohub'),
+                    'value' => $cart_item['booking_time'],
+                );
+        }
         return $item_data;
     }
 
     public function add_order_item_meta($item_id, $values) {
+        $order_id = wc_get_order_id_by_order_item_id($item_id); // Get the Order ID from item ID
+
         // Save selected add-ons to order meta
         if (isset($values['selected_add_ons'])) {
             $add_ons = array_map(function($add_on) {
@@ -129,6 +156,12 @@ class AddToCart {
         // Save selected service type to order meta
         if (isset($values['selected_service_type'])) {
             wc_add_order_item_meta($item_id, 'Service Type', $values['selected_service_type']);
+        }
+        if (isset($values['booking_date'])) { // Save date
+                wc_add_order_item_meta($item_id, 'Selected Date', $values['booking_date']);
+        }
+        if (isset($values['booking_time'])) { // Save time
+               wc_add_order_item_meta($item_id, 'Selected Time', $values['booking_time']);
         }
     }
 }
