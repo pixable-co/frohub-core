@@ -1,0 +1,55 @@
+<?php
+namespace FECore;
+
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
+
+class DisplayComments {
+
+    public static function init() {
+        $self = new self();
+        add_shortcode('display_comments', array($self, 'display_comments_shortcode'));
+    }
+
+    public function display_comments_shortcode() {
+        ob_start();
+
+        $comments = get_comments(array('post_id' => get_the_ID())); // Get comments for the current post
+        $currentUserId = get_current_user_id();
+        $allComments = array();
+
+        foreach ($comments as $comment) {
+            $allComments[] = array(
+                'comment_id' => $comment->comment_ID,
+                'user_id' => $comment->user_id,
+                'author' => $comment->comment_author,
+                'content' => $comment->comment_content,
+                'date' => $comment->comment_date_gmt,
+            );
+        }
+
+        // Sort by comment date (oldest to newest)
+        usort($allComments, function ($a, $b) {
+            return strtotime($a['date']) - strtotime($b['date']);
+        });
+        ?>
+
+        <div class="chat-container">
+            <div class="messages">
+                <?php foreach ($allComments as $comment): ?>
+                    <div class="message <?php echo ($comment['user_id'] == $currentUserId) ? 'user' : 'partner'; ?>">
+                        <div class="bubble <?php echo ($comment['user_id'] == $currentUserId) ? 'user' : 'partner'; ?>">
+                            <strong><?php echo ($comment['user_id'] == $currentUserId) ? 'You' : esc_html($comment['author']); ?>:</strong> 
+                            <?php echo wp_kses_post($comment['content']); ?>
+                            <div class="timestamp"><?php echo esc_html($comment['date']); ?></div>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        </div>
+
+        <?php
+        return ob_get_clean();
+    }
+}
