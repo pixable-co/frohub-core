@@ -132,6 +132,3 @@ class AddToCart {
         }
     }
 }
-
-// Initialize the AddToCart
-AddToCart::init();
