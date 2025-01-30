@@ -68,6 +68,7 @@ final class FrohubCore {
 		FECore\Shortcodes::init();
 		FECore\API::init();
 		FECore\Ajax::init();
+		FECore\Actions::init();
 	}
 
 	public function load_textdomain() {
