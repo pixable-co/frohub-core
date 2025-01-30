@@ -35,7 +35,7 @@ class DisplayComments {
         });
         ?>
 
-        <div class="chat-container">
+        <div class="chat-container" id="chat-container" style="overflow-y: auto; max-height: 800px; height: 800px;">
             <div class="messages">
                 <?php foreach ($allComments as $comment): ?>
                     <div class="message <?php echo ($comment['user_id'] == $currentUserId) ? 'user' : 'partner'; ?>">
@@ -48,6 +48,13 @@ class DisplayComments {
                 <?php endforeach; ?>
             </div>
         </div>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                var chatContainer = document.getElementById('chat-container');
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            });
+        </script>
 
         <?php
         return ob_get_clean();
