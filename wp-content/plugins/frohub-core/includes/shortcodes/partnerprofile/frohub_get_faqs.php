@@ -37,8 +37,8 @@ class FrohubGetFaqs {
         }
         $accordion .= '[/vc_tta_accordion]'; // End of Accordion shortcode
 
-        // echo do_shortcode($accordion);
-        return $accordion;
+        return do_shortcode($accordion);
+        // return $accordion;
         // return '<div class="frohub_get_faqs" data-key="' . esc_attr($unique_key) . '"></div>';
     }
 }
