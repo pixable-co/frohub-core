@@ -7,6 +7,7 @@ use FECore\FrohubCalender;
 use FECore\RenderAddToCart;
 use FECore\FrohubProductPartnerPage;
 use FECore\FrohubGetPartnerLocation;
+use FECore\FrohubGetPartnerServiceTypes;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -20,6 +21,7 @@ class Shortcodes {
 		FrohubCalender::init();
 		FrohubProductPartnerPage::init();
 		FrohubGetPartnerLocation::init();
+		FrohubGetPartnerServiceTypes::init();
 		
 	}
 }
