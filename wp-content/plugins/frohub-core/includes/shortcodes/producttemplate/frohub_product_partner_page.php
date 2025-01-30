@@ -17,7 +17,7 @@ class FrohubProductPartnerPage {
         $current_partner_id = get_the_id(); 
         $args = array(
             'post_type' => 'product', 
-            'fields' => 'ids', // Fetch only the IDs **NEW CODE**
+            'fields' => 'ids', 
             'meta_query' => array( 
                 array(
                     'key' => 'partner_id', 
@@ -32,13 +32,10 @@ class FrohubProductPartnerPage {
 
         // Get the post IDs
         $product_ids = $query->posts;
-        $imploded_ids = implode(',', $product_ids); // We implode the array of IDs so that the they are separated by commas. {123,435,6457,534}. This is what the shortcode requires
+        $imploded_ids = implode(',', $product_ids); 
 
 
-        //echo do_shortcode('[us_grid post_type="product" items_layout="197" columns="4" overriding_link="%7B%22url%22%3A%22%22%7D"]'); // This is what the grid layout usually looks like
-
-
-        echo do_shortcode('[us_grid post_type="ids" ids="'.$imploded_ids.'" items_layout="197" columns="4" overriding_link="%7B%22url%22%3A%22%22%7D"]'); //We will change the post type to "Ids" and insert our imploded array of ids. 
+        return do_shortcode('[us_grid post_type="ids" ids="'.$imploded_ids.'" items_layout="197" columns="4" overriding_link="%7B%22url%22%3A%22%22%7D"]'); 
                 
         // return '<div class="frohub_product_partner_page" data-key="' . esc_attr($unique_key) . '"></div>';
     }
