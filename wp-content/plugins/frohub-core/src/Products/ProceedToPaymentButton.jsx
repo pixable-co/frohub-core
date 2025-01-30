@@ -39,12 +39,17 @@ export default function ProceedToPaymentButton({ selectedAddOns, productPrice, p
     }, [productPrice]);
 
     const handleProceedToPayment = async () => {
+        const selectedDate = document.querySelector('input[name="selectedDate"]')?.value || "";
+        const selectedTime = document.querySelector('input[name="selectedTime"]')?.value || "";
+
         try {
             const response = await createData('frohub_add_to_cart', {
                 productId: productId,
                 selectedAddOns: selectedAddOns,
                 productPrice: totalPrice, // Using the updated total price
                 selectedServiceType: selectedServiceType,
+                selectedDate: selectedDate ? new Date(parseInt(selectedDate)).toISOString().split('T')[0] : "",
+                selectedTime: selectedTime,
             });
 
             console.log('AJAX call successful:', response.data.message);
