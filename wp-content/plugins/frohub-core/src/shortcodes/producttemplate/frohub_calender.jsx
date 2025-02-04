@@ -4,7 +4,8 @@ import { fetchData } from "../../services/fetchData.js";
 
 const FrohubCalender = () => {
     const [productId, setProductId] = useState(null);
-    const [availabilityData, setAvailabilityData] = useState([]); // Store fetched data
+    const [availabilityData, setAvailabilityData] = useState([]);
+    const [selectedDate, setSelectedDate] = useState(null);
 
     useEffect(() => {
         const productElement = document.querySelector(".frohub_add_to_cart");
@@ -15,22 +16,26 @@ const FrohubCalender = () => {
     }, []);
 
     useEffect(() => {
-        if (!productId) return;
+        if (!productId || !selectedDate) return;
 
-        fetchData("frohub/get_availibility", (response) => {
-            if (response.success) {
-                console.log("Availability Data:", response.data.availability);
-                setAvailabilityData(response.data.availability); // Store fetched data
-            } else {
-                console.error("Error fetching availability:", response.message);
-            }
-        }, { product_id: productId });
-
-    }, [productId]);
+        fetchData(
+            "frohub/get_availibility",
+            (response) => {
+                if (response.success) {
+                    // console.log("Availability Data:", response.data.availability);
+                    // console.log("Booked:", response.data.booked_slots);
+                    setAvailabilityData(response.data.availability);
+                } else {
+                    console.error("Error fetching availability:", response.message);
+                }
+            },
+            { product_id: productId, date: selectedDate } // Include date
+        );
+    }, [productId, selectedDate]);
 
     return (
         <div>
-            <FhCalender data={availabilityData} /> {/* Pass availability data as props */}
+            <FhCalender data={availabilityData} onDateChange={setSelectedDate} />
         </div>
     );
 };
