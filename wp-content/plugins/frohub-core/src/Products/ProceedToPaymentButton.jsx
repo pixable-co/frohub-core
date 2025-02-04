@@ -42,13 +42,15 @@ export default function ProceedToPaymentButton({ selectedAddOns, productPrice, p
         const selectedDate = document.querySelector('input[name="selectedDate"]')?.value || "";
         const selectedTime = document.querySelector('input[name="selectedTime"]')?.value || "";
 
+        console.log('Selected Date:', selectedDate);
+
         try {
             const response = await createData('frohub_add_to_cart', {
                 productId: productId,
                 selectedAddOns: selectedAddOns,
                 productPrice: totalPrice, // Using the updated total price
                 selectedServiceType: selectedServiceType,
-                selectedDate: selectedDate ? new Date(parseInt(selectedDate)).toISOString().split('T')[0] : "",
+                selectedDate: selectedDate,
                 selectedTime: selectedTime,
             });
 
