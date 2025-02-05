@@ -1,41 +1,62 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
+import { Spin } from "antd";
 import FhCalender from "../../common/controls/FhCalender.jsx";
 import { fetchData } from "../../services/fetchData.js";
 
 const FrohubCalender = () => {
-    const [productId, setProductId] = useState(null);
+    const productIdRef = useRef(null); // Use ref to avoid unnecessary re-renders
     const [availabilityData, setAvailabilityData] = useState([]);
     const [selectedDate, setSelectedDate] = useState(null);
+    const [loading, setLoading] = useState(false);
 
+    // Set today's date on initial load
+    useEffect(() => {
+        const today = new Date().toISOString().split("T")[0]; // Format: YYYY-MM-DD
+        setSelectedDate(today);
+    }, []);
+
+    // Set product ID once (without causing re-render)
     useEffect(() => {
         const productElement = document.querySelector(".frohub_add_to_cart");
         if (productElement) {
-            const productId = productElement.dataset.productId;
-            setProductId(productId);
+            productIdRef.current = productElement.dataset.productId;
         }
     }, []);
 
-    useEffect(() => {
-        if (!productId || !selectedDate) return;
+    // Fetch availability only when necessary
+    const fetchAvailability = useCallback(async () => {
+        if (!productIdRef.current || !selectedDate) return;
 
+        setLoading(true);
         fetchData(
             "frohub/get_availibility",
             (response) => {
                 if (response.success) {
-                    // console.log("Availability Data:", response.data.availability);
-                    // console.log("Booked:", response.data.booked_slots);
-                    setAvailabilityData(response.data.availability);
+                    setAvailabilityData((prevData) =>
+                        JSON.stringify(prevData) !== JSON.stringify(response.data.availability)
+                            ? response.data.availability
+                            : prevData
+                    );
                 } else {
                     console.error("Error fetching availability:", response.message);
                 }
+                setLoading(false);
             },
-            { product_id: productId, date: selectedDate } // Include date
+            { product_id: productIdRef.current, date: selectedDate }
         );
-    }, [productId, selectedDate]);
+    }, [selectedDate]); // Dependency array contains only `selectedDate` to avoid unnecessary calls
+
+    useEffect(() => {
+        if (selectedDate) {
+            fetchAvailability();
+        }
+    }, [fetchAvailability, selectedDate]); // Ensure it runs when `selectedDate` updates
 
     return (
-        <div>
-            <FhCalender data={availabilityData} onDateChange={setSelectedDate} />
+        <div className="relative">
+            <Spin spinning={loading} size="large">
+                <FhCalender data={availabilityData} onDateChange={setSelectedDate} />
+            </Spin>
         </div>
     );
 };
