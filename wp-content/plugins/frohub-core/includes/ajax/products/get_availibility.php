@@ -26,22 +26,17 @@ class GetAvailibility {
             wp_send_json_error(['message' => 'Date is required.']);
         }
 
-//         if (!isset($_POST['partner_id']) || empty($_POST['partner_id'])) {
-//             wp_send_json_error(['message' => 'Partner ID is required.']);
-//         }
-
         $product_id = intval($_POST['product_id']);
         $date = sanitize_text_field($_POST['date']);
-//         $partner_id = intval($_POST['partner_id']);
-        $partner_id = 1149;
+        $partner_id = get_field('partner_id', $product_id);
 
-        // ✅ Step 1: Get ACF Availability Data
+
         $availability = get_field('availability', $product_id);
         if (!$availability) {
             wp_send_json_error(['message' => 'No availability data found.']);
         }
 
-        // ✅ Step 2: Get Booked Slots from WooCommerce Orders
+
         $orders = Helper::get_orders_by_product_id_and_date($product_id, $date);
         $booked_slots = [];
 
@@ -51,25 +46,20 @@ class GetAvailibility {
             }
         }
 
-        // ✅ Step 3: Call Google Calendar API for Additional Booked Slots
+
         $google_calendar_booked_slots = $this->get_google_calendar_bookings($partner_id, $date);
         $booked_slots = array_merge($booked_slots, $google_calendar_booked_slots);
 
-        // ✅ Step 4: Filter Available Slots
         $available_slots = array_filter($availability, function ($entry) use ($booked_slots) {
             return !in_array($entry['from'] . ' - ' . $entry['to'], $booked_slots);
         });
 
-        // ✅ Step 5: Return the Response
         wp_send_json_success([
             'availability'   => array_values($available_slots),
             'booked_slots'   => $booked_slots,
         ]);
     }
 
-    /**
-     * Fetch Google Calendar booked slots for a specific partner and date
-     */
     private function get_google_calendar_bookings($partner_id, $date) {
         $url = "http://localhost:10028/wp-json/fpserver/v1/google-calendar-events?partner_id=" . $partner_id . "&date=" . $date;
         $response = wp_remote_get($url);
