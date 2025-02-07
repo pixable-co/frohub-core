@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import dayjs from "dayjs";
-import './style.css'
+import './style.css';
 
-const FhCalender = ({ data = [] }) => {
-    const [selectedDate, setSelectedDate] = useState(dayjs());
+const FhCalender = ({ data = [], onDateChange }) => {
+    const [selectedDate, setSelectedDate] = useState(dayjs()); // Ensure it starts as a valid date
     const [selectedTime, setSelectedTime] = useState(null);
     const [currentMonth, setCurrentMonth] = useState(dayjs());
 
@@ -32,10 +32,16 @@ const FhCalender = ({ data = [] }) => {
     };
 
     const handleSelect = (date) => {
-        setSelectedDate(date);
+        const newDate = dayjs(date); // Ensure it's always a dayjs object
+        setSelectedDate(newDate);
         setSelectedTime(null);
         document.getElementById("extra-charge-container").setAttribute("data-extra-charge", "0");
+
+        if (onDateChange) {
+            onDateChange(newDate.format("YYYY-MM-DD")); // Send formatted date
+        }
     };
+
 
     const handleTimeSelect = (time, price) => {
         setSelectedTime(time);
@@ -50,7 +56,7 @@ const FhCalender = ({ data = [] }) => {
         ? data
             .filter((entry) => entry.day === selectedDate.format("dddd"))
             .map((entry) => ({
-                time: `${entry.from} - ${entry.to}`, // Now correctly showing "From - To"
+                time: `${entry.from} - ${entry.to}`,
                 price: Number(entry.extra_charge) || 0,
             }))
         : [];
@@ -61,7 +67,6 @@ const FhCalender = ({ data = [] }) => {
 
     return (
         <div className="calendar-container">
-            {/* Calendar Section */}
             <div className="calendar-section custom-calendar">
                 <div className="flex items-center justify-between mb-4">
                     <button
@@ -79,7 +84,6 @@ const FhCalender = ({ data = [] }) => {
                     </button>
                 </div>
 
-                {/* Days of the Week */}
                 <div className="grid grid-cols-7 mb-2">
                     {["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"].map((day) => (
                         <div key={day} className="text-xs text-gray-500 text-center py-2">
@@ -88,7 +92,6 @@ const FhCalender = ({ data = [] }) => {
                     ))}
                 </div>
 
-                {/* Calendar Grid */}
                 <div className="grid grid-cols-7 gap-1">
                     {getDaysInMonth().map((dayObj, idx) => (
                         <button
@@ -110,7 +113,6 @@ const FhCalender = ({ data = [] }) => {
                 </div>
             </div>
 
-            {/* Time Slots Section */}
             <div className="timeslots-section">
                 <h3 className="selected-date">{selectedDate.format("ddd, MMM D YYYY")}</h3>
 
@@ -124,7 +126,7 @@ const FhCalender = ({ data = [] }) => {
                                 }`}
                                 onClick={() => handleTimeSelect(slot.time, slot.price)}
                             >
-                                <span>{slot.time}</span> {/* Shows "From - To" time */}
+                                <span>{slot.time}</span>
                                 {slot.price > 0 && <span className="extra-charge">+£{slot.price.toFixed(2)}</span>}
                             </button>
                         ))}
@@ -135,10 +137,10 @@ const FhCalender = ({ data = [] }) => {
                 <p className="timezone-info">All times are in London (GMT +01:00)</p>
             </div>
 
-            {/* Hidden div to store extra charge */}
-            <div id="extra-charge-container" data-extra-charge="0" style={{display: "none"}}></div>
-            <input type="hidden" value={selectedDate} name="selectedDate"/>
-            <input type="hidden" value={selectedTime} name="selectedTime"/>
+            <div id="extra-charge-container" data-extra-charge="0" style={{ display: "none" }}></div>
+            <input type="hidden" value={selectedDate.format("YYYY-MM-DD")} name="selectedDate" />
+            <input type="hidden" value={selectedTime || ""} name="selectedTime" />
+
         </div>
     );
 };
