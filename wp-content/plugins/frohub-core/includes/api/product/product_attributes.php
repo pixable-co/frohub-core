@@ -75,9 +75,6 @@ class ProductAttributes {
 			'product_price' => $product_price,
 		);
 
-		// Log the response for debugging
-		error_log(print_r($response, true));
-
 		return rest_ensure_response( $response );
     }
 }
