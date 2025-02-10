@@ -16,111 +16,137 @@ class GetAvailibility {
     }
 
 
-   public function get_availibility() {
-            check_ajax_referer('frohub_nonce');
+    public function get_availibility() {
+        check_ajax_referer('frohub_nonce');
 
-            if (!isset($_POST['product_id']) || empty($_POST['product_id'])) {
-                wp_send_json_error(['message' => 'Product ID is required.']);
-            }
-
-            if (!isset($_POST['date']) || empty($_POST['date'])) {
-                wp_send_json_error(['message' => 'Date is required.']);
-            }
-
-            $product_id = intval($_POST['product_id']);
-            $date = sanitize_text_field($_POST['date']);
-            $partner_id = get_field('partner_id', $product_id);
-
-            // Fetch availability from ACF
-            $availability = get_field('availability', $product_id);
-            if (!$availability) {
-                wp_send_json_error(['message' => 'No availability data found.']);
-            }
-
-            // Fetch product duration from ACF and convert to minutes
-            $duration_hours = get_field('duration_hours', $product_id);
-            $duration_minutes = get_field('duration_minutes', $product_id);
-            $product_duration_minutes = ($duration_hours * 60) + $duration_minutes;
-
-            // Check if an addon ID is provided
-            $addon_id = null;  // Replace with isset($_POST['addons_id']) ? intval($_POST['addons_id']) : null;
-            $addon_duration_minutes = 0;
-
-            $addons = get_field('add_ons', $partner_id);
-            if ($addons && is_array($addons)) {
-                foreach ($addons as $addon) {
-                    if (intval($addon['add_on']->term_id) === $addon_id) {
-                        $addon_duration_minutes = isset($addon['duration_minutes']) ? intval($addon['duration_minutes']) : 0;
-                        break;
-                    }
-                }
-            }
-
-            // Get already booked slots from WooCommerce orders
-            $orders = Helper::get_orders_by_product_id_and_date($product_id, $date);
-            $booked_slots = [];
-
-            foreach ($orders as $order) {
-                if (!empty($order['selected_time'])) {
-                    $booked_slots[] = $order['selected_time'];
-                }
-            }
-
-            // Include Google Calendar Bookings
-            $google_calendar_booked_slots = $this->get_google_calendar_bookings($partner_id, $date);
-            $booked_slots = array_merge($booked_slots, $google_calendar_booked_slots);
-
-            $final_slots = [];
-
-            // Total duration includes product and add-on duration
-            $total_duration_minutes = $product_duration_minutes + $addon_duration_minutes;
-
-            // Loop through availability to split into time slots
-            foreach ($availability as $slot) {
-                $day = $slot['day'];
-                $extra_charge = !empty($slot['extra_charge']) ? $slot['extra_charge'] : 0;
-                $start_time = strtotime($slot['from']);
-                $end_time = strtotime($slot['to']);
-
-                // Generate time slots
-                while (($start_time + ($total_duration_minutes * 60)) <= $end_time) {
-                    $slot_from = date('H:i', $start_time);
-                    $slot_to = date('H:i', $start_time + ($total_duration_minutes * 60));
-                    $time_range = "$slot_from - $slot_to";
-
-                    // Check if the slot is booked
-                    $is_booked = in_array($time_range, $booked_slots);
-
-                    // Skip adding booked slots to the availability
-                    if ($is_booked) {
-                        $start_time = strtotime($slot_to);  // Move start to the next available slot (current end time)
-                        continue;
-                    }
-
-                    // Add available slot with details
-                    $final_slots[] = [
-                        'day'                     => $day,
-                        'from'                    => $slot_from,
-                        'to'                      => $slot_to,
-                        'time_range'              => $time_range,
-                        'product_duration_minutes'=> $product_duration_minutes,
-                        'addon_duration_minutes'  => $addon_duration_minutes,
-                        'total_duration_minutes'  => $total_duration_minutes,
-                        'extra_charge'            => $extra_charge,
-                        'is_booked'               => $is_booked
-                    ];
-
-                    // Move start time to the end of the current slot
-                    $start_time = strtotime($slot_to);
-                }
-            }
-
-            wp_send_json_success([
-                'availability' => $final_slots,
-                'booked_slots' => $booked_slots,
-            ]);
+        if (!isset($_POST['product_id']) || empty($_POST['product_id'])) {
+            wp_send_json_error(['message' => 'Product ID is required.']);
         }
 
+        if (!isset($_POST['date']) || empty($_POST['date'])) {
+            wp_send_json_error(['message' => 'Date is required.']);
+        }
+
+        $product_id = intval($_POST['product_id']);
+        $date = sanitize_text_field($_POST['date']);
+        $partner_id = get_field('partner_id', $product_id);
+
+        // Fetch availability from ACF
+        $availability = get_field('availability', $product_id);
+        if (!$availability) {
+            wp_send_json_error(['message' => 'No availability data found.']);
+        }
+
+        // Fetch product duration from ACF and convert to minutes
+        $duration_hours = get_field('duration_hours', $product_id);
+        $duration_minutes = get_field('duration_minutes', $product_id);
+        $product_duration_minutes = ($duration_hours * 60) + $duration_minutes;
+
+        // Handle multiple addons_id passed as array
+        $addons_ids = isset($_POST['addons_id']) ? $_POST['addons_id'] : [];
+
+        // Ensure $addons_ids is an array even if one ID is passed
+        if (!is_array($addons_ids)) {
+            $addons_ids = [$addons_ids];
+        }
+
+        $addon_duration_minutes = 0;  // Initialize total addon duration
+
+        // Fetch add-ons from the partner post type and sum their durations
+        $addons = get_field('add_ons', $partner_id);
+        if ($addons && is_array($addons)) {
+            foreach ($addons as $addon) {
+                if (in_array(intval($addon['add_on']->term_id), $addons_ids)) {
+                    $addon_duration_minutes += isset($addon['duration_minutes']) ? intval($addon['duration_minutes']) : 0;
+                }
+            }
+        }
+
+        // Total duration includes product and add-on durations
+        $total_duration_minutes = $product_duration_minutes + $addon_duration_minutes;
+
+        // Get booked slots from WooCommerce orders
+        $orders = Helper::get_orders_by_product_id_and_date($product_id, $date);
+        $booked_slots = [];
+
+        foreach ($orders as $order) {
+            if (!empty($order['selected_time'])) {
+                $booked_slots[] = $order['selected_time'];
+            }
+        }
+
+        // Include Google Calendar Bookings
+        $google_calendar_booked_slots = $this->get_google_calendar_bookings($partner_id, $date);
+        $booked_slots = array_merge($booked_slots, $google_calendar_booked_slots);
+
+        // Convert booked slots to timestamps for easier comparison
+        $booked_slots_timestamps = $this->convert_slots_to_timestamps($booked_slots);
+
+        $final_slots = [];
+
+        // Generate all possible slots based on total duration
+        foreach ($availability as $slot) {
+            $day = $slot['day'];
+            $extra_charge = !empty($slot['extra_charge']) ? $slot['extra_charge'] : 0;
+            $start_time = strtotime($slot['from']);
+            $end_time = strtotime($slot['to']);
+
+            while (($start_time + ($total_duration_minutes * 60)) <= $end_time) {
+                $slot_from = date('H:i', $start_time);
+                $slot_to = date('H:i', $start_time + ($total_duration_minutes * 60));
+                $time_range = "$slot_from - $slot_to";
+
+                // Add all slots initially
+                $final_slots[] = [
+                    'day'                     => $day,
+                    'from'                    => $slot_from,
+                    'to'                      => $slot_to,
+                    'time_range'              => $time_range,
+                    'product_duration_minutes'=> $product_duration_minutes,
+                    'addon_duration_minutes'  => $addon_duration_minutes,
+                    'total_duration_minutes'  => $total_duration_minutes,
+                    'extra_charge'            => $extra_charge,
+                    'is_booked'               => false
+                ];
+
+                $start_time += ($total_duration_minutes * 60);
+            }
+        }
+
+        // Now filter out slots that overlap with booked slots
+        $available_slots = array_filter($final_slots, function ($slot) use ($booked_slots_timestamps) {
+            $slot_start = strtotime($slot['from']);
+            $slot_end = strtotime($slot['to']);
+
+            foreach ($booked_slots_timestamps as $booked_slot) {
+                if ($slot_start < $booked_slot['end'] && $slot_end > $booked_slot['start']) {
+                    return false;  // Overlap detected, remove this slot
+                }
+            }
+
+            return true;  // No overlap, keep the slot
+        });
+
+        wp_send_json_success([
+            'availability' => array_values($available_slots),
+            'booked_slots' => $booked_slots,
+        ]);
+    }
+
+    // Convert booked slots into timestamps for easier comparison
+    private function convert_slots_to_timestamps($booked_slots) {
+        $booked_slots_timestamps = [];
+
+        foreach ($booked_slots as $slot) {
+            list($from, $to) = explode(' - ', $slot);
+            $booked_slots_timestamps[] = [
+                'start' => strtotime($from),
+                'end'   => strtotime($to)
+            ];
+        }
+
+        return $booked_slots_timestamps;
+    }
 
     private function get_google_calendar_bookings($partner_id, $date) {
         $url = "https://frohubpartners.mystagingwebsite.com/wp-json/fpserver/v1/google-calendar-events?partner_id=" . $partner_id . "&date=" . $date;
