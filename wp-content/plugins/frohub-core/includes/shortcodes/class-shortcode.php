@@ -22,6 +22,10 @@ use FECore\GetPostCategory;
 // Conversation Shortcodes
 use FECore\DisplayComments;
 use FECore\DisplayExistingConversations;
+use FECore\SubmitCommentForm;
+
+// Header shortcodes
+use FECore\RenderMainShopFilters;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -45,5 +49,7 @@ class Shortcodes {
 		GetPostCategory::init();
 		DisplayComments::init();
 		DisplayExistingConversations::init();
+		RenderMainShopFilters::init();
+		SubmitCommentForm::init();
 	}
 }
