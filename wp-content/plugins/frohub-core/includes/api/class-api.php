@@ -2,7 +2,6 @@
 namespace FECore;
 
 use FECore\ProductAttributes;
-use FECore\ProductServiceType;
 use FECore\GetMyProducts;
 use FECore\ReturnOrderDetails;
 use FECore\CreatePartnerPost;
@@ -23,7 +22,6 @@ class API {
 	public static function init() {
 		$self = new self();
 		ProductAttributes::init();
-		ProductServiceType::init();
 		GetMyProducts::init();
 		ReturnOrderDetails::init();
 		CreatePartnerPost::init();
