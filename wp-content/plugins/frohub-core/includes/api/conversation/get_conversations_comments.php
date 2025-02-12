@@ -16,24 +16,63 @@ class GetConversationsComments {
      * Registers the REST API routes.
      */
     public function register_rest_routes() {
-        register_rest_route('frohub/v1', '/get-conversations-comments', array(
+        register_rest_route('frohub/v1', '/get-conversation-comments', [
             'methods'             => 'POST',
-            'callback'            => array($this, 'handle_request'),
-            'permission_callback' => '__return_true',
-        ));
+            'callback'            => array($this, 'get_conversation_comments'),
+            'permission_callback' => function () {
+                return current_user_can('edit_posts'); // Adjust permission as needed
+            },
+            'args'                => [
+                'conversation_post_id' => [
+                    'required'          => true,
+                    'validate_callback' => function ($param) {
+                        return is_numeric($param);
+                    },
+                ],
+            ],
+        ]);
     }
 
     /**
-     * Handles the API request.
+     * Fetches comments for a given conversation post.
      *
      * @param \WP_REST_Request $request
-     * @return \WP_REST_Response
+     * @return \WP_REST_Response|\WP_Error
      */
-    public function handle_request(\WP_REST_Request $request) {
-        // Example logic
-        return new \WP_REST_Response(array(
-            'success' => true,
-            'message' => 'get-conversations-comments API endpoint reached',
-        ), 200);
+    public function get_conversation_comments(\WP_REST_Request $request) {
+        $post_id = $request->get_param('conversation_post_id');
+
+        // Validate the conversation post
+        $post = get_post($post_id);
+        if (!$post || $post->post_type !== 'conversation') {
+            return rest_ensure_response([
+                'error'   => true,
+                'message' => __('Invalid conversation post ID.', 'textdomain')
+            ], 404);
+        }
+
+        // Fetch comments for the post
+        $comments = get_comments([
+            'post_id' => $post_id,
+            'status'  => 'approve',
+        ]);
+
+        // Format the comments with the ACF field "partner"
+        $formatted_comments = array_map(function ($comment) {
+            // Fetch the ACF field "partner" associated with the comment
+            $partner = get_field('partner', 'comment_' . $comment->comment_ID);
+            $partner_id = is_object($partner) && isset($partner->ID) ? $partner->ID : null;
+
+            return [
+                'comment_id'   => $comment->comment_ID,
+                'author'       => $comment->comment_author,
+                'content'      => $comment->comment_content,
+                'date'         => $comment->comment_date,
+                'author_email' => $comment->comment_author_email,
+                'partner'      => $partner_id,  // Include the ACF field in the response
+            ];
+        }, $comments);
+
+        return rest_ensure_response($formatted_comments);
     }
 }
