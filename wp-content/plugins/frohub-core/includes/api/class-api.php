@@ -1,6 +1,11 @@
 <?php
 namespace FECore;
 
+use FECore\GetLocationData;
+
+
+use FECore\UpdateLocationData;
+
 use FECore\ProductAttributes;
 use FECore\GetMyProducts;
 use FECore\ReturnOrderDetails;
@@ -32,5 +37,7 @@ class API {
 		CreateComment::init();
 		GetConversations::init();
 		GetConversationsComments::init();
+		UpdateLocationData::init();
+		GetLocationData::init();
 	}
 }
