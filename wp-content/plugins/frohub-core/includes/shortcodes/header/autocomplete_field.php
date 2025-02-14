@@ -18,35 +18,6 @@ class AutocompleteField {
         ob_start();
         ?>
         
-        <style>
-            .autocomplete-wrapper {
-                position: relative;
-                display: inline-block;
-            }
-
-            .autocomplete-wrapper input {
-                padding-right: 30px; /* Ensure space for spinner */
-            }
-
-            .spinner {
-                position: absolute;
-                right: 10px;
-                top: 50%;
-                transform: translateY(-50%);
-                width: 16px;
-                height: 16px;
-                border: 2px solid #ccc;
-                border-top: 2px solid #007bff; /* Spinner color */
-                border-radius: 50%;
-                animation: spin 0.8s linear infinite;
-                display: none; /* Initially hidden */
-            }
-
-            @keyframes spin {
-                0% { transform: translateY(-50%) rotate(0deg); }
-                100% { transform: translateY(-50%) rotate(360deg); }
-            }
-        </style>
 
         <div class="autocomplete-wrapper">
             <input type="text" id="category_autocomplete" name="category_autocomplete" placeholder="Start typing a category..." />
