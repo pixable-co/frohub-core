@@ -25,7 +25,15 @@ use FECore\DisplayExistingConversations;
 use FECore\SubmitCommentForm;
 
 // Header shortcodes
-use FECore\RenderMainShopFilters;
+use FECore\RenderHeaderFilters;
+use FECore\AutocompleteField;
+use FECore\ServicetypeField;
+use FECore\DaterangeField;
+use FECore\RadiusField;
+use FECore\LocationField;
+
+// Product Archive Page
+use FECore\RenderServicesGrid;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -49,7 +57,13 @@ class Shortcodes {
 		GetPostCategory::init();
 		DisplayComments::init();
 		DisplayExistingConversations::init();
-		RenderMainShopFilters::init();
+		RenderHeaderFilters::init();
 		SubmitCommentForm::init();
+		RenderServicesGrid::init();
+		ServicetypeField::init();
+		AutocompleteField::init();
+		DaterangeField::init();
+		RadiusField::init();
+		LocationField::init();
 	}
 }
