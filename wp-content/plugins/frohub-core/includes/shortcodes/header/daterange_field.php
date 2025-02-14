@@ -17,7 +17,6 @@ class DaterangeField {
         
         ob_start();
         ?>
-        <div class="daterange_field" data-key="<?php echo esc_attr($unique_key); ?>"></div>
 
         <!-- Date Range Picker -->
         <div class="custom-date-range">

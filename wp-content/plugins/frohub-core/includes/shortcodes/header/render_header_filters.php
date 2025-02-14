@@ -17,7 +17,6 @@ class RenderHeaderFilters {
         
         ob_start();
         ?>
-        <div class="render_header_filters" data-key="<?php echo esc_attr($unique_key); ?>"></div>
         
         <div class="custom-filters">
             <?php echo do_shortcode('[autocomplete_field]'); ?>

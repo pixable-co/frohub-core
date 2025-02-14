@@ -17,7 +17,6 @@ class RadiusField {
         
         ob_start();
         ?>
-        <div class="radius_field" data-key="<?php echo esc_attr($unique_key); ?>"></div>
         
         <!-- Radius Selection -->
         <select id="radius_selection" name="radius_selection">

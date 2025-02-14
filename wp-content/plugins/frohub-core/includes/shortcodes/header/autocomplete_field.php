@@ -17,7 +17,6 @@ class AutocompleteField {
         
         ob_start();
         ?>
-        <div class="autocomplete_field" data-key="<?php echo esc_attr($unique_key); ?>"></div>
         
         <style>
             .autocomplete-wrapper {

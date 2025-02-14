@@ -17,7 +17,6 @@ class LocationField {
         
         ob_start();
         ?>
-        <div class="location_field" data-key="<?php echo esc_attr($unique_key); ?>"></div>
 
         <div class="location-input-wrapper">
             <input type="text" id="location_selector" name="location_selector" placeholder="Enter location" 

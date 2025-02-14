@@ -16,9 +16,7 @@ class ServicetypeField {
         $unique_key = 'servicetype_field' . uniqid();
         
         ob_start();
-        ?>
-        <div class="servicetype_field" data-key="<?php echo esc_attr($unique_key); ?>"></div>
-        
+        ?>        
         <!-- Dropdown Field -->
         <select id="dropdown_field" name="dropdown_field">
             <option value="">Select an option</option>
