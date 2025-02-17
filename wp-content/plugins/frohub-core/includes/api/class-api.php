@@ -13,7 +13,7 @@ use FECore\CreatePartnerPost;
 use FECore\PublishPartnerCreateProduct;
 use FECore\GetPartnerData;
 use FECore\UpdateZohoAccountId;
-use FECore\CreateDraftServiceProduct;
+use FECore\CreateProduct;
 use FECore\CreateComment;
 use FECore\GetConversations;
 use FECore\GetConversationsComments;
@@ -33,7 +33,7 @@ class API {
 		PublishPartnerCreateProduct::init();
 		GetPartnerData::init();
 		UpdateZohoAccountId::init();
-		CreateDraftServiceProduct::init();
+		CreateProduct::init();
 		CreateComment::init();
 		GetConversations::init();
 		GetConversationsComments::init();

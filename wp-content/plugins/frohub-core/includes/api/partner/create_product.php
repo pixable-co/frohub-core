@@ -5,7 +5,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-class CreateDraftServiceProduct {
+class CreateProduct {
 
     public static function init() {
         $self = new self();
@@ -16,9 +16,9 @@ class CreateDraftServiceProduct {
      * Registers the REST API routes.
      */
     public function register_rest_routes() {
-        register_rest_route('frohub/v1', '/create-draft-service-product', array(
+        register_rest_route('frohub/v1', '/create-product', array(
             'methods'             => 'POST',
-            'callback'            => array($this, 'create_draft_service_product'),
+            'callback'            => array($this, 'create_product'),
             'permission_callback' => function () {
                 return current_user_can('edit_products');
             },
@@ -31,7 +31,7 @@ class CreateDraftServiceProduct {
      * @param \WP_REST_Request $request
      * @return \WP_REST_Response
      */
-    public function create_draft_service_product(\WP_REST_Request $request) {
+    public function create_product(\WP_REST_Request $request) {
         $data = $request->get_json_params();
 
         // Extract and sanitize input variables
@@ -135,6 +135,3 @@ class CreateDraftServiceProduct {
         }
     }
 }
-
-// Initialize the class
-CreateDraftServiceProduct::init();
