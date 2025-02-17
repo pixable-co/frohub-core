@@ -34,9 +34,28 @@ class DisplayExistingConversations {
 
             if ($query->have_posts()) {
                 while ($query->have_posts()) {
-                    $query->the_post();
+                    $conversation_id = get_the_ID();
+                    
+                    // Fetch unread comments
+                    $unread_comments = get_comments(array(
+                        'post_id' => $conversation_id,
+                        'meta_query' => array(
+                            array(
+                                'key'     => 'partner', // Only comments with 'partner'
+                                'compare' => 'EXISTS'
+                            ),
+                            array(
+                                'key'     => 'has_been_read_by_user', // Only unread comments
+                                'value'   => false,
+                                'compare' => '='
+                            )
+                        )
+                    ));
+
+                    $unread_count = count($unread_comments);
+
                     echo '<div class="ongoing-conversation">';
-                    echo '<h4><a href="' . get_permalink() . '">' . get_the_title() . '</a></h4>';
+                    echo '<h4><a href="' . get_permalink() . '">' . get_the_title() . ($unread_count > 0 ? " ({$unread_count})" : '') . '</a></h4>';
                     echo '</div>';
                 }
                 wp_reset_postdata();
