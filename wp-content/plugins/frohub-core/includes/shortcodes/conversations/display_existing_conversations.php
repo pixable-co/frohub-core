@@ -36,31 +36,29 @@ class DisplayExistingConversations {
                 while ($query->have_posts()) {
 					$query->the_post();
 					$conversation_id = get_the_ID();
+					$unread_comments = Array();
                     
 					// Fetch unread comments
-					$unread_comments = get_comments(array(
+					$comments = get_comments(array(
 						'post_id' => $conversation_id, // Ensure this uses the correct conversation post ID
-						'meta_query' => array(
-							array(
-								'key'     => 'partner', // Ensure comments have a 'partner' field
-								'compare' => 'EXISTS'
-							),
-							array(
-								'relation' => 'OR', // Handle different possible values
-								array(
-									'key'     => 'has_been_read_by_user', // Unread comments
-									'value'   => '0', // ACF might store false as '0'
-									'compare' => '='
-								),
-								array(
-									'key'     => 'has_been_read_by_user', // If the field does not exist
-									'compare' => 'NOT EXISTS'
-								)
-							)
-						)
 					));
 
-
+					foreach ($comments as $comment)
+					{
+						$comment_meta = get_comment_meta($comment->comment_ID);
+						
+						$comment_partner =  $comment_meta['partner'][0]; // Accessing the first value in the array
+						$has_been_read_by_customer = $comment_meta['has_been_read_by_customer'][0];
+						
+						if($comment_partner)
+						{
+							if($has_been_read_by_customer == 0 || $has_been_read_by_customer == null)
+							{
+								$unread_comments[] = $comment->comment_ID;
+							}
+						}
+					}
+					
     				$unread_count = count($unread_comments);
 					 
                     echo '<div class="ongoing-conversation">';
