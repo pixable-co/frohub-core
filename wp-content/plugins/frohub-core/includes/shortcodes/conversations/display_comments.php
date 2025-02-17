@@ -20,15 +20,8 @@ class DisplayComments {
         $allComments = array();
 
         foreach ($comments as $comment) {
-            $commentId = $comment->comment_ID;
-
-            // Mark comment as read
-            if (get_field('has_been_read', 'comment_' . $commentId) !== true) {
-                update_field('has_been_read', true, 'comment_' . $commentId);
-            }
-
             $allComments[] = array(
-                'comment_id' => $commentId,
+                'comment_id' => $comment->comment_ID,
                 'user_id' => $comment->user_id,
                 'author' => $comment->comment_author,
                 'content' => $comment->comment_content,
