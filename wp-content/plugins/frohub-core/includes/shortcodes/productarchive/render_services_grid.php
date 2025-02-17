@@ -108,6 +108,8 @@ class RenderServicesGrid {
 
         // Output filtered parameters and grid
         echo do_shortcode($grid_shortcode);
+
+        echo "This is a test";
     }
 
     private function filterByRadius($product_ids, $lat, $lng, $radius) {
