@@ -14,7 +14,7 @@ class RenderServicesGrid {
 
     public function render_services_grid_shortcode() {
         $unique_key = 'render_services_grid' . uniqid();
-        
+
         // Fetch URL parameters and sanitize them
         $dropdown = isset($_GET['dropdown']) ? strtolower(sanitize_text_field($_GET['dropdown'])) : '';
         $category = isset($_GET['category']) ? sanitize_text_field($_GET['category']) : '';
@@ -48,7 +48,7 @@ class RenderServicesGrid {
             'meta_query'     => array(),
         );
 
-        // Apply category filter if present
+        // Apply category filter
         if (!empty($category)) {
             $product_query_args['tax_query'][] = array(
                 'taxonomy' => 'product_cat',
@@ -57,7 +57,7 @@ class RenderServicesGrid {
             );
         }
 
-        // Apply service type filter (Dropdown)
+        // Apply service type filter
         if (!empty($dropdown)) {
             $product_query_args['meta_query'][] = array(
                 'key'     => 'service_types',
@@ -66,88 +66,106 @@ class RenderServicesGrid {
             );
         }
 
-        // Get products
+        // Fetch products
         $product_query = new \WP_Query($product_query_args);
         $product_ids = $product_query->posts;
 
-        // **Filter Products Based on Availability Days**
+        // Filter by availability days
         if (!empty($selected_days)) {
             $filtered_ids = [];
+
             foreach ($product_ids as $product_id) {
                 $availability = get_field('availability', $product_id);
+
                 if (!empty($availability) && is_array($availability)) {
                     foreach ($availability as $entry) {
-                        if (in_array($entry['day'], $selected_days)) {
+                        if (in_array($entry['day'] ?? '', $selected_days)) {
                             $filtered_ids[] = $product_id;
                             break;
                         }
                     }
                 }
             }
+
             $product_ids = $filtered_ids;
         }
 
-        // **Home-based & Salon-based Filtering using Partner Post**
+        // Filtering based on radius and location
         if (!empty($radius) && !empty($lat) && !empty($lng) && in_array($dropdown, ["home-based", "salon-based"])) {
-            $product_ids = $this->filter_by_radius($product_ids, $lat, $lng, $radius);
+            $product_ids = $this->filterByRadius($product_ids, $lat, $lng, $radius);
         }
 
-        // **Mobile Service Filtering using Partner Max Radius**
+        // Mobile service filtering
         if (!empty($lat) && !empty($lng) && $dropdown === "mobile") {
-            $product_ids = $this->filter_by_max_partner_radius($product_ids, $lat, $lng);
+            $product_ids = $this->filterByPartnerRadius($product_ids, $lat, $lng);
         }
 
-        // Convert array of IDs into a comma-separated string
+        // Convert product IDs into a usable format
         $idList = implode(",", $product_ids);
 
-        // Define shortcode parameters
-        return '<div class="render_services_grid" data-key="' . esc_attr($unique_key) . '" data-ids="' . esc_attr($idList) . '"></div>';
+        // Define grid shortcode
+        $grid_shortcode = '[us_grid post_type="ids" ids="' . esc_attr($idList) . '" items_quantity="0" items_layout="197" pagination="regular" columns="4"]';
+
+        // Output filtered parameters and grid
+        echo do_shortcode($grid_shortcode);
     }
 
-    private function filter_by_radius($product_ids, $lat, $lng, $radius) {
+    private function filterByRadius($product_ids, $lat, $lng, $radius) {
         $filtered_ids = [];
+
         foreach ($product_ids as $product_id) {
             $partner_id = get_field('partner_id', $product_id);
             if (!$partner_id) continue;
-            $partner_lat = get_field('latitude', $partner_id);
-            $partner_lng = get_field('longitude', $partner_id);
-            if (!$partner_lat || !$partner_lng) continue;
-            $distance = $this->haversine_distance($lat, $lng, $partner_lat, $partner_lng);
-            if ($distance <= $radius) {
-                $filtered_ids[] = $product_id;
+
+            $partner_lat = floatval(get_field('latitude', $partner_id));
+            $partner_lng = floatval(get_field('longitude', $partner_id));
+
+            if ($partner_lat && $partner_lng) {
+                $distance = $this->haversine_distance($lat, $lng, $partner_lat, $partner_lng);
+                if ($distance <= $radius) {
+                    $filtered_ids[] = $product_id;
+                }
             }
         }
+
         return $filtered_ids;
     }
 
-    private function filter_by_max_partner_radius($product_ids, $lat, $lng) {
+    private function filterByPartnerRadius($product_ids, $lat, $lng) {
         $filtered_ids = [];
+
         foreach ($product_ids as $product_id) {
             $partner_id = get_field('partner_id', $product_id);
             if (!$partner_id) continue;
-            $partner_lat = get_field('latitude', $partner_id);
-            $partner_lng = get_field('longitude', $partner_id);
-            if (!$partner_lat || !$partner_lng) continue;
-            $max_radius = $this->get_max_partner_radius($partner_id);
-            $distance = $this->haversine_distance($lat, $lng, $partner_lat, $partner_lng);
-            if ($distance <= $max_radius) {
-                $filtered_ids[] = $product_id;
+
+            $partner_lat = floatval(get_field('latitude', $partner_id));
+            $partner_lng = floatval(get_field('longitude', $partner_id));
+            $max_partner_radius = $this->get_max_partner_radius($partner_id);
+
+            if ($partner_lat && $partner_lng) {
+                $distance = $this->haversine_distance($lat, $lng, $partner_lat, $partner_lng);
+                if ($distance <= $max_partner_radius) {
+                    $filtered_ids[] = $product_id;
+                }
             }
         }
+
         return $filtered_ids;
     }
 
     private function get_max_partner_radius($partner_id) {
         $max_radius = 0;
         $radius_fees = get_field('radius_fees', $partner_id);
+
         if ($radius_fees && is_array($radius_fees)) {
-            foreach ($radius_fees as $radius_entry) {
-                $radius = isset($radius_entry['radius']) ? intval($radius_entry['radius']) : 0;
+            foreach ($radius_fees as $entry) {
+                $radius = intval($entry['radius'] ?? 0);
                 if ($radius > $max_radius) {
                     $max_radius = $radius;
                 }
             }
         }
+
         return $max_radius;
     }
 
@@ -155,11 +173,11 @@ class RenderServicesGrid {
         $earth_radius = 6371;
         $lat_delta = deg2rad($lat2 - $lat1);
         $lon_delta = deg2rad($lon2 - $lon1);
+
         $a = sin($lat_delta / 2) * sin($lat_delta / 2) +
-            cos(deg2rad($lat1)) * cos(deg2rad($lat2)) *
-            sin($lon_delta / 2) * sin($lon_delta / 2);
-        $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
-        return $earth_radius * $c * 0.621371;
+             cos(deg2rad($lat1)) * cos(deg2rad($lat2)) *
+             sin($lon_delta / 2) * sin($lon_delta / 2);
+
+        return (2 * atan2(sqrt($a), sqrt(1 - $a))) * $earth_radius * 0.621371;
     }
 }
-?>
