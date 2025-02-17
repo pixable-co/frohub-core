@@ -19,9 +19,9 @@ class ReturnOrderDetails {
         register_rest_route('frohub/v1', '/return-order-details', [
             'methods'             => 'POST',
             'callback'            => array($this, 'get_orders_by_partner_id'),
-            'permission_callback' => function () {
-                return current_user_can('manage_woocommerce'); // Ensures only authorized users can fetch orders
-            },
+//             'permission_callback' => function () {
+//                 return current_user_can('manage_woocommerce'); // Ensures only authorized users can fetch orders
+//             },
             'args'                => [
                 'partner_id' => [
                     'required'          => true,
