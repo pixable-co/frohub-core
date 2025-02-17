@@ -13,7 +13,7 @@ class RenderServicesGrid {
     }
 
     public function render_services_grid_shortcode() {
-        $unique_key = 'render_services_grid' . uniqid();
+        ob_start();
 
         // Fetch URL parameters and sanitize them
         $dropdown = isset($_GET['dropdown']) ? strtolower(sanitize_text_field($_GET['dropdown'])) : '';
@@ -109,7 +109,7 @@ class RenderServicesGrid {
         // Output filtered parameters and grid
         echo do_shortcode($grid_shortcode);
 
-        echo "This is a test";
+        return ob_get_clean();
     }
 
     private function filterByRadius($product_ids, $lat, $lng, $radius) {
