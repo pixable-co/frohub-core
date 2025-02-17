@@ -29,6 +29,8 @@ class DisplayComments {
                 update_field('has_been_read_by_user', true, $commentId);
             }
 
+            echo get_field('has_been_read_by_user', $commentId);
+
             $allComments[] = array(
                 'comment_id' => $commentId,
                 'user_id' => $comment->user_id,
