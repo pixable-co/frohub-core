@@ -20,8 +20,17 @@ class DisplayComments {
         $allComments = array();
 
         foreach ($comments as $comment) {
+            $commentId = $comment->comment_ID; // Store comment ID in a variable
+
+            // Upon load mark all partner comments as read
+            $partner = get_field('partner', $commentId);
+
+            if ($partner) {
+                update_field('has_been_read_by_user', true, $commentId);
+            }
+
             $allComments[] = array(
-                'comment_id' => $comment->comment_ID,
+                'comment_id' => $commentId,
                 'user_id' => $comment->user_id,
                 'author' => $comment->comment_author,
                 'content' => $comment->comment_content,
