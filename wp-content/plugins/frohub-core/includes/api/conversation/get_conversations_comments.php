@@ -73,7 +73,6 @@ class GetConversationsComments {
                 'content'      => $comment->comment_content,
                 'date'         => $comment->comment_date,
                 'author_email' => $comment->comment_author_email,
-                'partner'      => $partner_id,  // Include the ACF field in the response
                 'meta_data'    => $meta_data,   // Include all comment meta
             ];
         }, $comments);
