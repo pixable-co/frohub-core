@@ -34,28 +34,41 @@ class DisplayExistingConversations {
 
             if ($query->have_posts()) {
                 while ($query->have_posts()) {
-                    $conversation_id = get_the_ID();
+					$query->the_post();
+					$conversation_id = get_the_ID();
                     
-                    // Fetch unread comments
-                    $unread_comments = get_comments(array(
-                        'post_id' => $conversation_id,
-                        'meta_query' => array(
-                            array(
-                                'key'     => 'partner', // Only comments with 'partner'
-                                'compare' => 'EXISTS'
-                            ),
-                            array(
-                                'key'     => 'has_been_read_by_user', // Only unread comments
-                                'value'   => false,
-                                'compare' => '='
-                            )
-                        )
-                    ));
+					// Fetch unread comments
+					$unread_comments = get_comments(array(
+						'post_id' => $conversation_id, // Ensure this uses the correct conversation post ID
+						'meta_query' => array(
+							array(
+								'key'     => 'partner', // Ensure comments have a 'partner' field
+								'compare' => 'EXISTS'
+							),
+							array(
+								'relation' => 'OR', // Handle different possible values
+								array(
+									'key'     => 'has_been_read_by_user', // Unread comments
+									'value'   => '0', // ACF might store false as '0'
+									'compare' => '='
+								),
+								array(
+									'key'     => 'has_been_read_by_user', // If the field does not exist
+									'compare' => 'NOT EXISTS'
+								)
+							)
+						)
+					));
 
-                    $unread_count = count($unread_comments);
 
+    				$unread_count = count($unread_comments);
+					 
                     echo '<div class="ongoing-conversation">';
-                    echo '<h4><a href="' . get_permalink() . '">' . get_the_title() . ($unread_count > 0 ? " ({$unread_count})" : '') . '</a></h4>';
+                    echo '<h5 class="conversation-title"><a href="' . get_permalink() . '">' . get_the_title() .'</a></h5>';
+					if($unread_count > 0)
+					{
+						echo '<p> You have '.$unread_count.' unread messages. </p>';
+					}
                     echo '</div>';
                 }
                 wp_reset_postdata();
