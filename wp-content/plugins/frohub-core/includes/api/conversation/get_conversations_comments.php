@@ -1,4 +1,5 @@
 <?php
+
 namespace FECore;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -57,8 +58,11 @@ class GetConversationsComments {
             'status'  => 'approve',
         ]);
 
-        // Format the comments with the ACF field "partner"
+        // Format the comments with all metadata
         $formatted_comments = array_map(function ($comment) {
+            // Fetch all comment metadata
+            $meta_data = get_comment_meta($comment->comment_ID);
+
             // Fetch the ACF field "partner" associated with the comment
             $partner = get_field('partner', 'comment_' . $comment->comment_ID);
             $partner_id = is_object($partner) && isset($partner->ID) ? $partner->ID : null;
@@ -70,6 +74,7 @@ class GetConversationsComments {
                 'date'         => $comment->comment_date,
                 'author_email' => $comment->comment_author_email,
                 'partner'      => $partner_id,  // Include the ACF field in the response
+                'meta_data'    => $meta_data,   // Include all comment meta
             ];
         }, $comments);
 
