@@ -176,6 +176,7 @@ class CreateProduct {
         update_field('field_6777c7762f7e6', $hours, $product_id);
         update_field('field_6777c8252f7e7', $minutes, $product_id);
         update_field('field_6777ca0db882e', $isPrivateService ? "Yes" : "No", $product_id);
+        update_field('published_globally','0',$product_id);
 
       
         return new \WP_REST_Response([
