@@ -2,10 +2,7 @@
 namespace FECore;
 
 use FECore\GetLocationData;
-
-
 use FECore\UpdateLocationData;
-
 use FECore\ProductAttributes;
 use FECore\GetMyProducts;
 use FECore\ReturnOrderDetails;
@@ -17,6 +14,8 @@ use FECore\CreateProduct;
 use FECore\CreateComment;
 use FECore\GetConversations;
 use FECore\GetConversationsComments;
+use FECore\UnreadCount;
+use FECore\MarkRead;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -39,5 +38,7 @@ class API {
 		GetConversationsComments::init();
 		UpdateLocationData::init();
 		GetLocationData::init();
+		UnreadCount::init();
+		MarkRead::init();
 	}
 }
