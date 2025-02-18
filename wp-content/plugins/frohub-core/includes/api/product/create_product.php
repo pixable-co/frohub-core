@@ -16,24 +16,146 @@ class CreateProduct {
      * Registers the REST API routes.
      */
     public function register_rest_routes() {
-        register_rest_route('frohub/v1', '/create-product', array(
-            'methods'             => 'POST',
-            'callback'            => array($this, 'handle_request'),
-            'permission_callback' => '__return_true',
-        ));
+        register_rest_route('custom-api/v1', '/create-product', [
+            'methods'  => 'POST',
+            'callback' => [$this, 'create_custom_woocommerce_product'],
+            'permission_callback' => function () {
+                return current_user_can('manage_woocommerce'); // Restrict to WooCommerce managers
+            },
+        ]);
     }
 
     /**
-     * Handles the API request.
-     *
-     * @param \WP_REST_Request $request
-     * @return \WP_REST_Response
+     * Handles WooCommerce product creation.
      */
-    public function handle_request(\WP_REST_Request $request) {
-        // Example logic
-        return new \WP_REST_Response(array(
+    public function create_custom_woocommerce_product(\WP_REST_Request $request) {
+        $params = $request->get_json_params();
+
+        // Extracting values from JSON payload
+        $partnerId = isset($params["28"]) ? sanitize_text_field($params["28"]) : '';
+        $partnerName = get_the_title($partnerId);
+        $serviceName = isset($params["1"]) ? sanitize_text_field($params["1"]) : '';
+        $size = isset($params["2"]) ? sanitize_text_field($params["2"]) : '';
+        $length = isset($params["3"]) ? sanitize_text_field($params["3"]) : '';
+        $categories = isset($params["9"]) ? json_decode($params["9"], true) : [];
+        $tags = isset($params["10"]) ? json_decode($params["10"], true) : [];
+        $overrideAvailability = isset($params["12"]) ? filter_var($params["12"], FILTER_VALIDATE_BOOLEAN) : false;
+        $notice = isset($params["13"]) ? sanitize_text_field($params["13"]) : '';
+        $farFuture = isset($params["14"]) ? sanitize_text_field($params["14"]) : '';
+        $numOfClients = isset($params["15"]) ? sanitize_text_field($params["15"]) : '';
+        $price = isset($params["17"]) ? floatval($params["17"]) : 0;
+        $addOns = isset($params["18"]) ? json_decode($params["18"], true) : [];
+        $description = isset($params["19"]) ? sanitize_text_field($params["19"]) : '';
+        $faq = isset($params["20"]) ? json_decode($params["20"], true) : [];
+        $images = isset($params["21"]) ? json_decode($params["21"], true) : [];
+        $isPrivateService = isset($params["22"]) ? filter_var($params["22"], FILTER_VALIDATE_BOOLEAN) : false;
+        $bookingDuration = isset($params["27"]) ? sanitize_text_field($params["27"]) : '';
+
+        // Split duration into hours and minutes
+        $durationParts = explode(':', $bookingDuration);
+        $hours = isset($durationParts[0]) ? intval($durationParts[0]) : 0;
+        $minutes = isset($durationParts[1]) ? intval($durationParts[1]) : 0;
+
+        // Extract service types dynamically
+        $serviceTypes = [];
+        foreach (["11.1", "11.2", "11.3"] as $key) {
+            if (!empty($params[$key])) {
+                $serviceTypes[] = sanitize_text_field($params[$key]);
+            }
+        }
+
+        // Handle availability schedule
+        $availability = isset($params["23"]) ? $params["23"] : [];
+        $availabilityData = array_map(function ($slot) {
+            return [
+                "day" => isset($slot["1"]) ? sanitize_text_field($slot["1"]) : '',
+                "from" => isset($slot["3"]) ? sanitize_text_field($slot["3"]) : '',
+                "to" => isset($slot["4"]) ? sanitize_text_field($slot["4"]) : '',
+                "extra_charge" => isset($slot["5"]) ? floatval($slot["5"]) : 0,
+            ];
+        }, $availability);
+
+        // Create WooCommerce product
+        $product = new \WC_Product_Simple();
+        $product->set_name($serviceName);
+        $product->set_regular_price($price);
+        $product->set_description($description);
+        $product->set_stock_quantity($numOfClients);
+        $product->set_manage_stock(true);
+        $product->set_catalog_visibility('visible');
+
+        // Assign categories and tags
+        if (!empty($categories)) {
+            $product->set_category_ids($categories);
+        }
+        if (!empty($tags)) {
+            $product->set_tag_ids($tags);
+        }
+
+        // Set product images
+        if (!empty($images)) {
+            $product->set_image_id($this->attach_image_from_url($images[0]));
+            $galleryImageIds = array_map([$this, 'attach_image_from_url'], array_slice($images, 1));
+            $product->set_gallery_image_ids($galleryImageIds);
+        }
+
+        $product_id = $product->save();
+
+        // Update FAQs for ACF Repeater
+        $faq_data = [];
+        if (!empty($faq) && is_array($faq)) {
+            foreach ($faq as $faq_id) {
+                $faq_data[] = ['faq_post' => intval($faq_id)]; // Replace 'faq_post' with actual subfield name
+            }
+        }
+        update_field('field_67978b43caeb0', $faq_data, $product_id);
+
+        // **Populate ACF Fields**
+        update_field('field_67853b658c2dd', $partnerId, $product_id);
+        update_field('field_678928cad8da7', $partnerName, $product_id);
+        update_field('field_6777c8532f7e8', $size, $product_id);
+        update_field('field_6777c8692f7e9', $length, $product_id);
+        update_field('field_6777c89c2f7ec', $serviceTypes, $product_id);
+        update_field('field_67a4a2b3807e7', $overrideAvailability, $product_id);
+        update_field('field_6777c8d02f7ee', $availabilityData, $product_id);
+        update_field('field_6777c94b7ea36', $notice, $product_id);
+        update_field('field_6777c95b7ea37', $farFuture, $product_id);
+        update_field('field_6777c9737ea38', $numOfClients, $product_id);
+        update_field('field_6777c7762f7e6', $hours, $product_id);
+        update_field('field_6777c8252f7e7', $minutes, $product_id);
+        update_field('field_6777ca0db882e', $isPrivateService ? "Yes" : "No", $product_id);
+
+        return new \WP_REST_Response([
             'success' => true,
-            'message' => 'create-product API endpoint reached',
-        ), 200);
+            'product_id' => $product_id,
+            'message' => 'Product created successfully with ACF fields populated.'
+        ], 200);
+    }
+
+    /**
+     * Helper function to upload an image from a URL.
+     */
+    private function attach_image_from_url($image_url) {
+        $upload_dir = wp_upload_dir();
+        $image_data = file_get_contents($image_url);
+        $filename = basename($image_url);
+        $file_path = $upload_dir['path'] . '/' . $filename;
+
+        if (file_put_contents($file_path, $image_data)) {
+            $filetype = wp_check_filetype($filename, null);
+            $attachment = [
+                'post_mime_type' => $filetype['type'],
+                'post_title' => sanitize_file_name($filename),
+                'post_content' => '',
+                'post_status' => 'inherit'
+            ];
+            $attach_id = wp_insert_attachment($attachment, $file_path);
+            require_once(ABSPATH . 'wp-admin/includes/image.php');
+            wp_update_attachment_metadata($attach_id, wp_generate_attachment_metadata($attach_id, $file_path));
+            return $attach_id;
+        }
+        return 0;
     }
 }
+
+CreateProduct::init();
