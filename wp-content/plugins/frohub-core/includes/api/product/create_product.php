@@ -108,9 +108,13 @@ class CreateProduct {
             $product->set_tag_ids($tags);
         }
 
+
         // Set featured image
         if (!empty($featuredImage)) {
-        $product->set_image_id($this->attach_image_from_url($featuredImage));
+        $featuredImageId = $this->attach_image_from_url($featuredImage);
+            if ($featuredImageId) {
+                $product->set_image_id($featuredImageId);
+            }
         }
 
         // Set product gallery images
@@ -118,8 +122,6 @@ class CreateProduct {
         $galleryImageIds = array_map([$this, 'attach_image_from_url'], $galleryImages);
         $product->set_gallery_image_ids($galleryImageIds);
         }
-
-
 
 		$product_id = $product->save();
 
