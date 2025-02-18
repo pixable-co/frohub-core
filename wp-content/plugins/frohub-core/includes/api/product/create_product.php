@@ -44,12 +44,12 @@ class CreateProduct {
         $farFuture = isset($params["14"]) ? sanitize_text_field($params["14"]) : '';
         $numOfClients = isset($params["15"]) ? sanitize_text_field($params["15"]) : '';
         $price = isset($params["17"]) ? floatval($params["17"]) : 0;
-        $addOns = isset($params["18"]) ? json_decode($params["18"], true) : [];
         $description = isset($params["19"]) ? sanitize_text_field($params["19"]) : '';
         $faq = isset($params["20"]) ? json_decode($params["20"], true) : [];
         $images = isset($params["21"]) ? json_decode($params["21"], true) : [];
         $isPrivateService = isset($params["22"]) ? filter_var($params["22"], FILTER_VALIDATE_BOOLEAN) : false;
         $bookingDuration = isset($params["27"]) ? sanitize_text_field($params["27"]) : '';
+        $addOns = isset($params["18"]) ? json_decode($params["18"], true) : [];
 
         // Split duration into hours and minutes
         $durationParts = explode(':', $bookingDuration);
@@ -83,6 +83,29 @@ class CreateProduct {
         $product->set_stock_quantity($numOfClients);
         $product->set_manage_stock(true);
         $product->set_catalog_visibility('visible');
+
+        
+        // Prepare attributes for WooCommerce
+        $product_attributes = [];
+        if (!empty($addOns)) {
+            foreach ($addOns as $attribute_id) {
+                $attribute_id = intval($attribute_id);
+                $attribute = get_term($attribute_id, 'pa_add-on'); // Replace with actual attribute taxonomy slug
+                
+                if ($attribute && !is_wp_error($attribute)) {
+                    $attribute_name = wc_attribute_label($attribute->taxonomy);
+                    $attribute_slug = $attribute->slug;
+
+                    $product_attributes[$attribute->taxonomy] = array(
+                        'name'         => $attribute_name,
+                        'value'        => $attribute_slug,
+                        'is_visible'   => 1,
+                        'is_variation' => 0,
+                        'is_taxonomy'  => 1,
+                    );
+                }
+            }
+        }
 
         // Assign categories and tags
         if (!empty($categories)) {
@@ -157,5 +180,3 @@ class CreateProduct {
         return 0;
     }
 }
-
-CreateProduct::init();
