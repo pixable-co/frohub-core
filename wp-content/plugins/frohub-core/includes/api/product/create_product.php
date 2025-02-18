@@ -50,7 +50,10 @@ class CreateProduct {
 		$categories = isset($params["9"]) ? (is_array($params["9"]) ? $params["9"] : json_decode($params["9"], true)) : [];
 		$tags = isset($params["10"]) ? (is_array($params["10"]) ? $params["10"] : json_decode($params["10"], true)) : [];
 		$faq = isset($params["20"]) ? (is_array($params["20"]) ? $params["20"] : json_decode($params["20"], true)) : [];
-		$images = isset($params["21"]) ? (is_array($params["21"]) ? $params["21"] : json_decode($params["21"], true)) : [];
+
+        // Image fields
+        $featuredImage = isset($params["29"]) ? sanitize_text_field($params["29"]) : '';
+        $galleryImages = isset($params["21"]) ? (is_array($params["21"]) ? $params["21"] : json_decode($params["21"], true)) : [];
 
 		// Decode attributes array
 		$attribute_ids = isset($params["18"]) ? json_decode($params["18"], true) : [];
@@ -105,12 +108,18 @@ class CreateProduct {
             $product->set_tag_ids($tags);
         }
 
-        // Set product images
-        if (!empty($images)) {
-            $product->set_image_id(attach_image_from_url($images[0]));
-			$galleryImageIds = array_map('attach_image_from_url', array_slice($images, 1));
-            $product->set_gallery_image_ids($galleryImageIds);
+        // Set featured image
+        if (!empty($featuredImage)) {
+        $product->set_image_id($this->attach_image_from_url($featuredImage));
         }
+
+        // Set product gallery images
+        if (!empty($galleryImages)) {
+        $galleryImageIds = array_map([$this, 'attach_image_from_url'], $galleryImages);
+        $product->set_gallery_image_ids($galleryImageIds);
+        }
+
+
 
 		$product_id = $product->save();
 
@@ -186,10 +195,11 @@ class CreateProduct {
         ], 200);
     }
 
+    
     /**
      * Helper function to upload an image from a URL.
      */
-     private function attach_image_from_url($image_url) {
+    private function attach_image_from_url($image_url) {
         $upload_dir = wp_upload_dir();
         $image_data = file_get_contents($image_url);
         $filename = basename($image_url);
@@ -209,5 +219,5 @@ class CreateProduct {
             return $attach_id;
         }
         return 0;
-}
+    }
 }
