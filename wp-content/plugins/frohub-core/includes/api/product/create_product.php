@@ -16,7 +16,7 @@ class CreateProduct {
      * Registers the REST API routes.
      */
     public function register_rest_routes() {
-        register_rest_route('custom-api/v1', '/create-product', [
+        register_rest_route('frohub/v1', '/create-product', [
             'methods'  => 'POST',
             'callback' => [$this, 'create_custom_woocommerce_product'],
             'permission_callback' => function () {
