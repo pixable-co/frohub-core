@@ -58,7 +58,7 @@ export default function ProceedToPaymentButton({ selectedAddOns, productPrice, p
             console.log('Product ID:', response.data.product_id);
             console.log('Selected Add-Ons:', response.data.selected_add_ons);
             console.log('Product Price:', response.data.product_price);
-            console.log('Selected Service Type:', response.data.selected_service_type);
+            // console.log('Selected Service Type:', response.data.selected_service_type);
         } catch (error) {
             console.error('AJAX call failed:', error);
         }
@@ -66,10 +66,10 @@ export default function ProceedToPaymentButton({ selectedAddOns, productPrice, p
 
     return (
         <div>
-            <p>Total Price: £{totalPrice.toFixed(2)}</p>
-            <button onClick={handleProceedToPayment}>
-                Proceed to Payment
-            </button>
+            {/*<p>Total Price: £{totalPrice.toFixed(2)}</p>*/}
+            {/*<button onClick={handleProceedToPayment}>*/}
+            {/*    Proceed to Payment*/}
+            {/*</button>*/}
         </div>
     );
 }

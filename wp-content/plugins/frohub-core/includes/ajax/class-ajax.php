@@ -1,6 +1,8 @@
 <?php
 namespace FECore;
 
+use FECore\GetServiceType;
+
 use FECore\GetAvailibility;
 
 use FECore\AddToCart;
@@ -16,5 +18,6 @@ class Ajax {
 		$self = new self();
 		AddToCart::init();
 		GetAvailibility::init();
+		GetServiceType::init();
 	}
 }

@@ -9,9 +9,9 @@ export default function AddToCartProduct() {
     const [productPrice, setProductPrice] = useState(0);
     const [selectedServiceType, setSelectedServiceType] = useState('');
 
-    const handleServiceTypeChange = (event) => {
-        setSelectedServiceType(event.target.value);
-        console.log('Selected Service Type:', event.target.value); // Log the selected service type
+    const handleServiceTypeChange = (serviceType) => {
+        setSelectedServiceType(serviceType);
+        console.log('Selected Service Type:', serviceType);
     };
 
     return (
