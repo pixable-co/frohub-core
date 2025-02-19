@@ -1,5 +1,4 @@
 import { useEffect, useRef, useCallback } from "react";
-import { Spin } from "antd";
 import FhCalender from "../../common/controls/FhCalender.jsx";
 import { fetchData } from "../../services/fetchData.js";
 import frohubStore from "../../frohubStore.js";
@@ -58,9 +57,12 @@ const FrohubCalender = () => {
 
     return (
         <div className="relative">
-            <Spin spinning={loading} size="large">
-                <FhCalender data={availabilityData} onDateChange={setSelectedDate} />
-            </Spin>
+            <FhCalender data={availabilityData} onDateChange={setSelectedDate} />
+            {/*{loading ? (*/}
+            {/*    <FhCalender />*/}
+            {/*) : (*/}
+            {/*    */}
+            {/*)}*/}
         </div>
     );
 };

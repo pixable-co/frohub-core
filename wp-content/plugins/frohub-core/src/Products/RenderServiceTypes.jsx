@@ -1,43 +1,50 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from "react";
+import FhServiceButton from "../common/controls/FhServiceButton.jsx";
+import { fetchData } from "../services/fetchData.js";
 
 export default function RenderServiceTypes({ productId, onServiceTypeChange }) {
     const [serviceTypes, setServiceTypes] = useState([]);
-    const isFetchedRef = useRef(false);
+    const [selectedService, setSelectedService] = useState(null);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        if (!isFetchedRef.current && productId) {
-            fetch(`/wp-json/frohub/v1/product-service-type?product_id=${productId}`)
-                .then(response => response.json())
-                .then(data => {
-                    console.log('API Response:', data); // Log the API response
-                    if (data.success) {
-                        setServiceTypes(data.data);
+        if (productId) {
+            setLoading(true);
+            fetchData(
+                "frohub/get_service_type",
+                (response) => {
+                    console.log("API Response:", response);
+                    if (response.success && response.data?.data && Array.isArray(response.data.data)) {
+                        setServiceTypes(response.data.data);
+                        setSelectedService(response.data.data[0]?.toLowerCase() || null);
+                        onServiceTypeChange(response.data.data[0]?.toLowerCase() || null);
                     }
-                    isFetchedRef.current = true;
-                });
+                    setLoading(false);
+                },
+                { product_id: productId }
+            );
         }
     }, [productId]);
 
     return (
         <div>
+            Service Type
             <form>
-                {Array.isArray(serviceTypes) && serviceTypes.length > 0 ? (
-                    serviceTypes.map((type, index) => (
-                        <div key={index}>
-                            <input
-                                type="radio"
-                                id={`serviceType${index}`}
-                                name="serviceType"
-                                value={type}
-                                onChange={onServiceTypeChange}
-                                defaultChecked={index === 0} // Select the first service type by default
+                <div className="flex gap-4 mt-3 mb-6">
+                    {loading
+                        ? Array.from({ length: 3 }).map((_, index) => (
+                            <FhServiceButton key={index} loading={true} />
+                        ))
+                        : serviceTypes.map((service) => (
+                            <FhServiceButton
+                                key={service.toLowerCase()}
+                                service={service}
+                                selectedService={selectedService}
+                                handleSelectService={setSelectedService}
+                                loading={false}
                             />
-                            <label htmlFor={`serviceType${index}`}>{type}</label>
-                        </div>
-                    ))
-                ) : (
-                    <p>No service types available.</p>
-                )}
+                        ))}
+                </div>
             </form>
         </div>
     );

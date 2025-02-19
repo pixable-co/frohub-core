@@ -15,7 +15,6 @@ use FECore\GetPartnerData;
 use FECore\UpdateZohoAccountId;
 use FECore\CreateProduct;
 use FECore\CreateComment;
-use FECore\GetConversations;
 use FECore\GetConversationsComments;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -35,7 +34,6 @@ class API {
 		UpdateZohoAccountId::init();
 		CreateProduct::init();
 		CreateComment::init();
-		GetConversations::init();
 		GetConversationsComments::init();
 		UpdateLocationData::init();
 		GetLocationData::init();
