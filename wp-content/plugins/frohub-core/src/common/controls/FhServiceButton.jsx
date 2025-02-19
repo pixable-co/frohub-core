@@ -9,7 +9,6 @@ const iconMap = {
 };
 
 const FhServiceButton = ({ service, selectedService, handleSelectService, loading }) => {
-    // Show Skeleton when loading
     if (loading) {
         return (
             <div className="flex items-center justify-between gap-[1rem] w-full p-1 border border-gray-200 rounded-lg">
@@ -24,30 +23,29 @@ const FhServiceButton = ({ service, selectedService, handleSelectService, loadin
 
     if (!service) return null; // Ensure service exists
 
-    console.log("Rendering Service:", service); // Debugging Output
+    const lowerCaseService = service.toLowerCase();
+    const isSelected = selectedService?.toLowerCase() === lowerCaseService; // ✅ Case-insensitive check
 
     return (
         <div
-            className="flex items-center justify-center w-full p-1 border border-gray-200 rounded-lg cursor-pointer transition-all duration-200"
-            onClick={() => handleSelectService(service)}
+            className={`flex items-center justify-center w-full p-1 border rounded-lg cursor-pointer transition-all duration-200 ${
+                isSelected ? "bg-gray-200 border-gray-500" : "border-gray-300"
+            }`}
+            onClick={() => handleSelectService(lowerCaseService)} // ✅ Ensure service is passed in lowercase
         >
             {/* Hidden Radio Button */}
             <input
                 type="radio"
                 name="serviceType"
-                value={service}
-                checked={selectedService === service}
-                onChange={() => handleSelectService(service)}
+                value={lowerCaseService}
+                checked={isSelected}
+                onChange={() => handleSelectService(lowerCaseService)}
                 className="hidden"
             />
 
             {/* Label for Selection */}
-            <label
-                className={`flex justify-between items-center gap-[1rem] cursor-pointer w-full h-full p-1 rounded-lg transition-all duration-200 ${
-                    selectedService === service ? "bg-gray-200 border-gray-500" : "border-gray-300"
-                }`}
-            >
-                {iconMap[service.toLowerCase()] || <Home size={48} className="text-gray-500" />}
+            <label className="flex justify-between items-center gap-[1rem] cursor-pointer w-full h-full p-1 rounded-lg transition-all duration-200">
+                {iconMap[lowerCaseService] || <Home size={48} className="text-gray-500" />}
                 <div className="flex flex-col">
                     <span className="font-semibold text-lg mt-2">{service}</span>
                     <span className="text-sm text-gray-600">Select {service} service</span>
