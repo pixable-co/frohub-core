@@ -8,6 +8,8 @@ const FhCalender = ({ onDateChange }) => {
     const { availabilityData, loading } = frohubStore(); // ✅ Get state from Zustand
     const [selectedDate, setSelectedDate] = useState(dayjs());
     const [selectedTime, setSelectedTime] = useState(null);
+    const [selectedPrice, setSelectedPrice] = useState(0); // ✅ Track extra charge
+    const [selectedDuration, setSelectedDuration] = useState(0); // ✅ Track total duration time
     const [currentMonth, setCurrentMonth] = useState(dayjs());
 
     const getDaysInMonth = () => {
@@ -38,6 +40,8 @@ const FhCalender = ({ onDateChange }) => {
         const newDate = dayjs(date);
         setSelectedDate(newDate);
         setSelectedTime(null);
+        setSelectedPrice(0); // ✅ Reset extra charge
+        setSelectedDuration(0);
         document.getElementById("extra-charge-container").setAttribute("data-extra-charge", "0");
 
         if (onDateChange) {
@@ -45,8 +49,10 @@ const FhCalender = ({ onDateChange }) => {
         }
     };
 
-    const handleTimeSelect = (time, price) => {
+    const handleTimeSelect = (time, price, duration) => {
         setSelectedTime(time);
+        setSelectedPrice(price);
+        setSelectedDuration(duration); // ✅ Store duration
         document.getElementById("extra-charge-container").setAttribute("data-extra-charge", price);
     };
 
@@ -60,6 +66,7 @@ const FhCalender = ({ onDateChange }) => {
             .map((entry) => ({
                 time: `${entry.from} - ${entry.to}`,
                 price: Number(entry.extra_charge) || 0,
+                duration: entry.total_duration_minutes || 0, // ✅ Get total duration time
             }))
         : [];
 
@@ -117,7 +124,11 @@ const FhCalender = ({ onDateChange }) => {
                 ) : (
                     <div className="timeslots-grid">
                         {availableTimeSlots.map((slot, index) => (
-                            <button key={index} className="timeslot-button">
+                            <button
+                                key={index}
+                                className={`timeslot-button ${selectedTime === slot.time ? "selected" : ""}`}
+                                onClick={() => handleTimeSelect(slot.time, slot.price, slot.duration)}
+                            >
                                 <span>{slot.time}</span>
                                 {slot.price > 0 && <span className="extra-charge">+£{slot.price.toFixed(2)}</span>}
                             </button>
@@ -126,6 +137,13 @@ const FhCalender = ({ onDateChange }) => {
                 )}
                 <p className="timezone-info">All times are in London (GMT +01:00)</p>
             </div>
+
+            {/* ✅ Hidden Inputs for Storing Selected Values */}
+            <div id="extra-charge-container" data-extra-charge="0" style={{ display: "none" }}></div>
+            <input type="hidden" value={selectedDate.format("YYYY-MM-DD")} name="selectedDate" />
+            <input type="hidden" value={selectedTime || ""} name="selectedTime" />
+            <input type="hidden" value={selectedPrice} name="selectedPrice" />
+            <input type="hidden" value={selectedDuration} name="total_duration_time" /> {/* ✅ Store duration */}
         </div>
     );
 };

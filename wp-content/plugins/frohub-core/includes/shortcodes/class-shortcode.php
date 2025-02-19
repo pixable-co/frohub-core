@@ -1,6 +1,8 @@
 <?php
 namespace FECore;
 
+use FECore\RequestBookButton;
+
 // Product Template Shortcodes
 use FECore\FrohubCalender;
 use FECore\RenderAddToCart;
@@ -65,5 +67,6 @@ class Shortcodes {
 		DaterangeField::init();
 		RadiusField::init();
 		LocationField::init();
+		RequestBookButton::init();
 	}
 }

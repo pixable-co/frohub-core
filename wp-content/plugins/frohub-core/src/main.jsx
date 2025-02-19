@@ -1,3 +1,4 @@
+import RequestBookButton from './shortcodes/Product/request_book_button';
 import FrohubCalender from './shortcodes/producttemplate/frohub_calender';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
@@ -20,5 +21,13 @@ frohubCalenderElements.forEach(element => {
     const key = element.getAttribute('data-key');
     createRoot(element).render(
         <FrohubCalender dataKey={key} />
+    );
+});
+
+const requestBookButtonElements = document.querySelectorAll('.request_book_button');
+requestBookButtonElements.forEach(element => {
+    const key = element.getAttribute('data-key');
+    createRoot(element).render(
+        <RequestBookButton dataKey={key} />
     );
 });

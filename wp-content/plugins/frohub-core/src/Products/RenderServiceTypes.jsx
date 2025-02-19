@@ -13,11 +13,11 @@ export default function RenderServiceTypes({ productId, onServiceTypeChange }) {
             fetchData(
                 "frohub/get_service_type",
                 (response) => {
-                    console.log("API Response:", response);
                     if (response.success && response.data?.data && Array.isArray(response.data.data)) {
+                        const firstService = response.data.data[0]?.toLowerCase() || null;
                         setServiceTypes(response.data.data);
-                        setSelectedService(response.data.data[0]?.toLowerCase() || null);
-                        onServiceTypeChange(response.data.data[0]?.toLowerCase() || null);
+                        setSelectedService(firstService);
+                        onServiceTypeChange(firstService); // ✅ Notify parent component
                     }
                     setLoading(false);
                 },
@@ -25,6 +25,11 @@ export default function RenderServiceTypes({ productId, onServiceTypeChange }) {
             );
         }
     }, [productId]);
+
+    const handleSelectService = (service) => {
+        setSelectedService(service);
+        onServiceTypeChange(service); // ✅ Notify parent when changed
+    };
 
     return (
         <div>
@@ -40,7 +45,7 @@ export default function RenderServiceTypes({ productId, onServiceTypeChange }) {
                                 key={service.toLowerCase()}
                                 service={service}
                                 selectedService={selectedService}
-                                handleSelectService={setSelectedService}
+                                handleSelectService={handleSelectService} // ✅ Pass updated handler
                                 loading={false}
                             />
                         ))}
