@@ -77,7 +77,7 @@ const FhCalender = ({ onDateChange }) => {
                 </div>
 
                 <div className="grid grid-cols-7 mb-2">
-                    {["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"].map((day) => (
+                    {["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"].map((day) => (
                         <div key={day} className="text-xs text-gray-500 text-center py-2">{day}</div>
                     ))}
                 </div>
