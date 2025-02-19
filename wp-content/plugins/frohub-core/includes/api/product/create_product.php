@@ -108,10 +108,9 @@ class CreateProduct {
             $product->set_tag_ids($tags);
         }
 
-
         // Set featured image
         if (!empty($featuredImage)) {
-        $featuredImageId = $this->attach_image_from_url($featuredImage);
+            $featuredImageId = attach_image_from_url($featuredImage);
             if ($featuredImageId) {
                 $product->set_image_id($featuredImageId);
             }
@@ -123,14 +122,24 @@ class CreateProduct {
         $product->set_gallery_image_ids($galleryImageIds);
         }
 
-		$product_id = $product->save();
+        $product_id = $product->save();
 
-		if (!$product_id) {
-			return new \WP_REST_Response([
-				'success' => false,
-				'message' => 'Failed to create product.'
-			], 500);
-		}
+        if (!$product_id) {
+        return new \WP_REST_Response([
+        'success' => false,
+        'message' => 'Failed to create product.'
+        ], 500);
+        }
+
+        // Set featured image after saving the product
+        if (!empty($featuredImage)) {
+        $featuredImageId = attach_image_from_url($featuredImage);
+        if ($featuredImageId) {
+        set_post_thumbnail($product_id, $featuredImageId);
+        } else {
+        error_log("Failed to set featured image for product ID: " . $product_id);
+        }
+        }
 
 		// Assign Attributes
 		$taxonomy = 'pa_add-on'; // Change this to match your WooCommerce attribute slug
