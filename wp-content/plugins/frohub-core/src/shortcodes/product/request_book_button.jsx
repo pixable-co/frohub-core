@@ -12,7 +12,7 @@ export default function RequestBookButton() {
     const [booked, setBooked] = useState(false);
     const [serviceDuration, setServiceDuration] = useState("0h 0m"); // ✅ Track duration in hours & minutes
 
-    const depositDueToday = 0;
+    const depositDueToday = totalPrice * 0.30;
 
     useEffect(() => {
         const getExtraCharge = () => {
