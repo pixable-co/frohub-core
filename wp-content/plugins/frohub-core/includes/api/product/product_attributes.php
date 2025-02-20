@@ -31,8 +31,9 @@ class ProductAttributes {
 		$product_price = 0;
 
 		if ( $product ) {
-			$product_price = $product->get_regular_price();
+			$product_price = get_field('display_price', $product_id);
 			$partner_id = get_field('partner_id', $product_id);
+			$deposit_amount = $product->get_regular_price();
 			if ($partner_id) {
 				$partner_post = get_post($partner_id);
 				if ($partner_post) {
@@ -73,6 +74,7 @@ class ProductAttributes {
 			'partner'    => $partner,
 			'add_ons'    => $matched_add_ons,
 			'product_price' => $product_price,
+			'deposit_amount' => $deposit_amount,
 		);
 
 		return rest_ensure_response( $response );

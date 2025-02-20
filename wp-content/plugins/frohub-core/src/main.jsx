@@ -4,6 +4,16 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import './index.css';
 import AddToCartProduct from './products/AddToCartProduct';
+import {storeLocationData, getLocationDataFromCookie} from "./utils/locationUtils.js";
+
+// ✅ Run the function on page load
+storeLocationData();
+
+// ✅ Log stored location data for testing
+const storedLocationData = getLocationDataFromCookie();
+if (storedLocationData) {
+    console.log("Stored Location Data:", storedLocationData);
+}
 
 // Find the element with the class 'frohub_add_to_cart'
 const element = document.querySelector('.frohub_add_to_cart');

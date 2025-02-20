@@ -6,6 +6,7 @@ import RenderProductAddOns from './RenderProductAddOns';
 
 export default function AddToCartProduct() {
     // ✅ Keep using local state
+    const [partnerId, setPartnerId] = useState(null);
     const [productId, setProductId] = useState(null);
     const [selectedAddOns, setSelectedAddOns] = useState([]);
     const [productPrice, setProductPrice] = useState(0);
@@ -18,6 +19,16 @@ export default function AddToCartProduct() {
         setProductPrice: setGlobalProductPrice,
         setSelectedServiceType: setGlobalSelectedServiceType
     } = frohubStore();
+
+    useEffect(() => {
+        const partnerElement = document.querySelector(".frohub_add_to_cart");
+        if (partnerElement) {
+            const partnerIdValue = partnerElement.getAttribute("data-partner-id");
+            if (partnerIdValue) {
+                setPartnerId(partnerIdValue);
+            }
+        }
+    }, []);
 
     // ✅ Sync `productId` state
     useEffect(() => {
@@ -53,13 +64,7 @@ export default function AddToCartProduct() {
                 setSelectedAddOns={setSelectedAddOns}
                 setProductPrice={setProductPrice}
             />
-            <RenderServiceTypes productId={productId} onServiceTypeChange={handleServiceTypeChange} />
-            {/*<ProceedToPaymentButton*/}
-            {/*    // selectedAddOns={selectedAddOns}*/}
-            {/*    // productPrice={productPrice}*/}
-            {/*    // productId={productId}*/}
-            {/*    // selectedServiceType={selectedServiceType}*/}
-            {/*/>*/}
+            <RenderServiceTypes productId={productId} partnerId={partnerId} onServiceTypeChange={handleServiceTypeChange} />
         </div>
     );
 }

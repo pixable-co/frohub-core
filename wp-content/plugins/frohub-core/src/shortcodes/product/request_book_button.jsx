@@ -6,20 +6,20 @@ import { createData } from "../../services/createData.js";
 import { toastNotification } from "../../utils/toastNotification.js";
 
 export default function RequestBookButton() {
-    const { selectedAddOns, productPrice, productId, selectedServiceType } = frohubStore();
+    const { selectedAddOns, productPrice, productId, selectedServiceType, mobileTravelFee } = frohubStore(); // ✅ Get mobileTravelFee from Zustand
     const [totalPrice, setTotalPrice] = useState(productPrice);
     const [loading, setLoading] = useState(false);
     const [booked, setBooked] = useState(false);
     const [serviceDuration, setServiceDuration] = useState("0h 0m"); // ✅ Track duration in hours & minutes
 
-    const depositDueToday = 0;
+    const depositDueToday = totalPrice * 0.30;
 
     useEffect(() => {
         const getExtraCharge = () => {
             const container = document.getElementById('extra-charge-container');
             if (container) {
                 const extraCharge = parseFloat(container.getAttribute('data-extra-charge')) || 0;
-                setTotalPrice(productPrice + extraCharge);
+                setTotalPrice(productPrice + extraCharge + (mobileTravelFee || 0)); // ✅ Include mobileTravelFee
             }
         };
 
@@ -39,7 +39,7 @@ export default function RequestBookButton() {
         }
 
         return () => observer.disconnect();
-    }, [productPrice]);
+    }, [productPrice, mobileTravelFee]); // ✅ Include mobileTravelFee dependency
 
     useEffect(() => {
         const getServiceDuration = () => {
@@ -84,8 +84,11 @@ export default function RequestBookButton() {
                 selectedTime,
             });
 
-            toastNotification('success', `Added to Cart`, `The requested service has been added to the cart successfully`);
+            // toastNotification('success', `Success`, `The requested service has been added to the cart successfully`);
             setBooked(true);
+
+            // ✅ Redirect to checkout page
+            window.location.href = "/checkout";
         } catch (error) {
             console.error('AJAX call failed:', error);
         } finally {
@@ -108,6 +111,14 @@ export default function RequestBookButton() {
 
                     <div className="text-right">
                         <p className="text-gray-900 font-semibold">Total price: <span className="text-black">£{totalPrice.toFixed(2)}</span></p>
+
+                        {/* ✅ Show Mobile Travel Fee only if greater than 0 */}
+                        {mobileTravelFee > 0 && (
+                            <p className="text-gray-600 text-sm">
+                                Mobile Travel Fee: <span className="font-medium text-black">£{mobileTravelFee.toFixed(2)}</span>
+                            </p>
+                        )}
+
                         <p className="text-gray-600 text-sm">Deposit due today: <span className="font-medium text-black">£{depositDueToday}</span></p>
                         <p className="text-gray-600 text-sm">Service duration: <span className="font-medium">{serviceDuration}</span></p>
                     </div>
@@ -128,11 +139,6 @@ export default function RequestBookButton() {
                             "Request to Book"
                         )}
                     </button>
-                    {booked && (
-                        <a href="/cart" className="text-blue-600 font-medium mt-2 hover:underline">
-                            View Cart
-                        </a>
-                    )}
                 </div>
             </div>
         </div>

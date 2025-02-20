@@ -1,29 +1,31 @@
 import { create } from "zustand";
 
 const frohubStore = create((set) => ({
-    // ✅ Keep your existing state
+    // ✅ Existing states
     availabilityData: [],
     loading: false,
     selectedDate: null,
     productId: null,
     selectedAddOnId: null,
-
-    // ✅ Add new state values
     selectedAddOns: [],
     productPrice: 0,
     selectedServiceType: '',
 
-    // ✅ Keep existing actions
+    // ✅ New state for Mobile Travel Fee
+    mobileTravelFee: 0,
+
+    // ✅ Existing actions
     setAvailabilityData: (data) => set({ availabilityData: data, loading: false }),
     setLoading: (loading) => set({ loading }),
     setSelectedDate: (date) => set({ selectedDate: date }),
     setProductId: (id) => set({ productId: id }),
     setSelectedAddOnId: (addonId) => set({ selectedAddOnId: addonId }),
-
-    // ✅ Add new actions
     setSelectedAddOns: (addOns) => set({ selectedAddOns: addOns }),
     setProductPrice: (price) => set({ productPrice: price }),
     setSelectedServiceType: (serviceType) => set({ selectedServiceType: serviceType }),
+
+    // ✅ New action to set Mobile Travel Fee
+    setMobileTravelFee: (fee) => set({ mobileTravelFee: fee }),
 }));
 
 export default frohubStore;
