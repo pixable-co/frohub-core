@@ -12,13 +12,28 @@ const FhCalender = ({ onDateChange }) => {
     const [selectedDuration, setSelectedDuration] = useState(0); // ✅ Track total duration time
     const [currentMonth, setCurrentMonth] = useState(dayjs());
 
+    // Extract unique available days from availabilityData
+    const getAvailableDays = () => {
+        if (!Array.isArray(availabilityData)) return [];
+        return [...new Set(availabilityData.map((entry) => entry.day))]; // Extract unique days
+    };
+
+    const isAvailableDate = (date) => {
+        const availableDays = getAvailableDays();
+        return availableDays.includes(date.format("dddd")); // Check if the day is available
+    };
+
     const getDaysInMonth = () => {
         const firstDayOfMonth = currentMonth.startOf("month");
         const daysInMonth = currentMonth.daysInMonth();
-        const startingDay = firstDayOfMonth.day();
+        let startingDay = firstDayOfMonth.day(); // Get day index (0 = Sunday, 6 = Saturday)
+
+        // Adjust to start on Monday (if Sunday, set it to 6, otherwise subtract 1)
+        startingDay = startingDay === 0 ? 6 : startingDay - 1;
 
         const calendarDays = [];
 
+        // Fill in days from the previous month
         for (let i = 0; i < startingDay; i++) {
             calendarDays.push({
                 date: firstDayOfMonth.subtract(startingDay - i, "day"),
@@ -26,6 +41,7 @@ const FhCalender = ({ onDateChange }) => {
             });
         }
 
+        // Fill in current month's days
         for (let i = 1; i <= daysInMonth; i++) {
             calendarDays.push({
                 date: firstDayOfMonth.add(i - 1, "day"),
@@ -37,6 +53,8 @@ const FhCalender = ({ onDateChange }) => {
     };
 
     const handleSelect = (date) => {
+        if (!isAvailableDate(date)) return; // Prevent selecting disabled days
+
         const newDate = dayjs(date);
         setSelectedDate(newDate);
         setSelectedTime(null);
@@ -83,33 +101,42 @@ const FhCalender = ({ onDateChange }) => {
                     <button onClick={() => navigateMonth(1)} className="p-2 hover:bg-gray-200 rounded-full">&gt;</button>
                 </div>
 
+                {/* Days of the week - Starts from Monday */}
                 <div className="grid grid-cols-7 mb-2">
                     {["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"].map((day) => (
                         <div key={day} className="text-xs text-gray-500 text-center py-2">{day}</div>
                     ))}
                 </div>
 
+                {/* Calendar Days */}
                 <div className="grid grid-cols-7 gap-1">
-                    {getDaysInMonth().map((dayObj, idx) => (
-                        <button
-                            key={idx}
-                            onClick={() => !isPastDate(dayObj.date) && handleSelect(dayObj.date)}
-                            disabled={isPastDate(dayObj.date)}
-                            className={`
-                                w-10 h-10 flex items-center justify-center rounded-full
-                                text-sm font-medium
-                                ${!dayObj.isCurrentMonth ? "text-gray-400" : ""}
-                                ${isPastDate(dayObj.date) ? "text-gray-300 cursor-not-allowed" : "hover:bg-gray-200"}
-                                ${isSelected(dayObj.date) ? "bg-black text-white hover:bg-black" : ""}
-                                ${isToday(dayObj.date) && !isSelected(dayObj.date) ? "border border-black" : ""}
-                            `}
-                        >
-                            {dayObj.date.date()}
-                        </button>
-                    ))}
+                    {getDaysInMonth().map((dayObj, idx) => {
+                        const isAvailable = isAvailableDate(dayObj.date);
+                        const isDisabled = !isAvailable || isPastDate(dayObj.date);
+
+                        return (
+                            <button
+                                key={idx}
+                                onClick={() => isAvailable && handleSelect(dayObj.date)}
+                                disabled={isDisabled}
+                                className={`
+                                    w-10 h-10 flex items-center justify-center rounded-full
+                                    text-sm font-medium
+                                    ${!dayObj.isCurrentMonth ? "text-gray-400" : ""}
+                                    ${isDisabled ? "text-gray-300 cursor-not-allowed" : "hover:bg-orange-300"}
+                                    ${isAvailable ? "bg-orange-500 !text-white" : ""}
+                                    ${isSelected(dayObj.date) ? "bg-black text-white hover:bg-black" : ""}
+                                    ${isToday(dayObj.date) && !isSelected(dayObj.date) ? "border border-black" : ""}
+                                `}
+                            >
+                                {dayObj.date.date()}
+                            </button>
+                        );
+                    })}
                 </div>
             </div>
 
+            {/* Time Slots Section */}
             <div className="timeslots-section">
                 <h3 className="selected-date">{selectedDate.format("ddd, MMM D YYYY")}</h3>
 
