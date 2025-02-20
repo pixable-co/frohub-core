@@ -1,23 +1,40 @@
 import { useState, useEffect } from "react";
 import { CheckCircle, XCircle } from "lucide-react";
-import { Skeleton } from "antd"; // ✅ Import Ant Design Skeleton
+import { Skeleton } from "antd";
 import frohubStore from "../frohubStore.js";
+import { getLocationDataFromCookie } from "../utils/locationUtils.js"; // Import the cookie function
 
-const GOOGLE_MAPS_API_KEY = "AIzaSyA_myRdC3Q1OUQBmZ22dxxd3rGtwrVC1sI"; // Replace with actual key
+const GOOGLE_MAPS_API_KEY = "AIzaSyA_myRdC3Q1OUQBmZ22dxxd3rGtwrVC1sI";
 
 export default function MobileService({ partnerId }) {
     const [postcode, setPostcode] = useState("");
     const [isValid, setIsValid] = useState(false);
     const [travelFee, setTravelFee] = useState(null);
     const [partnerLocation, setPartnerLocation] = useState(null);
-    const [loading, setLoading] = useState(false); // ✅ Loading for postcode check
-    const [loadingPartner, setLoadingPartner] = useState(true); // ✅ Separate loading for partner location
+    const [loading, setLoading] = useState(false);
+    const [loadingPartner, setLoadingPartner] = useState(true);
     const [error, setError] = useState("");
+    const [staticLocation, setStaticLocation] = useState(null);
 
-    // ✅ Zustand action to store the travel fee globally
     const { setMobileTravelFee } = frohubStore();
 
     useEffect(() => {
+        // Get static location data from cookie using the imported function
+        const getStaticLocation = () => {
+            const cookieData = getLocationDataFromCookie();
+
+            // If data exists in cookie, use it
+            if (cookieData && cookieData.lat && cookieData.lng) {
+                setStaticLocation({
+                    latitude: parseFloat(cookieData.lat),
+                    longitude: parseFloat(cookieData.lng),
+                    name: cookieData.location_name
+                });
+            }
+        };
+
+        getStaticLocation();
+
         if (partnerId) {
             fetchPartnerLocation();
         }
@@ -46,9 +63,16 @@ export default function MobileService({ partnerId }) {
             setError("Error fetching location data.");
             console.error(err);
         } finally {
-            setLoadingPartner(false); // ✅ Stop showing Skeleton once partner data loads
+            setLoadingPartner(false);
         }
     };
+
+    useEffect(() => {
+        // When both partner location and static location are loaded, calculate fee automatically
+        if (partnerLocation && staticLocation && !loadingPartner) {
+            calculateTravelFeeForStatic();
+        }
+    }, [partnerLocation, staticLocation, loadingPartner]);
 
     // Get latitude & longitude of the postcode using Google Maps API
     const getCoordinatesFromPostcode = async (postcode) => {
@@ -82,13 +106,55 @@ export default function MobileService({ partnerId }) {
         return R * c; // Distance in km
     };
 
+    // Calculate fee with static location data
+    const calculateTravelFeeForStatic = () => {
+        setTravelFee(null);
+        setIsValid(false);
+        setError("");
+        setLoading(true);
+
+        if (!partnerLocation) {
+            setError("Partner location not loaded.");
+            setLoading(false);
+            return;
+        }
+
+        const distance = calculateDistance(
+            partnerLocation.latitude,
+            partnerLocation.longitude,
+            staticLocation.latitude,
+            staticLocation.longitude
+        );
+
+        // Find the applicable price based on radius
+        let applicablePrice = null;
+        for (const fee of partnerLocation.radiusFees) {
+            if (distance <= fee.radius) {
+                applicablePrice = fee.price;
+                break;
+            }
+        }
+
+        if (applicablePrice !== null) {
+            setIsValid(true);
+            setTravelFee(applicablePrice);
+            setMobileTravelFee(applicablePrice);
+        } else {
+            setIsValid(false);
+            setError("Sorry, you are outside the service area.");
+            setMobileTravelFee(0);
+        }
+
+        setLoading(false);
+    };
+
     // Handle postcode validation and price calculation
     const handleCheckPostcode = async (value) => {
         setPostcode(value);
         setTravelFee(null);
         setIsValid(false);
         setError("");
-        setLoading(true); // ✅ Only show loading for postcode check, not the whole component
+        setLoading(true);
 
         if (!partnerLocation) {
             setError("Partner location not loaded.");
@@ -122,17 +188,17 @@ export default function MobileService({ partnerId }) {
         if (applicablePrice !== null) {
             setIsValid(true);
             setTravelFee(applicablePrice);
-            setMobileTravelFee(applicablePrice); // ✅ Store the travel fee in Zustand
+            setMobileTravelFee(applicablePrice);
         } else {
             setIsValid(false);
             setError("Sorry, you are outside the service area.");
-            setMobileTravelFee(0); // ✅ Reset fee in Zustand if out of range
+            setMobileTravelFee(0);
         }
 
         setLoading(false);
     };
 
-    // ✅ Show Skeleton only while fetching partner location (not during postcode updates)
+    // Show Skeleton only while fetching partner location
     if (loadingPartner) {
         return (
             <div className="mt-4 mb-6 p-4 border border-gray-300 rounded-lg bg-white">
@@ -144,43 +210,76 @@ export default function MobileService({ partnerId }) {
 
     return (
         <div className="mt-4 mb-6 p-4 border border-gray-300 rounded-lg bg-white">
-            <p className="text-sm text-gray-700">
-                To check if you are within their mobile service area, enter your postcode.
-            </p>
-            <div className="flex justify-start items-center gap-6 mt-3">
-                <div>
-                    <input
-                        type="text"
-                        placeholder="Enter postcode"
-                        value={postcode}
-                        onChange={(e) => handleCheckPostcode(e.target.value)}
-                        className="w-full px-4 py-2 text-gray-600 border rounded-md bg-gray-100 border-gray-300 focus:ring focus:ring-indigo-300 focus:outline-none"
-                    />
-                </div>
-
-                <div>
-                    {/* Loading Indicator for postcode check */}
-                    {loading && <p className="text-sm text-gray-500 mt-2">Checking postcode...</p>}
-
-                    {/* Success Message */}
-                    {isValid && travelFee !== null && (
-                        <div className="flex items-center text-green-600 font-semibold mt-2">
-                            <CheckCircle className="w-5 h-5 mr-1" />
-                            You are inside the service area.
+            {!staticLocation ? (
+                // Original UI with postcode input
+                <>
+                    <p className="text-sm text-gray-700">
+                        To check if you are within their mobile service area, enter your postcode.
+                    </p>
+                    <div className="flex justify-start items-center gap-6 mt-3">
+                        <div>
+                            <input
+                                type="text"
+                                placeholder="Enter postcode"
+                                value={postcode}
+                                onChange={(e) => handleCheckPostcode(e.target.value)}
+                                className="w-full px-4 py-2 text-gray-600 border rounded-md bg-gray-100 border-gray-300 focus:ring focus:ring-indigo-300 focus:outline-none"
+                            />
                         </div>
-                    )}
 
-                    {/* Error Message */}
-                    {error && (
-                        <div className="flex items-center text-red-500 font-semibold mt-2">
-                            <XCircle className="w-5 h-5 mr-1" />
-                            {error}
+                        <div>
+                            {/* Loading Indicator for postcode check */}
+                            {loading && <p className="text-sm text-gray-500 mt-2">Checking postcode...</p>}
+
+                            {/* Success Message */}
+                            {isValid && travelFee !== null && (
+                                <div className="flex items-center text-green-600 font-semibold mt-2">
+                                    <CheckCircle className="w-5 h-5 mr-1" />
+                                    You are inside the service area.
+                                </div>
+                            )}
+
+                            {/* Error Message */}
+                            {error && (
+                                <div className="flex items-center text-red-500 font-semibold mt-2">
+                                    <XCircle className="w-5 h-5 mr-1" />
+                                    {error}
+                                </div>
+                            )}
                         </div>
-                    )}
-                </div>
-            </div>
+                    </div>
+                </>
+            ) : (
+                // Show static location info and results
+                <>
+                    <div className="font-medium mt-2 mb-3">
+                        {staticLocation.name}
+                    </div>
 
-            {/* Travel Fee Display */}
+                    <div>
+                        {/* Loading Indicator for calculation */}
+                        {loading && <p className="text-sm text-gray-500 mt-2">Checking availability...</p>}
+
+                        {/* Success Message */}
+                        {isValid && travelFee !== null && (
+                            <div className="flex items-center text-green-600 font-semibold mt-2">
+                                <CheckCircle className="w-5 h-5 mr-1" />
+                                You are inside the service area.
+                            </div>
+                        )}
+
+                        {/* Error Message */}
+                        {error && (
+                            <div className="flex items-center text-red-500 font-semibold mt-2">
+                                <XCircle className="w-5 h-5 mr-1" />
+                                {error}
+                            </div>
+                        )}
+                    </div>
+                </>
+            )}
+
+            {/* Travel Fee Display - Same for both static and dynamic location */}
             {isValid && travelFee !== null && (
                 <p className="!mt-4 text-lg font-semibold">
                     Mobile Travel Fee: <span className="text-gray-900">+£{travelFee.toFixed(2)}</span>

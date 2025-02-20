@@ -30,7 +30,8 @@ const FhCheckButton = ({ addOn, selectedAddOns, handleSelectAddOn, loading }) =>
                 data-duration={addOn.duration_minutes}
             />
             <span className="text-gray-700 text-sm">
-                {addOn.name} + £{addOn.price} ({addOn.duration_minutes} mins)
+                {addOn.name} + £{addOn.price}
+                {addOn.duration_minutes > 0 && ` (${addOn.duration_minutes} mins)`}
             </span>
         </label>
     );
