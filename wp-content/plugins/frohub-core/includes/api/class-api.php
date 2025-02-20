@@ -15,6 +15,12 @@ use FECore\CreateComment;
 use FECore\GetConversationsComments;
 use FECore\UnreadCount;
 use FECore\MarkRead;
+use FECore\ReturnProductCategories;
+use FECore\ReturnPartnerFaqs;
+use FECore\ReturnSpecificPartnerAddOns;
+use FECore\ReturnAllProductTags;
+
+
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -38,5 +44,10 @@ class API {
 		GetLocationData::init();
 		UnreadCount::init();
 		MarkRead::init();
+		ReturnProductCategories::init();
+		ReturnPartnerFaqs::init();
+		ReturnSpecificPartnerAddOns::init();
+		ReturnAllProductTags::init();
+
 	}
 }
