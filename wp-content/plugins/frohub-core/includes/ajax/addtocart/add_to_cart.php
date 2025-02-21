@@ -28,6 +28,8 @@ class AddToCart {
     public function add_to_cart() {
         check_ajax_referer( 'frohub_nonce' );
 
+        // Clear the cart before adding a new product
+        WC()->cart->empty_cart();
         // Get data from the request
         $product_id = isset($_POST['productId']) ? sanitize_text_field($_POST['productId']) : '';
         $selected_add_ons = isset($_POST['selectedAddOns']) ? array_map(function($add_on) {

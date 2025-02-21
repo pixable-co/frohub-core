@@ -30,9 +30,15 @@ class GetAvailibility {
         $product_id = intval($_POST['product_id']);
         $date = sanitize_text_field($_POST['date']);
         $partner_id = get_field('partner_id', $product_id);
+        $override_availibility = get_field('override_availibility', $product_id);
 
-        // Fetch availability from ACF
-        $availability = get_field('availability', $product_id);
+        if (true === $override_availibility){
+            $availability = get_field('availability', $product_id);
+        }
+        else {
+                $availability = get_field('availability', $partner_id);
+        }
+
         if (!$availability) {
             wp_send_json_error(['message' => 'No availability data found.']);
         }
