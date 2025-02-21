@@ -33,7 +33,7 @@ class FrohubProductPartnerPage {
         // Get the post IDs
         $product_ids = $query->posts;
         $imploded_ids = implode(',', $product_ids); 
-        $grid='[us_grid post_type="ids" ids="'.$imploded_ids.'" items_layout="197" columns="4" overriding_link="%7B%22url%22%3A%22%22%7D"]';
+        $grid='[us_grid post_type="ids" ids="'.$imploded_ids.'" items_layout="197" columns="4" overriding_link="%7B%22url%22%3A%22%22%7D" el_class="partner_profile_product_grid"]';
 
         return do_shortcode($grid);
     }
