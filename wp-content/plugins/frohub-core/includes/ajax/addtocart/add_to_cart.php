@@ -61,8 +61,18 @@ class AddToCart {
 
 
        $cart_item_key = WC()->cart->add_to_cart($product_id, 1, 0, array(), $cart_item_data);
-       $additional_product_id = 2600;
-       $secondary_cart_item_key = WC()->cart->add_to_cart($additional_product_id, 1);
+//        $additional_product_id = 2600;\
+
+        // Frohub Service Fee
+       $additional_product_id = 1034;
+       $base_price = $this->get_product_price($additional_product_id);
+       $percentage = $base_price / 100;
+       $secondary_product_price = $product_price * $percentage;
+
+       $secondary_cart_item_data = array(
+               'custom_price' => $secondary_product_price
+       );
+        $secondary_cart_item_key = WC()->cart->add_to_cart($additional_product_id, 1, 0, array(), $secondary_cart_item_data);
 
 
         if ($cart_item_key && $secondary_cart_item_key) {
@@ -77,6 +87,7 @@ class AddToCart {
                 'selected_service_type' => $selected_service_type,
                 'booking_date' => $selected_date,
                 'booking_time' => $selected_time,
+                'secondary_product_price' => $secondary_product_price,
             );
 
             // Send success response
@@ -85,6 +96,11 @@ class AddToCart {
             // Send error response
             wp_send_json_error(array('message' => 'Failed to add product to cart.'));
         }
+    }
+
+    private function get_product_price($product_id) {
+        $product = wc_get_product($product_id);
+        return $product ? floatval($product->get_price()) : 0;
     }
 
     public function apply_custom_price($cart_item) {
