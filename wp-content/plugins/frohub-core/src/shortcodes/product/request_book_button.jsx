@@ -77,8 +77,6 @@ export default function RequestBookButton() {
         const depositDue = totalPrice - depositDueToday;
         const serviceFee = depositDueToday * 0.03;
 
-        const finalPrice = depositDueToday + (depositDueToday * 0.03);
-
         document.cookie = `frohub_service_fee=${serviceFee}; path=/; max-age=86400`;
 
         try {
@@ -88,7 +86,7 @@ export default function RequestBookButton() {
                 depositDue,
                 depositDueToday,
                 serviceFee,
-                productPrice: finalPrice,
+                productPrice: depositDueToday,
                 selectedServiceType,
                 selectedDate,
                 selectedTime,

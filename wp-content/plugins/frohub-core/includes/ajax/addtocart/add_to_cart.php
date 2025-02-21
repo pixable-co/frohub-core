@@ -59,10 +59,13 @@ class AddToCart {
             'booking_time' => $selected_time,
         );
 
-        // Add product to WooCommerce cart
-        $cart_item_key = WC()->cart->add_to_cart($product_id, 1, 0, array(), $cart_item_data);
 
-        if ($cart_item_key) {
+       $cart_item_key = WC()->cart->add_to_cart($product_id, 1, 0, array(), $cart_item_data);
+       $additional_product_id = 2600;
+       $secondary_cart_item_key = WC()->cart->add_to_cart($additional_product_id, 1);
+
+
+        if ($cart_item_key && $secondary_cart_item_key) {
             // Prepare response data
             $response = array(
                 'message' => 'Product added to cart successfully.',

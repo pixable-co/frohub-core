@@ -5,14 +5,9 @@ import { createRoot } from 'react-dom/client';
 import './index.css';
 import AddToCartProduct from './products/AddToCartProduct';
 import {storeLocationData, getLocationDataFromCookie} from "./utils/locationUtils.js";
-import {showServiceFee} from "./utils/showServiceFee";
 
 // ✅ Run the function on page load
 storeLocationData();
-
-if (window.location.pathname.includes("/checkout")) {
-    showServiceFee();
-}
 
 // Find the element with the class 'frohub_add_to_cart'
 const element = document.querySelector('.frohub_add_to_cart');
