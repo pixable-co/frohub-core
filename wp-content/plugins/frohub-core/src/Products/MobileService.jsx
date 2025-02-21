@@ -3,6 +3,7 @@ import { CheckCircle, XCircle } from "lucide-react";
 import { Skeleton } from "antd";
 import frohubStore from "../frohubStore.js";
 import { getLocationDataFromCookie } from "../utils/locationUtils.js"; // Import the cookie function
+import {fetchData} from "../services/fetchData.js";
 
 const GOOGLE_MAPS_API_KEY = "AIzaSyA_myRdC3Q1OUQBmZ22dxxd3rGtwrVC1sI";
 
@@ -41,31 +42,60 @@ export default function MobileService({ partnerId }) {
     }, [partnerId]);
 
     // Fetch the partner's location and radius pricing
-    const fetchPartnerLocation = async () => {
-        try {
-            const API_URL = `/wp-json/frohub/v1/get-location-data/${partnerId}`;
-            const response = await fetch(API_URL);
-            const data = await response.json();
+    // Fetch the partner's location and radius pricing using AJAX
+    const fetchPartnerLocation = () => {
+        setLoadingPartner(true);
+        setError("");
 
-            if (data.success) {
-                setPartnerLocation({
-                    latitude: parseFloat(data.data.latitude),
-                    longitude: parseFloat(data.data.longitude),
-                    radiusFees: data.data.radius_fees.map((fee) => ({
-                        radius: parseFloat(fee.radius),
-                        price: parseFloat(fee.price),
-                    })),
-                });
-            } else {
-                setError("Failed to fetch partner location.");
+        fetchData(
+            "frohub/get_mobile_location_data", // Match your AJAX action in PHP
+            (response) => {
+                console.log(response)
+                if (response.success) {
+                    setPartnerLocation({
+                        latitude: parseFloat(response.data.data.latitude),
+                        longitude: parseFloat(response.data.data.longitude),
+                        radiusFees: response.data.data.radius_fees.map((fee) => ({
+                            radius: parseFloat(fee.radius),
+                            price: parseFloat(fee.price),
+                        })),
+                    });
+                } else {
+                    setError("Failed to fetch partner location.");
+                    console.error("Error fetching location:", response.message);
+                }
+                setLoadingPartner(false);
+            },
+            {
+                partner_id: partnerId,
             }
-        } catch (err) {
-            setError("Error fetching location data.");
-            console.error(err);
-        } finally {
-            setLoadingPartner(false);
-        }
+        );
     };
+    // const fetchPartnerLocation = async () => {
+    //     try {
+    //         const API_URL = `/wp-json/frohub/v1/get-location-data/${partnerId}`;
+    //         const response = await fetch(API_URL);
+    //         const data = await response.json();
+    //
+    //         if (data.success) {
+    //             setPartnerLocation({
+    //                 latitude: parseFloat(data.data.latitude),
+    //                 longitude: parseFloat(data.data.longitude),
+    //                 radiusFees: data.data.radius_fees.map((fee) => ({
+    //                     radius: parseFloat(fee.radius),
+    //                     price: parseFloat(fee.price),
+    //                 })),
+    //             });
+    //         } else {
+    //             setError("Failed to fetch partner location.");
+    //         }
+    //     } catch (err) {
+    //         setError("Error fetching location data.");
+    //         console.error(err);
+    //     } finally {
+    //         setLoadingPartner(false);
+    //     }
+    // };
 
     useEffect(() => {
         // When both partner location and static location are loaded, calculate fee automatically

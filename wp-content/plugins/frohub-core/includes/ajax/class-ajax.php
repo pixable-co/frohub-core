@@ -1,6 +1,8 @@
 <?php
 namespace FECore;
 
+use FECore\GetMobileLocationData;
+
 use FECore\GetServiceType;
 
 use FECore\GetAvailibility;
@@ -19,5 +21,6 @@ class Ajax {
 		AddToCart::init();
 		GetAvailibility::init();
 		GetServiceType::init();
+		GetMobileLocationData::init();
 	}
 }
