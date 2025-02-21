@@ -41,6 +41,9 @@ class AddToCart {
             );
         }, $_POST['selectedAddOns']) : array();
         $product_price = isset($_POST['productPrice']) ? sanitize_text_field($_POST['productPrice']) : 0;
+        $deposit_due = isset($_POST['depositDue']) ? sanitize_text_field($_POST['depositDue']) : 0;
+        $deposit_due_today = isset($_POST['depositDueToday']) ? sanitize_text_field($_POST['depositDueToday']) : 0;
+        $service_fee = isset($_POST['serviceFee']) ? sanitize_text_field($_POST['serviceFee']) : 0;
         $selected_service_type = isset($_POST['selectedServiceType']) ? sanitize_text_field($_POST['selectedServiceType']) : '';
         $selected_date = isset($_POST['selectedDate']) ? sanitize_text_field($_POST['selectedDate']) : '';
         $selected_time = isset($_POST['selectedTime']) ? sanitize_text_field($_POST['selectedTime']) : '';
@@ -49,6 +52,8 @@ class AddToCart {
         $cart_item_data = array(
             'selected_add_ons' => $selected_add_ons,
             'custom_price' => $product_price,
+            'deposit_due' => $deposit_due,
+            'service_fee' => $service_fee,
             'selected_service_type' => $selected_service_type, // Add service type to cart item data
             'booking_date' => $selected_date,
             'booking_time' => $selected_time,
@@ -64,6 +69,8 @@ class AddToCart {
                 'product_id' => $product_id,
                 'selected_add_ons' => $selected_add_ons,
                 'product_price' => $product_price,
+                'deposit_due' => $deposit_due,
+                'service_fee' => $service_fee,
                 'selected_service_type' => $selected_service_type,
                 'booking_date' => $selected_date,
                 'booking_time' => $selected_time,
@@ -81,6 +88,8 @@ class AddToCart {
         // Apply custom price to cart item
         if (isset($cart_item['custom_price'])) {
             $cart_item['data']->set_price($cart_item['custom_price']);
+            $cart_item['data']->set_regular_price($cart_item['custom_price']);
+            $cart_item['data']->set_sale_price('');
         }
         return $cart_item;
     }
@@ -90,6 +99,8 @@ class AddToCart {
         if (isset($values['custom_price'])) {
             $cart_item['custom_price'] = $values['custom_price'];
             $cart_item['data']->set_price($values['custom_price']);
+            $cart_item['data']->set_regular_price($values['custom_price']);
+            $cart_item['data']->set_sale_price('');
         }
         // Restore selected add-ons from session
         if (isset($values['selected_add_ons'])) {
@@ -122,6 +133,14 @@ class AddToCart {
                 'value' => $add_ons_string,
             );
         }
+
+        if (isset($cart_item['deposit_due']) && !empty($cart_item['deposit_due'])) {
+                $item_data[] = array(
+                    'name' => __('Deposit Due', 'frohub'),
+                    'value' => '£' . number_format($cart_item['deposit_due'], 2),
+                );
+        }
+
         // Display selected service type in cart and checkout
         if (isset($cart_item['selected_service_type']) && ! empty($cart_item['selected_service_type'])) {
             $item_data[] = array(
@@ -155,6 +174,15 @@ class AddToCart {
             }, $values['selected_add_ons']);
             wc_add_order_item_meta($item_id, 'Selected Add-Ons', implode(', ', $add_ons));
         }
+
+        if (isset($values['deposit_due'])) {
+            wc_add_order_item_meta($item_id, 'Total due on day', $values['deposit_due']);
+        }
+
+        if (isset($values['service_fee'])) {
+            wc_add_order_item_meta($order_id, '_frohub_service_fee', number_format($values['service_fee'], 2)); // ✅ Save service fee as hidden order meta
+        }
+
         // Save selected service type to order meta
         if (isset($values['selected_service_type'])) {
             wc_add_order_item_meta($item_id, 'Service Type', $values['selected_service_type']);
