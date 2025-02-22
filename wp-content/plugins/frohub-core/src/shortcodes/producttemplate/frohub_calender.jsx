@@ -4,25 +4,26 @@ import { fetchData } from "../../services/fetchData.js";
 import frohubStore from "../../frohubStore.js";
 
 const FrohubCalender = () => {
-    const productIdRef = useRef(null); // Use ref to avoid unnecessary re-renders
-
-    // Zustand store hooks
+    const productIdRef = useRef(null);
     const {
         availabilityData,
         setAvailabilityData,
         selectedDate,
         setSelectedDate,
         loading,
-        setLoading
+        setLoading,
+        addonsChanged,
+        setAddonsChanged,
+        resetAddonsChanged // ✅ New function to reset addonsChanged
     } = frohubStore();
 
-    // Set today's date on initial load
+    // ✅ Set today's date on first load
     useEffect(() => {
         const today = new Date().toISOString().split("T")[0];
         setSelectedDate(today);
     }, [setSelectedDate]);
 
-    // Set product ID once (without causing re-render)
+    // ✅ Get product ID once
     useEffect(() => {
         const productElement = document.querySelector(".frohub_add_to_cart");
         if (productElement) {
@@ -30,11 +31,12 @@ const FrohubCalender = () => {
         }
     }, []);
 
-    // Fetch availability when selectedDate changes
+    // ✅ Fetch availability only on first load OR when addons change
     const fetchAvailability = useCallback(async () => {
-        if (!productIdRef.current || !selectedDate) return;
+        if (!productIdRef.current) return;
+        if (!addonsChanged && availabilityData.length > 0) return; // ✅ Prevent unnecessary calls
 
-        setLoading(true); // Set loading true before fetching data
+        setLoading(true);
         fetchData(
             "frohub/get_availibility",
             (response) => {
@@ -43,26 +45,21 @@ const FrohubCalender = () => {
                 } else {
                     console.error("Error fetching availability:", response.message);
                 }
-                setLoading(false); // Set loading false after response
+                setLoading(false);
             },
             { product_id: productIdRef.current, date: selectedDate }
         );
-    }, [selectedDate, setAvailabilityData, setLoading]);
+
+        resetAddonsChanged(); // ✅ Reset after fetching
+    }, [productIdRef.current, selectedDate, addonsChanged, availabilityData.length, setAvailabilityData, setLoading, resetAddonsChanged]);
 
     useEffect(() => {
-        if (selectedDate) {
-            fetchAvailability();
-        }
-    }, [fetchAvailability, selectedDate]);
+        fetchAvailability();
+    }, [fetchAvailability]);
 
     return (
         <div className="relative">
             <FhCalender data={availabilityData} onDateChange={setSelectedDate} />
-            {/*{loading ? (*/}
-            {/*    <FhCalender />*/}
-            {/*) : (*/}
-            {/*    */}
-            {/*)}*/}
         </div>
     );
 };
