@@ -140,10 +140,6 @@ export default function RequestBookButton() {
                     >
                         {loading ? (
                             <Spin size="small" className="mr-2" />
-                        ) : booked ? (
-                            <>
-                                <Check size={18} className="mr-2 text-green-600" /> Booked
-                            </>
                         ) : (
                             "Request to Book"
                         )}
