@@ -66,8 +66,9 @@ export default function RequestBookButton() {
     const handleProceedToPayment = async () => {
         const selectedDate = document.querySelector('input[name="selectedDate"]')?.value || "";
         const selectedTime = document.querySelector('input[name="selectedTime"]')?.value || "";
+        const selectedTimeButton = document.querySelector(".timeslot-button.selected");
 
-        if (!selectedDate || !selectedTime) {
+        if (!selectedDate || !selectedTimeButton) {
             toastNotification('error', 'Missing Information', 'Please select a service type and date & time before proceeding.');
             return;
         }

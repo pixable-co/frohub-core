@@ -10,6 +10,7 @@ const frohubStore = create((set) => ({
     selectedAddOns: [],
     productPrice: 0,
     selectedServiceType: '',
+    addonsChanged: false,
 
     // ✅ New state for Mobile Travel Fee
     mobileTravelFee: 0,
@@ -26,6 +27,10 @@ const frohubStore = create((set) => ({
 
     // ✅ New action to set Mobile Travel Fee
     setMobileTravelFee: (fee) => set({ mobileTravelFee: fee }),
+    setAddonsChanged: () => set({ addonsChanged: true }),
+
+    // ✅ Reset addonsChanged after fetch
+    resetAddonsChanged: () => set({ addonsChanged: false }),
 }));
 
 export default frohubStore;

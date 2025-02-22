@@ -78,6 +78,7 @@ const FhCalender = ({ onDateChange }) => {
         setCurrentMonth(currentMonth.add(direction, "month"));
     };
 
+
     const availableTimeSlots = Array.isArray(availabilityData)
         ? availabilityData
             .filter((entry) => entry.day === selectedDate.format("dddd"))
