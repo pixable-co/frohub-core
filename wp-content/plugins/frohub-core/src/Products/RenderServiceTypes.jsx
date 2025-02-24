@@ -38,7 +38,7 @@ export default function RenderServiceTypes({ productId, partnerId, onServiceType
             <div>
                 Service Type
                 <form>
-                    <div className="flex gap-4 mt-3 mb-6">
+                    <div className="grid grid-cols-3 gap-4 mt-3 mb-6">
                         {loading
                             ? Array.from({ length: 3 }).map((_, index) => (
                                 <FhServiceButton key={index} loading={true} />
