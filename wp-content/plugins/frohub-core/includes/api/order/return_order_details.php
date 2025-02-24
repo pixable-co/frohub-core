@@ -94,7 +94,13 @@ class ReturnOrderDetails {
             // Loop through order items and retrieve stored meta
             foreach ($order->get_items() as $item_id => $item) {
                 $product = $item->get_product();
-                
+                $product_id = $item->get_product_id();
+    
+                // Ignore product with ID 2600
+                if ($product_id == 2600) {
+                    continue;
+                }
+    
                 // Retrieve stored product meta from order item
                 $selected_add_ons = wc_get_order_item_meta($item_id, 'Selected Add-Ons', true) ?: '';
                 $deposit_due = wc_get_order_item_meta($item_id, 'Total due on day', true) ?: '';
@@ -103,7 +109,7 @@ class ReturnOrderDetails {
                 $booking_time = wc_get_order_item_meta($item_id, 'Selected Time', true) ?: '';
     
                 $order_data['line_items'][] = [
-                    'product_id'   => $item->get_product_id(),
+                    'product_id'   => $product_id,
                     'product_name' => $product ? $product->get_name() : '',
                     'name'         => $item->get_name(),
                     'quantity'     => $item->get_quantity(),
@@ -123,5 +129,6 @@ class ReturnOrderDetails {
         }
     
         return rest_ensure_response($orders_data);
-    }    
+    }
+     
 }
