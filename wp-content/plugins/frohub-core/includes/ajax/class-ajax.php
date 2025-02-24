@@ -1,6 +1,8 @@
 <?php
 namespace FECore;
 
+use FECore\GetAddons;
+
 use FECore\GetMobileLocationData;
 
 use FECore\GetServiceType;
@@ -22,5 +24,6 @@ class Ajax {
 		GetAvailibility::init();
 		GetServiceType::init();
 		GetMobileLocationData::init();
+		GetAddons::init();
 	}
 }

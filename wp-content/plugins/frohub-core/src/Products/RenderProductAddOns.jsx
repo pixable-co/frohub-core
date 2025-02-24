@@ -21,23 +21,43 @@ export default function RenderProductAddOns({ productId, setProductId, selectedA
     }, [setProductId]);
 
     useEffect(() => {
-        const fetchProductData = async () => {
-            try {
-                setLoading(true); // ✅ Show skeleton while fetching add-ons
-                const response = await fetch(`/wp-json/frohub/v1/product-attributes?product_id=${productId}`);
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    throw new Error(`Network response was not ok: ${errorText}`);
+        const fetchProductData = () => {
+            setLoading(true); // ✅ Show skeleton while fetching add-ons
+
+            fetchData(
+                "frohub/get_addons",
+                (response) => {
+                    if (response.success) {
+                        setAddOns(response.data.add_ons || []);
+                        setProductPrice(parseFloat(response.data.product_price) || 0);
+                    } else {
+                        console.error("Error fetching add-ons:", response.message);
+                        setError(response.message);
+                    }
+                    setLoading(false); // ✅ Stop loading after fetch
+                },
+                {
+                    product_id: productId,
                 }
-                const data = await response.json();
-                setAddOns(data.add_ons || []);
-                setProductPrice(parseFloat(data.product_price) || 0);
-                setLoading(false); // ✅ Stop loading after fetch
-            } catch (error) {
-                setError(error.message);
-                setLoading(false);
-            }
+            );
         };
+        // const fetchProductData = async () => {
+        //     try {
+        //         setLoading(true); // ✅ Show skeleton while fetching add-ons
+        //         const response = await fetch(`/wp-json/frohub/v1/product-attributes?product_id=${productId}`);
+        //         if (!response.ok) {
+        //             const errorText = await response.text();
+        //             throw new Error(`Network response was not ok: ${errorText}`);
+        //         }
+        //         const data = await response.json();
+        //         setAddOns(data.add_ons || []);
+        //         setProductPrice(parseFloat(data.product_price) || 0);
+        //         setLoading(false); // ✅ Stop loading after fetch
+        //     } catch (error) {
+        //         setError(error.message);
+        //         setLoading(false);
+        //     }
+        // };
 
         if (productId) {
             fetchProductData();
