@@ -64,7 +64,7 @@ class AddToCart {
        $cart_item_key = WC()->cart->add_to_cart($product_id, 1, 0, array(), $cart_item_data);
 
         // Frohub Service Fee
-       $additional_product_id = 1034;
+       $additional_product_id = 2600;
        $base_price = $this->get_product_price($additional_product_id);
        $percentage = $base_price / 100;
        $secondary_product_price = $total_price * $percentage;
