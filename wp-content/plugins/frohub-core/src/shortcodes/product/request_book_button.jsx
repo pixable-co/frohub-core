@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Spin } from 'antd';
 import { Check } from 'lucide-react'; // ✅ Import check icon
 import frohubStore from "../../frohubStore.js";
+import {fetchData} from "../../services/fetchData.js";
 import { createData } from "../../services/createData.js";
 import { toastNotification } from "../../utils/toastNotification.js";
 
@@ -13,6 +14,30 @@ export default function RequestBookButton() {
     const [serviceDuration, setServiceDuration] = useState("0h 0m"); // ✅ Track duration in hours & minutes
 
     const depositDueToday = totalPrice * 0.30;
+
+    useEffect(() => {
+        const fetchServiceDuration = () => {
+            if (!productId) return;
+
+            fetchData(
+                "frohub/get_duration",
+                (response) => {
+                    if (response.success) {
+                        const hours = response.data.duration_hours || 0;
+                        const minutes = response.data.duration_minutes || 0;
+
+                        // ✅ Update service duration display
+                        setServiceDuration(`${hours}h ${minutes}m`);
+                    } else {
+                        console.error("Error fetching service duration:", response.message);
+                    }
+                },
+                { product_id: productId }
+            );
+        };
+
+        fetchServiceDuration();
+    }, [productId]); // ✅ Runs when `productId` changes
 
     useEffect(() => {
         const getExtraCharge = () => {

@@ -1,6 +1,9 @@
 <?php
 namespace FECore;
 
+use FECore\GetDuration;
+
+
 use FECore\GetAddons;
 
 use FECore\GetMobileLocationData;
@@ -25,5 +28,6 @@ class Ajax {
 		GetServiceType::init();
 		GetMobileLocationData::init();
 		GetAddons::init();
+		GetDuration::init();
 	}
 }

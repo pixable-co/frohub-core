@@ -6,7 +6,6 @@ import frohubStore from "../../frohubStore.js";
 const FrohubCalender = () => {
     const productIdRef = useRef(null);
     const [bookingNotice, setBookingNotice] = useState(null);
-    const [initialServiceDuration, setInitialServiceDuration] = useState(0); // ✅ Default value to avoid `null`
 
     const {
         availabilityData,
@@ -47,10 +46,6 @@ const FrohubCalender = () => {
                 if (response.success) {
                     setAvailabilityData(response.data.availability);
                     setBookingNotice(response.data.booking_notice);
-
-                    const duration = response.data.availability[0]['product_service_duration'];
-                    console.log("🟢 Setting initialServiceDuration:", duration);
-                    setInitialServiceDuration(duration);
                 } else {
                     console.error("Error fetching availability:", response.message);
                 }
@@ -72,7 +67,6 @@ const FrohubCalender = () => {
                 data={availabilityData}
                 onDateChange={setSelectedDate}
                 bookingNotice={bookingNotice}
-                initialServiceDuration={initialServiceDuration} // ✅ Passed as prop
             />
         </div>
     );
