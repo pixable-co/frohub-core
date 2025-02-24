@@ -19,23 +19,40 @@ class GetServiceType {
         // Verify nonce
         check_ajax_referer('frohub_nonce');
 
-        // Get product ID from request
         $product_id = isset($_POST['product_id']) ? intval($_POST['product_id']) : 0;
 
         if (!$product_id) {
-            wp_send_json_error(array(
-                'message' => 'Invalid product ID.',
-            ));
+            wp_send_json_error(['message' => 'Invalid product ID.']);
         }
 
-        // Get product and service types
         $product = wc_get_product($product_id);
-        $serviceTypes = get_field('service_types', $product_id);
+
+        if (!$product || !$product->is_type('variable')) {
+            wp_send_json_error(['message' => 'Product is not a variable product.']);
+        }
+
+        $serviceTypes = [];
+        $variation_ids = $product->get_children();
+
+        foreach ($variation_ids as $variation_id) {
+            $variation_product = wc_get_product($variation_id);
+            if ($variation_product->get_status() !== 'publish') {
+                continue;
+            }
+
+            
+            $service_type = $variation_product->get_attribute('pa_service-type');
+
+            if (!empty($service_type) && !in_array($service_type, $serviceTypes)) {
+                $serviceTypes[] = $service_type;
+            }
+        }
 
         // Return response
-        wp_send_json_success(array(
+        wp_send_json_success([
             'message' => 'get_service_type AJAX handler executed successfully.',
             'data' => $serviceTypes,
-        ));
+        ]);
     }
+
 }
