@@ -6,7 +6,7 @@ import { createData } from "../../services/createData.js";
 import { toastNotification } from "../../utils/toastNotification.js";
 
 export default function RequestBookButton() {
-    const { selectedAddOns, productPrice, productId, selectedServiceType, mobileTravelFee } = frohubStore(); // ✅ Get mobileTravelFee from Zustand
+    const { selectedAddOns, productPrice, productId, selectedServiceType, mobileTravelFee, initialServiceDuration } = frohubStore(); // ✅ Get mobileTravelFee from Zustand
     const [totalPrice, setTotalPrice] = useState(productPrice);
     const [loading, setLoading] = useState(false);
     const [booked, setBooked] = useState(false);
@@ -49,6 +49,11 @@ export default function RequestBookButton() {
                 const hours = Math.floor(totalMinutes / 60);
                 const minutes = totalMinutes % 60;
                 setServiceDuration(`${hours}h ${minutes}m`); // ✅ Convert to hours & minutes
+            }
+            else {
+                const hours = Math.floor(initialServiceDuration / 60);
+                const minutes = initialServiceDuration % 60;
+                setServiceDuration(`${hours}h ${minutes}m`);
             }
         };
 

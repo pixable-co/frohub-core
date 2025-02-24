@@ -33,7 +33,7 @@ class GetAddons {
         $deposit_amount = 0;
 
         if ($product) {
-            $product_price = get_field('display_price', $product_id);
+            $product_price = get_field('service_price', $product_id);
             $partner_id = get_field('partner_id', $product_id);
             $deposit_amount = $product->get_regular_price();
 

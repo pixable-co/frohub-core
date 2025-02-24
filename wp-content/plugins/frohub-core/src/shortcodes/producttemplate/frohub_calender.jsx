@@ -1,10 +1,13 @@
-import { useEffect, useRef, useCallback } from "react";
+import { useEffect, useRef, useCallback, useState } from "react";
 import FhCalender from "../../common/controls/FhCalender.jsx";
 import { fetchData } from "../../services/fetchData.js";
 import frohubStore from "../../frohubStore.js";
 
 const FrohubCalender = () => {
     const productIdRef = useRef(null);
+    const [bookingNotice, setBookingNotice] = useState(null);
+    const [initialServiceDuration, setInitialServiceDuration] = useState(0); // ✅ Default value to avoid `null`
+
     const {
         availabilityData,
         setAvailabilityData,
@@ -14,7 +17,7 @@ const FrohubCalender = () => {
         setLoading,
         addonsChanged,
         setAddonsChanged,
-        resetAddonsChanged // ✅ New function to reset addonsChanged
+        resetAddonsChanged
     } = frohubStore();
 
     // ✅ Set today's date on first load
@@ -31,9 +34,10 @@ const FrohubCalender = () => {
         }
     }, []);
 
-    // ✅ Fetch availability only on first load OR when addons change
+    // ✅ Fetch availability including initial service duration
     const fetchAvailability = useCallback(async () => {
-        if (!productIdRef.current) return;
+        const productId = productIdRef.current;
+        if (!productId) return;
         if (!addonsChanged && availabilityData.length > 0) return; // ✅ Prevent unnecessary calls
 
         setLoading(true);
@@ -42,16 +46,21 @@ const FrohubCalender = () => {
             (response) => {
                 if (response.success) {
                     setAvailabilityData(response.data.availability);
+                    setBookingNotice(response.data.booking_notice);
+
+                    const duration = response.data.availability[0]['product_service_duration'];
+                    console.log("🟢 Setting initialServiceDuration:", duration);
+                    setInitialServiceDuration(duration);
                 } else {
                     console.error("Error fetching availability:", response.message);
                 }
                 setLoading(false);
             },
-            { product_id: productIdRef.current, date: selectedDate }
+            { product_id: productId, date: selectedDate }
         );
 
         resetAddonsChanged(); // ✅ Reset after fetching
-    }, [productIdRef.current, selectedDate, addonsChanged, availabilityData.length, setAvailabilityData, setLoading, resetAddonsChanged]);
+    }, [selectedDate, addonsChanged, availabilityData.length, setAvailabilityData, setLoading, resetAddonsChanged]); // ✅ Removed `productIdRef.current`
 
     useEffect(() => {
         fetchAvailability();
@@ -59,7 +68,12 @@ const FrohubCalender = () => {
 
     return (
         <div className="relative">
-            <FhCalender data={availabilityData} onDateChange={setSelectedDate} />
+            <FhCalender
+                data={availabilityData}
+                onDateChange={setSelectedDate}
+                bookingNotice={bookingNotice}
+                initialServiceDuration={initialServiceDuration} // ✅ Passed as prop
+            />
         </div>
     );
 };

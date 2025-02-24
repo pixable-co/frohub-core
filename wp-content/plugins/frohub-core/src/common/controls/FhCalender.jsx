@@ -1,16 +1,29 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import dayjs from "dayjs";
 import { Skeleton } from "antd";
 import frohubStore from "../../frohubStore.js";
 import './style.css';
 
-const FhCalender = ({ onDateChange }) => {
+const FhCalender = ({ onDateChange,bookingNotice,initialServiceDuration }) => {
     const { availabilityData, loading } = frohubStore(); // ✅ Get state from Zustand
     const [selectedDate, setSelectedDate] = useState(dayjs());
     const [selectedTime, setSelectedTime] = useState(null);
     const [selectedPrice, setSelectedPrice] = useState(0); // ✅ Track extra charge
     const [selectedDuration, setSelectedDuration] = useState(0); // ✅ Track total duration time
     const [currentMonth, setCurrentMonth] = useState(dayjs());
+
+    useEffect(() => {
+        const duration = parseInt(initialServiceDuration, 10) || 0;
+
+        if (duration > 0) {
+            const hours = Math.floor(duration / 60); // ✅ Get whole hours
+            const minutes = duration % 60; // ✅ Get remaining minutes
+            setSelectedDuration(`${hours}h ${minutes}m`);
+        } else {
+            setSelectedDuration("0h 0m"); // ✅ Default if invalid
+        }
+    }, [initialServiceDuration]); // ✅ Runs when `initialServiceDuration` updates
+
 
     // Extract unique available days from availabilityData
     const getAvailableDays = () => {
@@ -20,7 +33,14 @@ const FhCalender = ({ onDateChange }) => {
 
     const isAvailableDate = (date) => {
         const availableDays = getAvailableDays();
-        return availableDays.includes(date.format("dddd")); // Check if the day is available
+        const today = dayjs();
+
+        // const bookingNoticeDays = availabilityData?.booking_notice || 0;
+        const bookingNoticeDays = bookingNotice;
+        const noticeCutoffDate = today.add(bookingNoticeDays, "day"); // ✅ Calculate cutoff date
+
+        // ✅ Check if the day is available AND meets the booking notice requirement
+        return availableDays.includes(date.format("dddd")) && date.isAfter(noticeCutoffDate, "day");
     };
 
     const getDaysInMonth = () => {
@@ -78,14 +98,13 @@ const FhCalender = ({ onDateChange }) => {
         setCurrentMonth(currentMonth.add(direction, "month"));
     };
 
-
     const availableTimeSlots = Array.isArray(availabilityData)
         ? availabilityData
-            .filter((entry) => entry.day === selectedDate.format("dddd"))
+            .filter((entry) => entry.day === selectedDate.format("dddd") && isAvailableDate(selectedDate)) // ✅ Ensure date is valid
             .map((entry) => ({
                 time: `${entry.from} - ${entry.to}`,
                 price: Number(entry.extra_charge) || 0,
-                duration: entry.total_duration_minutes || 0, // ✅ Get total duration time
+                duration: entry.total_duration_minutes || 0,
             }))
         : [];
 

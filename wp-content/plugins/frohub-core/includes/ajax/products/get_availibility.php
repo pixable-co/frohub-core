@@ -89,6 +89,7 @@ class GetAvailibility {
         $booked_slots_timestamps = $this->convert_slots_to_timestamps($booked_slots);
 
         $final_slots = [];
+        $available_dates = [];
 
         // Generate all possible slots based on total duration
         foreach ($availability as $slot) {
@@ -115,6 +116,12 @@ class GetAvailibility {
                     'is_booked'               => false
                 ];
 
+                // Collect available dates
+                $date_available = date('Y-m-d', strtotime("next $day"));
+                if (!in_array($date_available, $available_dates)) {
+                   $available_dates[] = $date_available;
+                }
+
                 $start_time += ($total_duration_minutes * 60);
             }
         }
@@ -133,9 +140,17 @@ class GetAvailibility {
             return true;  // No overlap, keep the slot
         });
 
+        sort($available_dates);
+        $next_available_date = count($available_dates) > 0 ? $available_dates[0] : null;
+        $booking_notice = get_field('booking_notice', $product_id);
+        $booking_notice_days = is_numeric($booking_notice) ? intval($booking_notice) : 0;
+
         wp_send_json_success([
             'availability' => array_values($available_slots),
             'booked_slots' => $booked_slots,
+            'next_available_date' => $next_available_date,
+            'service_duration' => $total_duration_minutes,
+            'booking_notice'   => $booking_notice_days,
         ]);
     }
 
