@@ -88,6 +88,7 @@ export default function RequestBookButton() {
                 depositDueToday,
                 serviceFee,
                 productPrice: depositDueToday,
+                totalPrice,
                 selectedServiceType,
                 selectedDate,
                 selectedTime,
@@ -139,6 +140,8 @@ export default function RequestBookButton() {
                         style={{ minWidth: "150px", height: "40px" }}
                     >
                         {loading ? (
+                            <Spin size="small" className="mr-2" />
+                        ) : booked ? (
                             <Spin size="small" className="mr-2" />
                         ) : (
                             "Request to Book"

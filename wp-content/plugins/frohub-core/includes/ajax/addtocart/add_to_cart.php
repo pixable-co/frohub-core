@@ -41,6 +41,7 @@ class AddToCart {
             );
         }, $_POST['selectedAddOns']) : array();
         $product_price = isset($_POST['productPrice']) ? sanitize_text_field($_POST['productPrice']) : 0;
+        $total_price = isset($_POST['totalPrice']) ? sanitize_text_field($_POST['totalPrice']) : 0;
         $deposit_due = isset($_POST['depositDue']) ? sanitize_text_field($_POST['depositDue']) : 0;
         $deposit_due_today = isset($_POST['depositDueToday']) ? sanitize_text_field($_POST['depositDueToday']) : 0;
         $service_fee = isset($_POST['serviceFee']) ? sanitize_text_field($_POST['serviceFee']) : 0;
@@ -63,10 +64,10 @@ class AddToCart {
        $cart_item_key = WC()->cart->add_to_cart($product_id, 1, 0, array(), $cart_item_data);
 
         // Frohub Service Fee
-       $additional_product_id = 2600;
+       $additional_product_id = 1034;
        $base_price = $this->get_product_price($additional_product_id);
        $percentage = $base_price / 100;
-       $secondary_product_price = $product_price * $percentage;
+       $secondary_product_price = $total_price * $percentage;
 
        $secondary_cart_item_data = array(
                'custom_price' => $secondary_product_price
