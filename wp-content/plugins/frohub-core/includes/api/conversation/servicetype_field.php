@@ -13,6 +13,8 @@ class ServicetypeField {
     }
 
     public function servicetype_field_shortcode() {
+        $unique_key = 'servicetype_field' . uniqid();
+        
         ob_start();
         ?>        
         <!-- Dropdown Field -->
@@ -30,25 +32,19 @@ class ServicetypeField {
 
                 if (dropdownField && radiusField) {
                     dropdownField.addEventListener("change", function () {
-                        let naOption = radiusField.querySelector('option[value="na"]');
-
                         if (dropdownField.value === "mobile") {
-                            radiusField.value = "na"; // Set to N/A
+                            radiusField.value = "N/A"; // Reset value
                             radiusField.disabled = true; // Disable selection
                             radiusField.classList.add("field_disabled"); // Add disabled class
                         } else {
                             radiusField.disabled = false; // Enable selection
-                            naOption.disabled = true; // Make N/A unselectable
                         }
                     });
 
                     // Ensure the correct state on page load
-                    let naOption = radiusField.querySelector('option[value="na"]');
                     if (dropdownField.value === "mobile") {
-                        radiusField.value = "na";
+                        radiusField.value = "";
                         radiusField.disabled = true;
-                    } else {
-                        naOption.disabled = true; // Make N/A unselectable when not Mobile
                     }
                 }
             });

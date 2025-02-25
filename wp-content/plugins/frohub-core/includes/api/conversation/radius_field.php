@@ -13,12 +13,14 @@ class RadiusField {
     }
 
     public function radius_field_shortcode() {
+        $unique_key = 'radius_field' . uniqid();
+        
         ob_start();
         ?>
         
         <!-- Radius Selection -->
         <select id="radius_selection" name="radius_selection">
-            <option value="na">N/A</option> <!-- Fixed value to make it selectable -->
+            <option value="">N/A</option>
             <option value="">Select radius</option>
             <option value="5">5 miles</option>
             <option value="10">10 miles</option>
