@@ -28,7 +28,7 @@ class ServicetypeFilter {
             document.addEventListener("DOMContentLoaded", function () {
                 let dropdownField = document.getElementById("dropdown_field");
                 let radiusField = document.getElementById("radius_selection");
-                radiusField.value = "5";
+
 
                 if (dropdownField && radiusField) {
                     dropdownField.addEventListener("change", function () {
@@ -40,7 +40,13 @@ class ServicetypeFilter {
                             radiusField.classList.add("field_disabled"); // Add disabled class
                             naOption.style.display = "block";
 
-                        } else {
+                        } 
+                        else if(radiusField.value == "")
+                        {
+                            radiusField.value = "5"; // Set to N/A
+
+                        }
+                        else {
                             radiusField.value = "5"; // Set to N/A
                             radiusField.disabled = false; // Enable selection
                             naOption.disabled = true; // Make N/A unselectable
