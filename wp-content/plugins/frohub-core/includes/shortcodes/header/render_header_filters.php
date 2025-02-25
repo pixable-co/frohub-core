@@ -34,48 +34,95 @@ class RenderHeaderFilters {
         <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
         <script>
-        document.addEventListener("DOMContentLoaded", function () {
-        setTimeout(() => {
-        let locationInput = document.getElementById("location_selector");
-        if (!locationInput) {
-        console.error("Location input not found. Check the shortcode output.");
-        return;
-        }
+         document.addEventListener("DOMContentLoaded", function () {
+    function getQueryParam(param) {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(param) || "";
+    }
 
-        document.getElementById("search_button").addEventListener("click", function () {
+    // Auto-populate fields safely
+    let simpleText = document.getElementById("simple_text");
+    if (simpleText) simpleText.value = getQueryParam("text");
+
+    let dropdown = document.getElementById("dropdown_field");
+    if (dropdown) dropdown.value = getQueryParam("dropdown");
+
+    let category = document.getElementById("category_autocomplete");
+    if (category) category.value = getQueryParam("category");
+
+    let startDate = document.getElementById("start_date");
+    let endDate = document.getElementById("end_date");
+    let dateRange = document.getElementById("date_range");
+
+    if (startDate && endDate) {
+        startDate.value = getQueryParam("start_date") || startDate.value;
+        endDate.value = getQueryParam("end_date") || endDate.value;
+
+        if (dateRange) {
+            if(dateRange.value === "")
+            {
+            }
+            else
+            {
+            dateRange.value = `${startDate.value} to ${endDate.value}`;
+
+            }
+        }
+    }
+
+    // Initialize Flatpickr on the date range input
+    if (dateRange) {
+        flatpickr(dateRange, {
+            mode: "range",
+            dateFormat: "Y-m-d",
+            defaultDate: [startDate.value, endDate.value],
+            onClose: function(selectedDates, dateStr) {
+                if (selectedDates.length === 2) {
+                    startDate.value = selectedDates[0].toISOString().split("T")[0];
+                    endDate.value = selectedDates[1].toISOString().split("T")[0];
+                }
+            }
+        });
+    }
+    let radius = document.getElementById("radius_selection");
+    if (radius) radius.value = getQueryParam("radius");
+
+    let locationInput = document.getElementById("location_selector");
+    if (locationInput) {
+        locationInput.value = getQueryParam("location_name");
+        locationInput.setAttribute("data-lat", getQueryParam("lat"));
+        locationInput.setAttribute("data-lng", getQueryParam("lng"));
+    }
+
+    // Search Button Click Event
+    document.getElementById("search_button").addEventListener("click", function () {
         let baseUrl = "/book-black-afro-hair-stylist-beauty-appointments";
         let params = new URLSearchParams();
 
-        let simpleText = document.getElementById("simple_text")?.value.trim();
-        let dropdown = document.getElementById("dropdown_field")?.value;
-        let category = document.getElementById("category_autocomplete")?.value;
-        let startDate = document.getElementById("start_date")?.value;
-        let endDate = document.getElementById("end_date")?.value;
-        let radius = document.getElementById("radius_selection")?.value;
+        if (simpleText && simpleText.value.trim()) params.append("text", simpleText.value.trim());
+        if (dropdown && dropdown.value) params.append("dropdown", dropdown.value);
+        if (category && category.value) params.append("category", category.value);
+        if (startDate && startDate.value) params.append("start_date", startDate.value);
+        if (endDate && endDate.value) params.append("end_date", endDate.value);
+        if (radius && radius.value) params.append("radius", radius.value);
 
-        if (simpleText) params.append("text", simpleText);
-        if (dropdown) params.append("dropdown", dropdown);
-        if (category) params.append("category", category);
-        if (startDate) params.append("start_date", startDate);
-        if (endDate) params.append("end_date", endDate);
-        if (radius) params.append("radius", radius);
+        if (locationInput) {
+            let locationName = locationInput.value.trim();
+            let lat = locationInput.getAttribute("data-lat");
+            let lng = locationInput.getAttribute("data-lng");
 
-        let locationName = locationInput?.value.trim();
-        let lat = locationInput?.getAttribute("data-lat");
-        let lng = locationInput?.getAttribute("data-lng");
-
-        if (locationName) params.append("location_name", locationName);
-        if (lat) params.append("lat", lat);
-        if (lng) params.append("lng", lng);
+            if (locationName) params.append("location_name", locationName);
+            if (lat) params.append("lat", lat);
+            if (lng) params.append("lng", lng);
+        }
 
         console.log("Final Redirect URL:", baseUrl + "?" + params.toString());
 
+        // Redirect to search results page with parameters
         window.location.href = baseUrl + "?" + params.toString();
-        });
-        }, 500); // Small delay to ensure elements exist
-        });
-
-        </script>
+    });
+});
+</script>
         <?php
         return ob_get_clean();
     }
