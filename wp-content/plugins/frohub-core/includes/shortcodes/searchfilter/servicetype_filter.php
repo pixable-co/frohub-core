@@ -38,8 +38,10 @@ class ServicetypeFilter {
                             radiusField.disabled = true; // Disable selection
                             radiusField.classList.add("field_disabled"); // Add disabled class
                         } else {
+                            radiusField.value = ""; // Set to N/A
                             radiusField.disabled = false; // Enable selection
                             naOption.disabled = true; // Make N/A unselectable
+                            radiusField.classList.remove("field_disabled"); // Add disabled class
                         }
                     });
 
