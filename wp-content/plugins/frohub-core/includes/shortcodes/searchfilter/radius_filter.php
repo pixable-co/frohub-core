@@ -5,14 +5,14 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-class RadiusField {
+class RadiusFilter {
 
     public static function init() {
         $self = new self();
-        add_shortcode( 'radius_field', array($self, 'radius_field_shortcode') );
+        add_shortcode( 'radius_filter', array($self, 'radius_filter_shortcode') );
     }
 
-    public function radius_field_shortcode() {
+    public function radius_filter_shortcode() {
         ob_start();
         ?>
         

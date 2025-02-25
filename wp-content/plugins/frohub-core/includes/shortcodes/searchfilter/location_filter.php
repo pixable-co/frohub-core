@@ -5,16 +5,15 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-class LocationField {
+class LocationFilter {
 
     public static function init() {
         $self = new self();
-        add_shortcode( 'location_field', array($self, 'location_field_shortcode') );
+        add_shortcode( 'location_filter', array($self, 'location_filter_shortcode') );
     }
 
-    public function location_field_shortcode() {
-        $unique_key = 'location_field' . uniqid();
-        
+    public function location_filter_shortcode() {
+        $unique_key = 'location_filter' . uniqid();
         ob_start();
         ?>
 
@@ -67,6 +66,5 @@ class LocationField {
             });
         </script>
         <?php
-        return ob_get_clean();
-    }
+        return ob_get_clean();    }
 }

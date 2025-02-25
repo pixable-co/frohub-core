@@ -5,16 +5,15 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-class DaterangeField {
+class DaterangeFilter {
 
     public static function init() {
         $self = new self();
-        add_shortcode( 'daterange_field', array($self, 'daterange_field_shortcode') );
+        add_shortcode( 'daterange_filter', array($self, 'daterange_filter_shortcode') );
     }
 
-    public function daterange_field_shortcode() {
-        $unique_key = 'daterange_field' . uniqid();
-        
+    public function daterange_filter_shortcode() {
+        $unique_key = 'daterange_filter' . uniqid();
         ob_start();
         ?>
 
@@ -55,6 +54,5 @@ class DaterangeField {
         });
         </script>
         <?php
-        return ob_get_clean();
-    }
+        return ob_get_clean();    }
 }

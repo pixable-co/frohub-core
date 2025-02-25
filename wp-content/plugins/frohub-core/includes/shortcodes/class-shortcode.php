@@ -27,12 +27,12 @@ use FECore\DisplayExistingConversations;
 use FECore\SubmitCommentForm;
 
 // Header shortcodes
-use FECore\RenderHeaderFilters;
-use FECore\AutocompleteField;
-use FECore\ServicetypeField;
-use FECore\DaterangeField;
-use FECore\RadiusField;
-use FECore\LocationField;
+use FECore\RenderSearchFilters;
+use FECore\CategoryAutocompleteFilter;
+use FECore\ServicetypeFilter;
+use FECore\DaterangeFilter;
+use FECore\RadiusFilter;
+use FECore\LocationFilter;
 
 // Product Archive Page
 use FECore\RenderServicesGrid;
@@ -62,11 +62,12 @@ class Shortcodes {
 		RenderHeaderFilters::init();
 		SubmitCommentForm::init();
 		RenderServicesGrid::init();
-		ServicetypeField::init();
-		AutocompleteField::init();
-		DaterangeField::init();
-		RadiusField::init();
-		LocationField::init();
+		RenderSearchFilters::init();
+		ServicetypeFilter::init();
+		CategoryAutocompleteFilter::init();
+		DaterangeFilter::init();
+		RadiusFilter::init();
+		LocationFilter::init();
 		RequestBookButton::init();
 	}
 }

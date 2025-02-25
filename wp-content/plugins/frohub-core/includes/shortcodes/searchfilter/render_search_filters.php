@@ -5,25 +5,24 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-class RenderHeaderFilters {
+class RenderSearchFilters {
 
     public static function init() {
         $self = new self();
-        add_shortcode( 'render_header_filters', array($self, 'render_header_filters_shortcode') );
+        add_shortcode( 'render_search_filters', array($self, 'render_search_filters_shortcode') );
     }
 
-    public function render_header_filters_shortcode() {
-        $unique_key = 'render_header_filters' . uniqid();
-        
+    public function render_search_filters_shortcode() {
+ 
         ob_start();
         ?>
         
         <div class="custom-filters">
-            <?php echo do_shortcode('[autocomplete_field]'); ?>
-            <?php echo do_shortcode('[servicetype_field]'); ?>
-            <?php echo do_shortcode('[daterange_field]'); ?>
-            <?php echo do_shortcode('[location_field]'); ?>
-            <?php echo do_shortcode('[radius_field]'); ?>
+            <?php echo do_shortcode('[category_autocomplete_filter]'); ?>
+            <?php echo do_shortcode('[servicetype_filter]'); ?>
+            <?php echo do_shortcode('[daterange_filter]'); ?>
+            <?php echo do_shortcode('[location_filter]'); ?>
+            <?php echo do_shortcode('[radius_filter]'); ?>
 
             <!-- Submit Button -->
             <button id="search_button" class="w-btn us-btn-style_1"><p> Search </p><i class="far fa-search"></i></button>

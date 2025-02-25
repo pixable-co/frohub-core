@@ -5,14 +5,15 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-class ServicetypeField {
+class ServicetypeFilter {
 
     public static function init() {
         $self = new self();
-        add_shortcode( 'servicetype_field', array($self, 'servicetype_field_shortcode') );
+        add_shortcode( 'servicetype_filter', array($self, 'servicetype_filter_shortcode') );
     }
 
-    public function servicetype_field_shortcode() {
+    public function servicetype_filter_shortcode() {
+        $unique_key = 'servicetype_filter' . uniqid();
         ob_start();
         ?>        
         <!-- Dropdown Field -->
@@ -54,6 +55,5 @@ class ServicetypeField {
             });
         </script>
         <?php
-        return ob_get_clean();
-    }
+        return ob_get_clean();    }
 }

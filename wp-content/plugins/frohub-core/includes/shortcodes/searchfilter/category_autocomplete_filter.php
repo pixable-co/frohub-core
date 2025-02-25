@@ -5,16 +5,15 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-class AutocompleteField {
+class CategoryAutocompleteFilter {
 
     public static function init() {
         $self = new self();
-        add_shortcode( 'autocomplete_field', array($self, 'autocomplete_field_shortcode') );
+        add_shortcode( 'category_autocomplete_filter', array($self, 'category_autocomplete_filter_shortcode') );
     }
 
-    public function autocomplete_field_shortcode() {
-        $unique_key = 'autocomplete_field' . uniqid();
-        
+    public function category_autocomplete_filter_shortcode() {
+        $unique_key = 'category_autocomplete_filter' . uniqid();
         ob_start();
         ?>
     
@@ -66,5 +65,5 @@ class AutocompleteField {
         </script>
         <?php
         return ob_get_clean();
-    }
+        }
 }
