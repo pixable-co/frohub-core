@@ -26,7 +26,7 @@ class RenderHeaderFilters {
             <?php echo do_shortcode('[radius_field]'); ?>
 
             <!-- Submit Button -->
-            <button id="search_button">Search <i class="far fa-search"></i></button>
+            <button id="search_button"><p> Search </p><i class="far fa-search"></i></button>
         </div>
 
         <!-- Include Flatpickr -->
