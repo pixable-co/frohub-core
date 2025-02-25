@@ -37,11 +37,14 @@ class ServicetypeFilter {
                             radiusField.value = "na"; // Set to N/A
                             radiusField.disabled = true; // Disable selection
                             radiusField.classList.add("field_disabled"); // Add disabled class
+                            naOption.style.display = "block";
+
                         } else {
                             radiusField.value = ""; // Set to N/A
                             radiusField.disabled = false; // Enable selection
                             naOption.disabled = true; // Make N/A unselectable
                             radiusField.classList.remove("field_disabled"); // Add disabled class
+                            naOption.style.display = "none"; 
                         }
                     });
 
