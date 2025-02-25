@@ -13,13 +13,12 @@ class DaterangeFilter {
     }
 
     public function daterange_filter_shortcode() {
-        $unique_key = 'daterange_filter' . uniqid();
         ob_start();
         ?>
 
         <!-- Date Range Picker -->
         <div class="custom-date-range">
-            <input type="text" id="date_range" placeholder="Select Date Range" />
+            <input type="text" id="date_range" placeholder="Date(s)" />
             <input type="hidden" id="start_date" name="start_date">
             <input type="hidden" id="end_date" name="end_date">
         </div>

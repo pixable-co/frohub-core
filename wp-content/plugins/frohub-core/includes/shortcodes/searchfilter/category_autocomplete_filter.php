@@ -18,7 +18,7 @@ class CategoryAutocompleteFilter {
         ?>
     
         <div class="autocomplete-wrapper">
-            <input type="text" id="category_autocomplete" name="category_autocomplete" placeholder="Start typing a category..." />
+            <input type="text" id="category_autocomplete" name="category_autocomplete" placeholder="Search Treatments" />
             <span class="spinner"></span>
         </div>
 

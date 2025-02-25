@@ -13,12 +13,11 @@ class LocationFilter {
     }
 
     public function location_filter_shortcode() {
-        $unique_key = 'location_filter' . uniqid();
         ob_start();
         ?>
 
         <div class="location-input-wrapper">
-            <input type="text" id="location_selector" name="location_selector" placeholder="Enter location" 
+            <input type="text" id="location_selector" name="location_selector" placeholder="Location" 
                 data-location="" data-lat="" data-lng="" />
         </div>
 

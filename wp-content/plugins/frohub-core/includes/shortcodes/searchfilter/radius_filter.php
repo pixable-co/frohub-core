@@ -19,7 +19,6 @@ class RadiusFilter {
         <!-- Radius Selection -->
         <select id="radius_selection" name="radius_selection">
             <option value="na" class="hidden" >N/A</option> <!-- Fixed value to make it selectable -->
-            <option value="">Select radius</option>
             <option value="5">5 miles</option>
             <option value="10">10 miles</option>
             <option value="25">25 miles</option>

@@ -18,7 +18,7 @@ class ServicetypeFilter {
         ?>        
         <!-- Dropdown Field -->
         <select id="dropdown_field" name="dropdown_field">
-            <option value="">Select an option</option>
+            <option value="">Service Type</option>
             <option value="home-based">Home Based</option>
             <option value="salon-based">Salon Based</option>
             <option value="mobile">Mobile</option>
@@ -40,7 +40,7 @@ class ServicetypeFilter {
                             naOption.style.display = "block";
 
                         } else {
-                            radiusField.value = ""; // Set to N/A
+                            radiusField.value = "5"; // Set to N/A
                             radiusField.disabled = false; // Enable selection
                             naOption.disabled = true; // Make N/A unselectable
                             radiusField.classList.remove("field_disabled"); // Add disabled class
