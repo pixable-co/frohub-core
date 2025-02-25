@@ -18,7 +18,7 @@ class DaterangeFilter {
 
         <!-- Date Range Picker -->
         <div class="custom-date-range">
-            <input type="text" id="date_range" placeholder="Date(s)" />
+            <input type="text" id="date_range" placeholder="Select Date(s)" />
             <input type="hidden" id="start_date" name="start_date">
             <input type="hidden" id="end_date" name="end_date">
         </div>

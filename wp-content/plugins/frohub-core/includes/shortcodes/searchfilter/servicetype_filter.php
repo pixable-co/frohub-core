@@ -28,6 +28,7 @@ class ServicetypeFilter {
             document.addEventListener("DOMContentLoaded", function () {
                 let dropdownField = document.getElementById("dropdown_field");
                 let radiusField = document.getElementById("radius_selection");
+                radiusField.value = "5";
 
                 if (dropdownField && radiusField) {
                     dropdownField.addEventListener("change", function () {

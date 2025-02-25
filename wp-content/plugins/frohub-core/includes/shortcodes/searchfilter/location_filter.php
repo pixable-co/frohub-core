@@ -17,7 +17,7 @@ class LocationFilter {
         ?>
 
         <div class="location-input-wrapper">
-            <input type="text" id="location_selector" name="location_selector" placeholder="Location" 
+            <input type="text" id="location_selector" name="location_selector" placeholder="Select Location" 
                 data-location="" data-lat="" data-lng="" />
         </div>
 
