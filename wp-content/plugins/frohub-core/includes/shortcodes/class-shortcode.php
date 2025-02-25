@@ -30,7 +30,7 @@ use FECore\SubmitCommentForm;
 use FECore\RenderHeaderFilters;
 use FECore\AutocompleteField;
 use FECore\ServicetypeField;
-use FECore\DaterangeFilter;
+use FECore\DaterangeField;
 use FECore\RadiusField;
 use FECore\LocationField;
 
@@ -64,7 +64,7 @@ class Shortcodes {
 		RenderServicesGrid::init();
 		ServicetypeField::init();
 		AutocompleteField::init();
-		DaterangeFilter::init();
+		DaterangeField::init();
 		RadiusField::init();
 		LocationField::init();
 		RequestBookButton::init();
