@@ -35,6 +35,7 @@ class ServicetypeField {
                         if (dropdownField.value === "mobile") {
                             radiusField.value = ""; // Reset value
                             radiusField.disabled = true; // Disable selection
+                            radiusField.classList.add("field_disabled"); // Add disabled class
                         } else {
                             radiusField.disabled = false; // Enable selection
                         }
