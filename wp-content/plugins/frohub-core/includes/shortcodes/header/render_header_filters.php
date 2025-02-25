@@ -70,20 +70,6 @@ class RenderHeaderFilters {
         }
     }
 
-    // Initialize Flatpickr on the date range input
-    if (dateRange) {
-        flatpickr(dateRange, {
-            mode: "range",
-            dateFormat: "Y-m-d",
-            defaultDate: [startDate.value, endDate.value],
-            onClose: function(selectedDates, dateStr) {
-                if (selectedDates.length === 2) {
-                    startDate.value = selectedDates[0].toISOString().split("T")[0];
-                    endDate.value = selectedDates[1].toISOString().split("T")[0];
-                }
-            }
-        });
-    }
     let radius = document.getElementById("radius_selection");
     if (radius) radius.value = getQueryParam("radius");
 

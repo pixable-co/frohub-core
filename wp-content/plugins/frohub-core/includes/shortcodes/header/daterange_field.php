@@ -33,17 +33,20 @@ class DaterangeField {
         document.addEventListener("DOMContentLoaded", function() {
             flatpickr("#date_range", {
                 mode: "range",
-                dateFormat: "Y-m-d",
+                dateFormat: "d-m-Y",
+                locale: {
+                    firstDayOfWeek: 1 // Start week on Monday
+                },
                 onClose: function(selectedDates) {
                     if (selectedDates.length === 2) {
                         // Store values in hidden fields in "Y-m-d" format
                         document.getElementById("start_date").value = selectedDates[0].toISOString().split('T')[0];
                         document.getElementById("end_date").value = selectedDates[1].toISOString().split('T')[0];
 
-                        // Format the displayed value
-                        const options = { year: 'numeric', month: 'long', day: 'numeric' };
-                        let formattedStartDate = selectedDates[0].toLocaleDateString('en-US', options);
-                        let formattedEndDate = selectedDates[1].toLocaleDateString('en-US', options);
+                        // Format the displayed value as "27 Feb - 29 Feb"
+                        const options = { day: 'numeric', month: 'short' };
+                        let formattedStartDate = selectedDates[0].toLocaleDateString('en-GB', options);
+                        let formattedEndDate = selectedDates[1].toLocaleDateString('en-GB', options);
                         
                         document.getElementById("date_range").value = formattedStartDate + " - " + formattedEndDate;
                     }
