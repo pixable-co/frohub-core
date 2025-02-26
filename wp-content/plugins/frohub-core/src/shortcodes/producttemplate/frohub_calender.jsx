@@ -43,12 +43,12 @@ const FrohubCalender = () => {
         fetchData(
             "frohub/get_availibility",
             (response) => {
-                console.log("Fetch response:", response); // Debugging line
+                // console.log("Fetch response:", response); // Debugging line
                 if (response.success) {
                     setAvailabilityData(response.data.availability);
                     setBookingNotice(response.data.booking_notice);
                 } else {
-                    console.error("Error fetching availability test:", response);
+                    // console.error("Error fetching availability test:", response);
                 }
                 setLoading(false);
             },
