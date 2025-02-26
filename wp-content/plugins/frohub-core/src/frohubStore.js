@@ -1,10 +1,10 @@
 import { create } from "zustand";
-
+const today = new Date().toISOString().split("T")[0];
 const frohubStore = create((set) => ({
     // ✅ Existing states
     availabilityData: [],
     loading: false,
-    selectedDate: null,
+    selectedDate: today,
     productId: null,
     selectedAddOnId: null,
     selectedAddOns: [],
