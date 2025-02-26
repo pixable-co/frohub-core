@@ -47,7 +47,7 @@ const FrohubCalender = () => {
                     setAvailabilityData(response.data.availability);
                     setBookingNotice(response.data.booking_notice);
                 } else {
-                    console.error("Error fetching availability:", response.message);
+                    console.error("Error fetching availability:", response);
                 }
                 setLoading(false);
             },
