@@ -32,7 +32,6 @@ class GetAvailibility {
         $partner_id = get_field('partner_id', $product_id);
         $override_availibility = get_field('override_availibility', $product_id);
 
-        // Override Availability
         if (true === $override_availibility){
             $availability = get_field('availability', $product_id);
         }
