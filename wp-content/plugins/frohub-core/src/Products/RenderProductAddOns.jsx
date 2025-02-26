@@ -83,8 +83,6 @@ export default function RenderProductAddOns({ productId, setProductId, selectedA
             fetchData(
                 "frohub/get_availibility",
                 (response) => {
-                    console.log("Response Message",response.message);
-                    console.log("Response",response);
                     if (response.success) {
                         const currentAvailabilityData = frohubStore.getState().availabilityData;
                         if (JSON.stringify(currentAvailabilityData) !== JSON.stringify(response.data.availability)) {
