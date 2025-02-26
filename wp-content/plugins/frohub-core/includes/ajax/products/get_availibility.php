@@ -74,7 +74,6 @@ class GetAvailibility {
 
         // Get booked slots from WooCommerce orders
         $orders = Helper::get_orders_by_product_id_and_date($product_id, $date);
-
         $booked_slots = [];
 
         foreach ($orders as $order) {
@@ -147,15 +146,12 @@ class GetAvailibility {
         $booking_notice = get_field('booking_notice', $product_id);
         $booking_notice_days = is_numeric($booking_notice) ? intval($booking_notice) : 0;
 
-        // wp_send_json_success([
-        //     'availability' => "array_values($available_slots),
-        //     'booked_slots' => $booked_slots,
-        //     'next_available_date' => $next_available_date,
-        //     'service_duration' => $total_duration_minutes,
-        //     'booking_notice'   => $booking_notice_days,"
-        // ]);
         wp_send_json_success([
-            'availability' => "Success"
+            'availability' => array_values($available_slots),
+            'booked_slots' => $booked_slots,
+            'next_available_date' => $next_available_date,
+            'service_duration' => $total_duration_minutes,
+            'booking_notice'   => $booking_notice_days,
         ]);
     }
 
