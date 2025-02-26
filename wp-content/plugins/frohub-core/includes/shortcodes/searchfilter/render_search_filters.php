@@ -25,7 +25,7 @@ class RenderSearchFilters {
             <?php echo do_shortcode('[radius_filter]'); ?>
 
             <!-- Submit Button -->
-            <button id="search_button" class="w-btn us-btn-style_5"><i class="far fa-search"></i></button>
+            <button id="search_button" class="w-btn us-btn-style_1"><i class="far fa-search"></i></button>
         </div>
 
         <!-- Include Flatpickr -->
