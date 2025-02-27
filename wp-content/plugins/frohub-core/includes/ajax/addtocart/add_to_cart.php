@@ -175,7 +175,7 @@ class AddToCart {
             );
         }
 
-        $formatted_date = format_date($cart_item['booking_date']);
+        $formatted_date = $this->format_date($cart_item['booking_date']);
         if (isset($cart_item['booking_date']) && !empty($cart_item['booking_date'])) {
                 $item_data[] = array(
                     'name' => __('Selected Date', 'frohub'),
