@@ -171,7 +171,7 @@ class AddToCart {
         if (isset($cart_item['selected_service_type']) && ! empty($cart_item['selected_service_type'])) {
             $item_data[] = array(
                 'name' => __('Service Type', 'frohub'),
-                'value' => $cart_item['selected_service_type'],
+                'value' => ucfirst($cart_item['selected_service_type']),
             );
         }
 
