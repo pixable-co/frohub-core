@@ -10,7 +10,7 @@ use FECore\CreatePartnerPost;
 use FECore\PublishPartnerCreateProduct;
 use FECore\GetPartnerData;
 use FECore\UpdateZohoAccountId;
-use FECore\CreateProduct;
+use FECore\UpsertProduct;
 use FECore\CreateComment;
 use FECore\GetConversationsComments;
 use FECore\UnreadCount;
@@ -20,6 +20,12 @@ use FECore\ReturnPartnerFaqs;
 use FECore\ReturnSpecificPartnerAddOns;
 use FECore\ReturnAllProductTags;
 
+use FECore\Payouts;
+use FECore\MyServices;
+use FECore\ConfirmPartnerPayout;
+use FECore\ConfirmOrder;
+use FECore\RescheduleOrder;
+use FECore\UpdatePartnerStripeDetails;
 
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -37,7 +43,7 @@ class API {
 		PublishPartnerCreateProduct::init();
 		GetPartnerData::init();
 		UpdateZohoAccountId::init();
-		CreateProduct::init();
+		UpsertProduct::init();
 		CreateComment::init();
 		GetConversationsComments::init();
 		UpdateLocationData::init();
@@ -48,6 +54,15 @@ class API {
 		ReturnPartnerFaqs::init();
 		ReturnSpecificPartnerAddOns::init();
 		ReturnAllProductTags::init();
+
+
+		Payouts::init();
+		MyServices::init();
+		ConfirmPartnerPayout::init();
+		ConfirmOrder::init();
+		RescheduleOrder::init();
+		UpdatePartnerStripeDetails::init();
+	
 
 	}
 }
