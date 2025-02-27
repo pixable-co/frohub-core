@@ -25,30 +25,48 @@ class AddToCart {
         add_action('woocommerce_add_order_item_meta', array($self, 'add_order_item_meta'), 10, 2);
     }
 
-    public function add_to_cart() {
-        check_ajax_referer( 'frohub_nonce' );
+public function add_to_cart() {
+    check_ajax_referer('frohub_nonce');
 
-        // Clear the cart before adding a new product
-        WC()->cart->empty_cart();
-        // Get data from the request
-        $product_id = isset($_POST['productId']) ? sanitize_text_field($_POST['productId']) : '';
-        $selected_add_ons = isset($_POST['selectedAddOns']) ? array_map(function($add_on) {
-            return array(
-                'id' => sanitize_text_field($add_on['id']),
-                'name' => sanitize_text_field($add_on['name']),
-                'price' => sanitize_text_field($add_on['price']),
-                'duration_minutes' => sanitize_text_field($add_on['duration_minutes']),
-            );
-        }, $_POST['selectedAddOns']) : array();
-        $product_price = isset($_POST['productPrice']) ? sanitize_text_field($_POST['productPrice']) : 0;
-        $total_price = isset($_POST['totalPrice']) ? sanitize_text_field($_POST['totalPrice']) : 0;
-        $deposit_due = isset($_POST['depositDue']) ? sanitize_text_field($_POST['depositDue']) : 0;
-        $deposit_due_today = isset($_POST['depositDueToday']) ? sanitize_text_field($_POST['depositDueToday']) : 0;
-        $service_fee = isset($_POST['serviceFee']) ? sanitize_text_field($_POST['serviceFee']) : 0;
-        $selected_service_type = isset($_POST['selectedServiceType']) ? sanitize_text_field($_POST['selectedServiceType']) : '';
-        $selected_date = isset($_POST['selectedDate']) ? sanitize_text_field($_POST['selectedDate']) : '';
-        $selected_time = isset($_POST['selectedTime']) ? sanitize_text_field($_POST['selectedTime']) : '';
+    // Clear the cart before adding a new product
+    WC()->cart->empty_cart();
+    // Get data from the request
+    $product_id = isset($_POST['productId']) ? sanitize_text_field($_POST['productId']) : '';
+    $selected_add_ons = isset($_POST['selectedAddOns']) ? array_map(function($add_on) {
+        return array(
+            'id' => sanitize_text_field($add_on['id']),
+            'name' => sanitize_text_field($add_on['name']),
+            'price' => sanitize_text_field($add_on['price']),
+            'duration_minutes' => sanitize_text_field($add_on['duration_minutes']),
+        );
+    }, $_POST['selectedAddOns']) : array();
+    $product_price = isset($_POST['productPrice']) ? sanitize_text_field($_POST['productPrice']) : 0;
+    $total_price = isset($_POST['totalPrice']) ? sanitize_text_field($_POST['totalPrice']) : 0;
+    $deposit_due = isset($_POST['depositDue']) ? sanitize_text_field($_POST['depositDue']) : 0;
+    $deposit_due_today = isset($_POST['depositDueToday']) ? sanitize_text_field($_POST['depositDueToday']) : 0;
+    $service_fee = isset($_POST['serviceFee']) ? sanitize_text_field($_POST['serviceFee']) : 0;
+    $selected_service_type = isset($_POST['selectedServiceType']) ? sanitize_text_field($_POST['selectedServiceType']) : '';
+    $selected_date = isset($_POST['selectedDate']) ? sanitize_text_field($_POST['selectedDate']) : '';
+    $selected_time = isset($_POST['selectedTime']) ? sanitize_text_field($_POST['selectedTime']) : '';
 
+    // Fetch the product and find the correct variation
+    $product = wc_get_product($product_id);
+    $variation_id = 0;
+
+    if ($product && $product->is_type('variable')) {
+        $variations = $product->get_available_variations();
+
+        foreach ($variations as $variation) {
+            $variation_attributes = $variation['attributes'];
+
+            if (isset($variation_attributes['attribute_pa_service-type']) && $variation_attributes['attribute_pa_service-type'] === $selected_service_type) {
+                $variation_id = $variation['variation_id'];
+                break;
+            }
+        }
+    }
+
+    if ($variation_id) {
         // Add product to cart with custom meta
         $cart_item_data = array(
             'selected_add_ons' => $selected_add_ons,
@@ -60,20 +78,18 @@ class AddToCart {
             'booking_time' => $selected_time,
         );
 
-
-       $cart_item_key = WC()->cart->add_to_cart($product_id, 1, 0, array(), $cart_item_data);
+        $cart_item_key = WC()->cart->add_to_cart($product_id, 1, $variation_id, array(), $cart_item_data);
 
         // Frohub Service Fee
-       $additional_product_id = 2600;
-       $base_price = $this->get_product_price($additional_product_id);
-       $percentage = $base_price / 100;
-       $secondary_product_price = $total_price * $percentage;
+        $additional_product_id = 2600;
+        $base_price = $this->get_product_price($additional_product_id);
+        $percentage = $base_price / 100;
+        $secondary_product_price = $total_price * $percentage;
 
-       $secondary_cart_item_data = array(
-               'custom_price' => $secondary_product_price
-       );
+        $secondary_cart_item_data = array(
+            'custom_price' => $secondary_product_price
+        );
         $secondary_cart_item_key = WC()->cart->add_to_cart($additional_product_id, 1, 0, array(), $secondary_cart_item_data);
-
 
         if ($cart_item_key && $secondary_cart_item_key) {
             // Prepare response data
@@ -96,7 +112,11 @@ class AddToCart {
             // Send error response
             wp_send_json_error(array('message' => 'Failed to add product to cart.'));
         }
+    } else {
+        // Send error response if no matching variation is found
+        wp_send_json_error(array('message' => 'No matching variation found for the selected service type.'));
     }
+}
 
     public function format_date($date) {
         if (!$date) return ''; // Return empty string if no date
