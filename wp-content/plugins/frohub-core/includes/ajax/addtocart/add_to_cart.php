@@ -98,7 +98,7 @@ class AddToCart {
         }
     }
 
-    private function format_date($date) {
+    public function format_date($date) {
         if (!$date) return ''; // Return empty string if no date
 
         $date_obj = date_create_from_format('Y-m-d', $date);
@@ -179,7 +179,7 @@ class AddToCart {
         if (isset($cart_item['booking_date']) && !empty($cart_item['booking_date'])) {
                 $item_data[] = array(
                     'name' => __('Selected Date', 'frohub'),
-                    'value' => $cart_item['booking_date'],
+                    'value' => $formatted_date,
                 );
         }
         if (isset($cart_item['booking_time']) && !empty($cart_item['booking_time'])) { // Display time
