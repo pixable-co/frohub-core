@@ -42,7 +42,7 @@ class AddToCart {
         }, $_POST['selectedAddOns']) : array();
         $product_price = isset($_POST['productPrice']) ? sanitize_text_field($_POST['productPrice']) : 0;
         $total_price = isset($_POST['totalPrice']) ? sanitize_text_field($_POST['totalPrice']) : 0;
-        $deposit_due = isset($_POST['depositDue']) ? sanitize_text_field($_POST['depositDue']) : 0;
+        $total_due_on_day = isset($_POST['totalDueOnDay']) ? sanitize_text_field($_POST['totalDueOnDay']) : 0;
         $deposit_due_today = isset($_POST['depositDueToday']) ? sanitize_text_field($_POST['depositDueToday']) : 0;
         $service_fee = isset($_POST['serviceFee']) ? sanitize_text_field($_POST['serviceFee']) : 0;
         $selected_service_type = isset($_POST['selectedServiceType']) ? sanitize_text_field($_POST['selectedServiceType']) : '';
@@ -53,27 +53,25 @@ class AddToCart {
         $cart_item_data = array(
             'selected_add_ons' => $selected_add_ons,
             'custom_price' => $product_price,
-            'deposit_due' => $deposit_due,
+            'total_due_on_day' => $total_due_on_day,
             'service_fee' => $service_fee,
-            'selected_service_type' => $selected_service_type, // Add service type to cart item data
+            'selected_service_type' => $selected_service_type,
             'booking_date' => $selected_date,
             'booking_time' => $selected_time,
         );
 
-
-       $cart_item_key = WC()->cart->add_to_cart($product_id, 1, 0, array(), $cart_item_data);
+        $cart_item_key = WC()->cart->add_to_cart($product_id, 1, 0, array(), $cart_item_data);
 
         // Frohub Service Fee
-       $additional_product_id = 2600;
-       $base_price = $this->get_product_price($additional_product_id);
-       $percentage = $base_price / 100;
-       $secondary_product_price = $total_price * $percentage;
+        $additional_product_id = 2600;
+        $base_price = $this->get_product_price($additional_product_id);
+        $percentage = $base_price / 100;
+        $secondary_product_price = $total_price * $percentage;
 
-       $secondary_cart_item_data = array(
-               'custom_price' => $secondary_product_price
-       );
+        $secondary_cart_item_data = array(
+            'custom_price' => $secondary_product_price
+        );
         $secondary_cart_item_key = WC()->cart->add_to_cart($additional_product_id, 1, 0, array(), $secondary_cart_item_data);
-
 
         if ($cart_item_key && $secondary_cart_item_key) {
             // Prepare response data
@@ -82,7 +80,7 @@ class AddToCart {
                 'product_id' => $product_id,
                 'selected_add_ons' => $selected_add_ons,
                 'product_price' => $product_price,
-                'deposit_due' => $deposit_due,
+                'total_due_on_day' => $total_due_on_day,
                 'service_fee' => $service_fee,
                 'selected_service_type' => $selected_service_type,
                 'booking_date' => $selected_date,
@@ -104,7 +102,6 @@ class AddToCart {
     }
 
     public function apply_custom_price($cart_item) {
-        // Apply custom price to cart item
         if (isset($cart_item['custom_price'])) {
             $cart_item['data']->set_price($cart_item['custom_price']);
             $cart_item['data']->set_regular_price($cart_item['custom_price']);
@@ -114,54 +111,50 @@ class AddToCart {
     }
 
     public function get_cart_item_from_session($cart_item, $values) {
-        // Restore custom price from session
         if (isset($values['custom_price'])) {
             $cart_item['custom_price'] = $values['custom_price'];
             $cart_item['data']->set_price($values['custom_price']);
             $cart_item['data']->set_regular_price($values['custom_price']);
             $cart_item['data']->set_sale_price('');
         }
-        // Restore selected add-ons from session
         if (isset($values['selected_add_ons'])) {
             $cart_item['selected_add_ons'] = $values['selected_add_ons'];
         }
-        // Restore selected service type from session
         if (isset($values['selected_service_type'])) {
             $cart_item['selected_service_type'] = $values['selected_service_type'];
         }
-        if (isset($values['booking_date'])) { // Restore date
-                $cart_item['booking_date'] = $values['booking_date'];
+        if (isset($values['booking_date'])) {
+            $cart_item['booking_date'] = $values['booking_date'];
         }
-        if (isset($values['booking_time'])) { // Restore time
+        if (isset($values['booking_time'])) {
             $cart_item['booking_time'] = $values['booking_time'];
+        }
+        if (isset($values['total_due_on_day'])) {
+            $cart_item['total_due_on_day'] = $values['total_due_on_day'];
         }
         return $cart_item;
     }
 
     public function display_selected_add_ons($item_data, $cart_item) {
-        // Display selected add-ons in cart and checkout
-        if (isset($cart_item['selected_add_ons']) && ! empty($cart_item['selected_add_ons'])) {
+        if (isset($cart_item['selected_add_ons']) && !empty($cart_item['selected_add_ons'])) {
             $add_ons = array_map(function($add_on) {
                 return $add_on['name'];
             }, $cart_item['selected_add_ons']);
-            
-            // Convert array to comma-separated string
-            $add_ons_string = implode(', ', $add_ons);
+
             $item_data[] = array(
                 'name' => __('Selected Add-Ons', 'frohub'),
-                'value' => $add_ons_string,
+                'value' => implode(', ', $add_ons),
             );
         }
 
-        if (isset($cart_item['deposit_due']) && !empty($cart_item['deposit_due'])) {
-                $item_data[] = array(
-                    'name' => __('Deposit Due', 'frohub'),
-                    'value' => '£' . number_format($cart_item['deposit_due'], 2),
-                );
+        if (isset($cart_item['total_due_on_day']) && !empty($cart_item['total_due_on_day'])) {
+            $item_data[] = array(
+                'name' => __('Total Due on Day', 'frohub'),
+                'value' => '£' . number_format($cart_item['total_due_on_day'], 2),
+            );
         }
 
-        // Display selected service type in cart and checkout
-        if (isset($cart_item['selected_service_type']) && ! empty($cart_item['selected_service_type'])) {
+        if (isset($cart_item['selected_service_type']) && !empty($cart_item['selected_service_type'])) {
             $item_data[] = array(
                 'name' => __('Service Type', 'frohub'),
                 'value' => $cart_item['selected_service_type'],
@@ -169,24 +162,21 @@ class AddToCart {
         }
 
         if (isset($cart_item['booking_date']) && !empty($cart_item['booking_date'])) {
-                $item_data[] = array(
-                    'name' => __('Selected Date', 'frohub'),
-                    'value' => $cart_item['booking_date'],
-                );
+            $item_data[] = array(
+                'name' => __('Selected Date', 'frohub'),
+                'value' => $cart_item['booking_date'],
+            );
         }
-        if (isset($cart_item['booking_time']) && !empty($cart_item['booking_time'])) { // Display time
-                $item_data[] = array(
-                    'name' => __('Selected Time', 'frohub'),
-                    'value' => $cart_item['booking_time'],
-                );
+        if (isset($cart_item['booking_time']) && !empty($cart_item['booking_time'])) {
+            $item_data[] = array(
+                'name' => __('Selected Time', 'frohub'),
+                'value' => $cart_item['booking_time'],
+            );
         }
         return $item_data;
     }
 
     public function add_order_item_meta($item_id, $values) {
-        $order_id = wc_get_order_id_by_order_item_id($item_id); // Get the Order ID from item ID
-
-        // Save selected add-ons to order meta
         if (isset($values['selected_add_ons'])) {
             $add_ons = array_map(function($add_on) {
                 return $add_on['name'];
@@ -194,23 +184,8 @@ class AddToCart {
             wc_add_order_item_meta($item_id, 'Selected Add-Ons', implode(', ', $add_ons));
         }
 
-        if (isset($values['deposit_due'])) {
-            wc_add_order_item_meta($item_id, 'Total due on day', $values['deposit_due']);
-        }
-
-        if (isset($values['service_fee'])) {
-            wc_add_order_item_meta($order_id, '_frohub_service_fee', number_format($values['service_fee'], 2)); // ✅ Save service fee as hidden order meta
-        }
-
-        // Save selected service type to order meta
-        if (isset($values['selected_service_type'])) {
-            wc_add_order_item_meta($item_id, 'Service Type', $values['selected_service_type']);
-        }
-        if (isset($values['booking_date'])) { // Save date
-                wc_add_order_item_meta($item_id, 'Selected Date', $values['booking_date']);
-        }
-        if (isset($values['booking_time'])) { // Save time
-               wc_add_order_item_meta($item_id, 'Selected Time', $values['booking_time']);
+        if (isset($values['total_due_on_day'])) {
+            wc_add_order_item_meta($item_id, 'Total Due on Day', $values['total_due_on_day']);
         }
     }
 }
