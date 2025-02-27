@@ -98,13 +98,11 @@ class AddToCart {
         }
     }
 
-    }
-
     private function format_date($date) {
         if (!$date) return ''; // Return empty string if no date
 
         $date_obj = date_create_from_format('Y-m-d', $date);
-        return $date_obj ? date_format($date_obj, 'jS F Y') : $date; // Return formatted date or original if parsing fails
+        return $date_obj ? date_format($date_obj, 'jS F Y') : $date; // Convert to readable format for frontend
     }
 
     private function get_product_price($product_id) {
@@ -177,11 +175,11 @@ class AddToCart {
             );
         }
 
-        $formatted_date = $this->format_date($cart_item['booking_date']); // Convert only for display
+        $formatted_date = format_date($cart_item['booking_date']);
         if (isset($cart_item['booking_date']) && !empty($cart_item['booking_date'])) {
                 $item_data[] = array(
                     'name' => __('Selected Date', 'frohub'),
-                    'value' => $formatted_date,
+                    'value' => $cart_item['booking_date'],
                 );
         }
         if (isset($cart_item['booking_time']) && !empty($cart_item['booking_time'])) { // Display time
@@ -223,10 +221,4 @@ class AddToCart {
                wc_add_order_item_meta($item_id, 'Selected Time', $values['booking_time']);
         }
     }
-
-    private function format_date($date) {
-        if (!$date) return ''; // Return empty string if no date
-
-        $date_obj = date_create_from_format('Y-m-d', $date);
-        return $date_obj ? date_format($date_obj, 'jS F Y') : $date; // Return formatted date or original if parsing fails
 }
