@@ -178,13 +178,13 @@ class AddToCart {
         $formatted_date = $this->format_date($cart_item['booking_date']);
         if (isset($cart_item['booking_date']) && !empty($cart_item['booking_date'])) {
                 $item_data[] = array(
-                    'name' => __('Selected Date', 'frohub'),
+                    'name' => __('Requested Date', 'frohub'),
                     'value' => $formatted_date,
                 );
         }
         if (isset($cart_item['booking_time']) && !empty($cart_item['booking_time'])) { // Display time
                 $item_data[] = array(
-                    'name' => __('Selected Time', 'frohub'),
+                    'name' => __('Requested Time', 'frohub'),
                     'value' => $cart_item['booking_time'],
                 );
         }
