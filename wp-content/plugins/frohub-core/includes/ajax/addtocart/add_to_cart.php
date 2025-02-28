@@ -229,8 +229,8 @@ public function add_to_cart() {
     }
 
     public function add_order_item_meta($item_id, $values) {
-        $order_id = wc_get_order_id_by_order_item_id($item_id); // Get the Order ID from item ID
-
+        $order_id = wc_get_order_id_by_order_item_id($item_id);
+    
         // Save selected add-ons to order meta
         if (isset($values['selected_add_ons'])) {
             $add_ons = array_map(function($add_on) {
@@ -238,32 +238,34 @@ public function add_to_cart() {
             }, $values['selected_add_ons']);
             wc_add_order_item_meta($item_id, 'Selected Add-Ons', implode(', ', $add_ons));
         }
-
+    
         if (isset($values['deposit_due'])) {
             wc_add_order_item_meta($item_id, 'Total due on day', $values['deposit_due']);
         }
-
+    
         if (isset($values['service_fee'])) {
-            wc_add_order_item_meta($order_id, '_frohub_service_fee', number_format($values['service_fee'], 2)); // ✅ Save service fee as hidden order meta
+            wc_add_order_item_meta($order_id, '_frohub_service_fee', number_format($values['service_fee'], 2));
         }
-
-        // Save selected service type to order meta
-        if (isset($values['selected_service_type'])) {
+    
+        // ✅ Prevent duplication of Service Type
+        if (isset($values['selected_service_type']) && !metadata_exists('woocommerce_order_item', $item_id, 'Service Type')) {
             wc_add_order_item_meta($item_id, 'Service Type', $values['selected_service_type']);
         }
-        if (isset($values['booking_date'])) { // Save date
-                wc_add_order_item_meta($item_id, 'Selected Date', $values['booking_date']);
+    
+        if (isset($values['booking_date'])) {
+            wc_add_order_item_meta($item_id, 'Selected Date', $values['booking_date']);
         }
-        if (isset($values['booking_time'])) { // Save time
-               wc_add_order_item_meta($item_id, 'Selected Time', $values['booking_time']);
+        if (isset($values['booking_time'])) {
+            wc_add_order_item_meta($item_id, 'Selected Time', $values['booking_time']);
         }
-
+    
         // Save Size & Length as hidden order meta (admin-only)
         if (isset($values['size']) && !empty($values['size'])) {
-            wc_add_order_item_meta($item_id, 'Size', $values['size']);
+            wc_add_order_item_meta($item_id, '_Size', $values['size']);
         }
         if (isset($values['length']) && !empty($values['length'])) {
-            wc_add_order_item_meta($item_id, 'Length', $values['length']);
+            wc_add_order_item_meta($item_id, '_Length', $values['length']);
         }
     }
+    
 }
