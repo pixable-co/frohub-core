@@ -22,7 +22,6 @@ use FECore\ReturnAllProductTags;
 
 use FECore\Payouts;
 use FECore\MyServices;
-use FECore\ConfirmPartnerPayout;
 use FECore\ConfirmOrder;
 use FECore\RescheduleOrder;
 use FECore\UpdatePartnerStripeDetails;
@@ -59,7 +58,6 @@ class API {
 
 		Payouts::init();
 		MyServices::init();
-		ConfirmPartnerPayout::init();
 		ConfirmOrder::init();
 		RescheduleOrder::init();
 		UpdatePartnerStripeDetails::init();
