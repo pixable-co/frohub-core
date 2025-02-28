@@ -232,6 +232,7 @@ public function add_to_cart() {
         $order_id = wc_get_order_id_by_order_item_id($item_id);
     
         // Save selected add-ons to order meta
+        // *NOTE SERVICE TYPE NOT ADDED AS IT'S PART OF A VARIATION PRODUCT SO IT'S ADDED AUTOMATICALLY*
         if (isset($values['selected_add_ons'])) {
             $add_ons = array_map(function($add_on) {
                 return $add_on['name'];
