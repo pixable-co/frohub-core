@@ -26,6 +26,7 @@ use FECore\ConfirmPartnerPayout;
 use FECore\ConfirmOrder;
 use FECore\RescheduleOrder;
 use FECore\UpdatePartnerStripeDetails;
+use FECore\StripeAccount;
 
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -62,6 +63,7 @@ class API {
 		ConfirmOrder::init();
 		RescheduleOrder::init();
 		UpdatePartnerStripeDetails::init();
+		StripeAccount::init();
 	
 
 	}
