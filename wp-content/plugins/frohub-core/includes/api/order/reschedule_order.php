@@ -108,45 +108,23 @@ class RescheduleOrder {
             ], 400);
         }
 
-        // Update meta data
-        wc_update_order_item_meta($item_id, 'Selected Date', $date);
-        wc_update_order_item_meta($item_id, 'Selected Time', $start_time . ' - ' . $end_time);
+        // Set Proposed Start and End Date Time without modifying existing fields
+        wc_update_order_item_meta($item_id, 'Proposed Start Date Time', $date . ' ' . $start_time);
+        wc_update_order_item_meta($item_id, 'Proposed End Date Time', $date . ' ' . $end_time);
 
         // Fetch updated values correctly
-        $selected_date = wc_get_order_item_meta($item_id, 'Selected Date', true);
-        $selected_time = wc_get_order_item_meta($item_id, 'Selected Time', true);
+        $proposed_start_datetime = wc_get_order_item_meta($item_id, 'Proposed Start Date Time', true);
+        $proposed_end_datetime = wc_get_order_item_meta($item_id, 'Proposed End Date Time', true);
 
-        if (!$selected_date || !$selected_time) {
+        if (!$proposed_start_datetime || !$proposed_end_datetime) {
             return new \WP_REST_Response([
                 'success' => false,
-                'message' => 'Failed to retrieve updated booking details.',
+                'message' => 'Failed to retrieve updated proposed booking details.',
             ], 500);
         }
 
-        // Extract start and end time safely
-        $time_parts = explode(' - ', $selected_time);
-        $start_time = $time_parts[0] ?? '';
-        $end_time   = $time_parts[1] ?? '';
-
-        if (!$start_time || !$end_time) {
-            return new \WP_REST_Response([
-                'success' => false,
-                'message' => 'Invalid time format. Expected "HH:MM - HH:MM".',
-            ], 400);
-        }
-
-        // Format the date-time values for ACF (if needed)
-        $appointment_start = $selected_date . ' ' . $start_time;
-        $appointment_end = $selected_date . ' ' . $end_time;
-
-        // Check if ACF is active before updating fields
-        if (function_exists('update_field')) {
-            update_field('appointment_start', $appointment_start, $order_id);
-            update_field('appointment_end', $appointment_end, $order_id);
-        }
-
         // Update order status to "rescheduling"
-        $order->update_status('wc-rescheduling', 'Order rescheduled via API.');
+        $order->update_status('wc-rescheduling', 'Order rescheduled with proposed times via API.');
 
         // Save changes
         $order->save();
@@ -154,7 +132,9 @@ class RescheduleOrder {
         // Return a success response
         return new \WP_REST_Response([
             'success' => true,
-            'message' => "Order #$order_id rescheduled to $selected_date from $start_time to $end_time.",
+            'message' => "Order #$order_id rescheduled with proposed times: $proposed_start_datetime to $proposed_end_datetime.",
+            'proposed_start_datetime' => $proposed_start_datetime,
+            'proposed_end_datetime' => $proposed_end_datetime,
         ], 200);
     }
 }
