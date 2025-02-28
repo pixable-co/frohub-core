@@ -204,14 +204,6 @@ public function add_to_cart() {
                 );
         }
 
-        // Display selected service type in cart and checkout
-        if (isset($cart_item['selected_service_type']) && ! empty($cart_item['selected_service_type'])) {
-            $item_data[] = array(
-                'name' => __('Service Type', 'frohub'),
-                'value' => ucfirst($cart_item['selected_service_type']),
-            );
-        }
-
         $formatted_date = $this->format_date($cart_item['booking_date']);
         if (isset($cart_item['booking_date']) && !empty($cart_item['booking_date'])) {
                 $item_data[] = array(
