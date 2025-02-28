@@ -255,7 +255,7 @@ public function add_to_cart() {
             }
     
             // Convert to DateTime
-            $start_datetime = DateTime::createFromFormat('H:i Y-m-d', $start_time . ' ' . $selected_date);
+            $start_datetime = \DateTime::createFromFormat('H:i Y-m-d', $start_time . ' ' . $selected_date);
     
             if ($start_datetime) {
                 // Calculate duration
@@ -270,8 +270,8 @@ public function add_to_cart() {
     
                 // If no add-ons, use default duration from input time range
                 if ($duration_minutes == 0) {
-                    $start_time_obj = DateTime::createFromFormat('H:i', $start_time);
-                    $end_time_obj = DateTime::createFromFormat('H:i', trim($end_time));
+                    $start_time_obj = \DateTime::createFromFormat('H:i', $start_time);
+                    $end_time_obj = \DateTime::createFromFormat('H:i', trim($end_time));
     
                     if ($start_time_obj && $end_time_obj) {
                         $duration_minutes = ($end_time_obj->getTimestamp() - $start_time_obj->getTimestamp()) / 60;
