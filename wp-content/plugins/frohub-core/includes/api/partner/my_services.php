@@ -171,6 +171,3 @@ class MyServices {
         ], 200);
     }
 }
-
-// Initialize the class
-MyServices::init();

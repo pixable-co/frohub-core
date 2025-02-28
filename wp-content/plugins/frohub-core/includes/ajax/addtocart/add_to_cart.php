@@ -49,6 +49,7 @@ public function add_to_cart() {
     $selected_date = isset($_POST['selectedDate']) ? sanitize_text_field($_POST['selectedDate']) : '';
     $selected_time = isset($_POST['selectedTime']) ? sanitize_text_field($_POST['selectedTime']) : '';
 
+
     // Fetch the product and find the correct variation
     $product = wc_get_product($product_id);
     $variation_id = 0;

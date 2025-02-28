@@ -158,6 +158,3 @@ class RescheduleOrder {
         ], 200);
     }
 }
-
-// Initialize the class
-RescheduleOrder::init();

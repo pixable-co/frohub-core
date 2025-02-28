@@ -81,6 +81,3 @@ class ConfirmOrder {
         ], 200);
     }
 }
-
-// Initialize the class
-ConfirmOrder::init();
