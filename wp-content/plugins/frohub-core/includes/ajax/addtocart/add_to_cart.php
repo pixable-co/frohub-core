@@ -236,11 +236,6 @@ public function add_to_cart() {
             wc_add_order_item_meta($item_id, 'Total Due on the Day', '£' . number_format((float)$values['deposit_due'], 2));
         }
     
-        // Save "Service Type"
-        if (!empty($values['selected_service_type'])) {
-            wc_add_order_item_meta($item_id, 'Service Type', ucfirst($values['selected_service_type']));
-        }
-    
         // Ensure "Selected Date" and "Selected Time" exist
         if (!empty($values['booking_date']) && !empty($values['booking_time'])) {
             $selected_date = $values['booking_date'];
