@@ -53,8 +53,14 @@ public function add_to_cart() {
     // Fetch the product and find the correct variation
     $product = wc_get_product($product_id);
     $variation_id = 0;
+    $pa_size = '';
+    $pa_length = '';
 
     if ($product && $product->is_type('variable')) {
+        // ✅ Fetch `pa_size` and `pa_length` from the **parent product** (not variation)
+        $pa_size = $product->get_attribute('pa_size');
+        $pa_length = $product->get_attribute('pa_length');
+
         $variations = $product->get_available_variations();
 
         foreach ($variations as $variation) {
@@ -77,6 +83,8 @@ public function add_to_cart() {
             'selected_service_type' => $selected_service_type, // Add service type to cart item data
             'booking_date' => $selected_date,
             'booking_time' => $selected_time,
+            'size' => $pa_size,
+            'length' => $pa_length,
         );
 
         $cart_item_key = WC()->cart->add_to_cart($product_id, 1, $variation_id, array(), $cart_item_data);
@@ -105,6 +113,8 @@ public function add_to_cart() {
                 'booking_date' => $selected_date,
                 'booking_time' => $selected_time,
                 'secondary_product_price' => $secondary_product_price,
+                'size' => $pa_size,
+                'length' => $pa_length,
             );
 
             // Send success response
@@ -162,6 +172,12 @@ public function add_to_cart() {
         }
         if (isset($values['booking_time'])) { // Restore time
             $cart_item['booking_time'] = $values['booking_time'];
+        }
+        if (isset($values['size'])) {
+            $cart_item['size'] = $values['size'];
+        }
+        if (isset($values['length'])) {
+            $cart_item['length'] = $values['length'];
         }
         return $cart_item;
     }
@@ -240,6 +256,14 @@ public function add_to_cart() {
         }
         if (isset($values['booking_time'])) { // Save time
                wc_add_order_item_meta($item_id, 'Selected Time', $values['booking_time']);
+        }
+
+        // Save Size & Length as hidden order meta (admin-only)
+        if (isset($values['size']) && !empty($values['size'])) {
+            wc_add_order_item_meta($item_id, '_Size', $values['size']);
+        }
+        if (isset($values['length']) && !empty($values['length'])) {
+            wc_add_order_item_meta($item_id, '_Length', $values['length']);
         }
     }
 }
