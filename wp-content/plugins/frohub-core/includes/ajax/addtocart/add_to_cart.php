@@ -240,6 +240,10 @@ public function add_to_cart() {
         if (!empty($values['booking_date']) && !empty($values['booking_time'])) {
             $selected_date = $values['booking_date'];
             $selected_time = $values['booking_time'];
+
+            if (isset($values['booking_time'])) {
+                wc_add_order_item_meta($item_id, 'Selected Time', $values['booking_time']);
+            }
     
             // Validate and split time
             if (strpos($selected_time, ' - ') !== false) {
