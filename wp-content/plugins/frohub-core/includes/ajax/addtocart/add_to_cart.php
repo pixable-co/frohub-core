@@ -231,37 +231,83 @@ public function add_to_cart() {
     public function add_order_item_meta($item_id, $values) {
         $order_id = wc_get_order_id_by_order_item_id($item_id);
     
-        // Save selected add-ons to order meta
-        // *NOTE SERVICE TYPE NOT ADDED AS IT'S PART OF A VARIATION PRODUCT SO IT'S ADDED AUTOMATICALLY*
-        if (isset($values['selected_add_ons'])) {
-            $add_ons = array_map(function($add_on) {
-                return $add_on['name'];
-            }, $values['selected_add_ons']);
-            wc_add_order_item_meta($item_id, 'Selected Add-Ons', implode(', ', $add_ons));
-        }
-    
+        // Save "Total Due on the Day" with 2 decimal places
         if (isset($values['deposit_due'])) {
-            wc_add_order_item_meta($item_id, 'Total due on day', $values['deposit_due']);
+            wc_add_order_item_meta($item_id, 'Total Due on the Day', '£' . number_format((float)$values['deposit_due'], 2));
         }
     
-        if (isset($values['service_fee'])) {
-            wc_add_order_item_meta($order_id, '_frohub_service_fee', number_format($values['service_fee'], 2));
+        // Save "Service Type"
+        if (!empty($values['selected_service_type'])) {
+            wc_add_order_item_meta($item_id, 'Service Type', ucfirst($values['selected_service_type']));
         }
     
-        if (isset($values['booking_date'])) {
-            wc_add_order_item_meta($item_id, 'Selected Date', $values['booking_date']);
-        }
-        if (isset($values['booking_time'])) {
-            wc_add_order_item_meta($item_id, 'Selected Time', $values['booking_time']);
+        // Ensure "Selected Date" and "Selected Time" exist
+        if (!empty($values['booking_date']) && !empty($values['booking_time'])) {
+            $selected_date = $values['booking_date'];
+            $selected_time = $values['booking_time'];
+    
+            // Validate and split time
+            if (strpos($selected_time, ' - ') !== false) {
+                list($start_time, $end_time) = explode(' - ', $selected_time);
+                $start_time = trim($start_time);
+            } else {
+                return; // Invalid time format, don't save
+            }
+    
+            // Convert to DateTime
+            $start_datetime = DateTime::createFromFormat('H:i Y-m-d', $start_time . ' ' . $selected_date);
+    
+            if ($start_datetime) {
+                // Calculate duration
+                $duration_minutes = 0;
+                if (!empty($values['selected_add_ons'])) {
+                    foreach ($values['selected_add_ons'] as $add_on) {
+                        if (!empty($add_on['duration_minutes'])) {
+                            $duration_minutes += (int)$add_on['duration_minutes'];
+                        }
+                    }
+                }
+    
+                // If no add-ons, use default duration from input time range
+                if ($duration_minutes == 0) {
+                    $start_time_obj = DateTime::createFromFormat('H:i', $start_time);
+                    $end_time_obj = DateTime::createFromFormat('H:i', trim($end_time));
+    
+                    if ($start_time_obj && $end_time_obj) {
+                        $duration_minutes = ($end_time_obj->getTimestamp() - $start_time_obj->getTimestamp()) / 60;
+                    } else {
+                        return; // Invalid start/end time, don't save
+                    }
+                }
+    
+                // Compute "End Date Time"
+                $end_datetime = clone $start_datetime;
+                $end_datetime->modify("+{$duration_minutes} minutes");
+    
+                // Format output
+                $start_formatted = $start_datetime->format('H:i, d M Y');
+                $end_formatted = $end_datetime->format('H:i, d M Y');
+    
+                // Save "Start Date Time" and "End Date Time"
+                wc_add_order_item_meta($item_id, 'Start Date Time', $start_formatted);
+                wc_add_order_item_meta($item_id, 'End Date Time', $end_formatted);
+    
+                // Format "Duration"
+                $hours = floor($duration_minutes / 60);
+                $minutes = $duration_minutes % 60;
+                $duration_string = ($hours > 0 ? "{$hours} hrs " : '') . ($minutes > 0 ? "{$minutes} mins" : '');
+                wc_add_order_item_meta($item_id, 'Duration', trim($duration_string));
+            }
         }
     
-        // Save Size & Length as hidden order meta (admin-only)
-        if (isset($values['size']) && !empty($values['size'])) {
-            wc_add_order_item_meta($item_id, 'Size', $values['size']);
+        // Save "Size" & "Length" if available
+        if (!empty($values['size'])) {
+            wc_add_order_item_meta($item_id, 'Size', ucfirst($values['size']));
         }
-        if (isset($values['length']) && !empty($values['length'])) {
-            wc_add_order_item_meta($item_id, 'Length', $values['length']);
+        if (!empty($values['length'])) {
+            wc_add_order_item_meta($item_id, 'Length', ucfirst($values['length']));
         }
     }
+    
     
 }
