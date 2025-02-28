@@ -109,8 +109,13 @@ class RescheduleOrder {
         }
 
         // Set Proposed Start and End Date Time without modifying existing fields
-        wc_update_order_item_meta($item_id, 'Proposed Start Date Time', $date . ' ' . $start_time);
-        wc_update_order_item_meta($item_id, 'Proposed End Date Time', $date . ' ' . $end_time);
+        // Convert proposed start and end date-time to the correct format
+        $formatted_proposed_start_datetime = date('H:i, d M Y', strtotime($date . ' ' . $start_time));
+        $formatted_proposed_end_datetime = date('H:i, d M Y', strtotime($date . ' ' . $end_time));
+
+        // Store the formatted proposed start and end times in order meta
+        wc_update_order_item_meta($item_id, 'Proposed Start Date Time', $formatted_proposed_start_datetime);
+        wc_update_order_item_meta($item_id, 'Proposed End Date Time', $formatted_proposed_end_datetime);
 
         // Fetch updated values correctly
         $proposed_start_datetime = wc_get_order_item_meta($item_id, 'Proposed Start Date Time', true);
