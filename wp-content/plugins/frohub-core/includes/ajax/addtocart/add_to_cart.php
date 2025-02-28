@@ -260,10 +260,10 @@ public function add_to_cart() {
 
         // Save Size & Length as hidden order meta (admin-only)
         if (isset($values['size']) && !empty($values['size'])) {
-            wc_add_order_item_meta($item_id, '_Size', $values['size']);
+            wc_add_order_item_meta($item_id, 'Size', $values['size']);
         }
         if (isset($values['length']) && !empty($values['length'])) {
-            wc_add_order_item_meta($item_id, '_Length', $values['length']);
+            wc_add_order_item_meta($item_id, 'Length', $values['length']);
         }
     }
 }
