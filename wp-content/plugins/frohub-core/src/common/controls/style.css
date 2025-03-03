@@ -101,3 +101,7 @@
     color: #6b7280;
     margin-top: 1rem;
 }
+
+.fhcheck-selected {
+    background-color: #F1F3F4;
+}
