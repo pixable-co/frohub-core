@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { CheckCircle, XCircle } from "lucide-react";
+import { CheckCircle, XCircle, RefreshCw } from "lucide-react";
 import { Skeleton } from "antd";
 import frohubStore from "../frohubStore.js";
 import { getLocationDataFromCookie } from "../utils/locationUtils.js"; // Import the cookie function
@@ -314,6 +314,23 @@ export default function MobileService({ partnerId }) {
                 <p className="!mt-4 text-lg font-semibold">
                     Mobile Travel Fee: <span className="text-gray-900">+£{travelFee.toFixed(2)}</span>
                 </p>
+            )}
+            {/* Reset Button to clear location cookie */}
+            {staticLocation && (
+                <button
+                    onClick={() => {
+                        // Clear the location cookie
+                        document.cookie = "frohub_location=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                        // Reset the state
+                        setStaticLocation(null);
+                        setTravelFee(null);
+                        setIsValid(false);
+                    }}
+                    className="flex items-center gap-1 text-sm text-red-600 hover:text-red-800 mt-2"
+                >
+                    <RefreshCw className="w-4 h-4" />
+                    Reset Location
+                </button>
             )}
         </div>
     );
