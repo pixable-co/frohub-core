@@ -3,12 +3,16 @@ import { Skeleton } from "antd";
 import { Home, Building, Car } from "lucide-react";
 
 const iconMap = {
-    home: <Home size={48} className="text-gray-500" />,
-    salon: <Building size={48} className="text-gray-500" />,
-    mobile: <Car size={48} className="text-gray-500" />,
+    // home: <Home size={48} className="text-gray-500" />,
+    // salon: <Building size={48} className="text-gray-500" />,
+    // mobile: <Car size={48} className="text-gray-500" />,
+
+    home: <i className="fas fa-home text-[32px]"></i>,
+    salon: <i className="fas fa-chair-office text-[32px]"></i>,
+    mobile: <i className="fas fa-car-side text-[32px]"></i>,
 };
 
-const FhServiceButton = ({ service, selectedService, handleSelectService, loading }) => {
+const FhServiceButton = ({service, selectedService, handleSelectService, loading }) => {
     if (loading) {
         return (
             <div className="flex items-center justify-between gap-[1rem] w-full p-1 border border-gray-200 rounded-lg">
@@ -44,8 +48,8 @@ const FhServiceButton = ({ service, selectedService, handleSelectService, loadin
             />
 
             {/* Label for Selection */}
-            <label className="flex justify-between items-center gap-[1rem] cursor-pointer w-full h-full p-1 rounded-lg transition-all duration-200">
-                {iconMap[lowerCaseService] || <Home size={48} className="text-gray-500" />}
+            <label className="flex items-center gap-[1rem] cursor-pointer w-full h-full p-1 rounded-lg transition-all duration-200">
+                {iconMap[lowerCaseService] || <i className="fas fa-home text-[32px]"></i>}
                 <div className="flex flex-col">
                     <span className="font-semibold text-lg mt-2">{service}</span>
                     <span className="text-sm text-gray-600">Select {service} service</span>
