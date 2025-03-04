@@ -181,6 +181,17 @@ export default function MobileService({ partnerId }) {
     // Handle postcode validation and price calculation
     const handleCheckPostcode = async (value) => {
         setPostcode(value);
+
+        // If postcode is empty, clear everything and don't show validation messages
+        if (!value.trim()) {
+            setTravelFee(null);
+            setIsValid(false);
+            setError("");
+            setMobileTravelFee(0);
+            setLoading(false);
+            return;
+        }
+
         setTravelFee(null);
         setIsValid(false);
         setError("");

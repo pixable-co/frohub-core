@@ -137,7 +137,7 @@ export default function RequestBookButton() {
     };
 
     return (
-        <div className="fixed bottom-0 left-0 w-full bg-white shadow-md py-4 px-6 z-50">
+        <div className="fixed bottom-0 left-0 w-full bg-[#f2f4f7] border-t border-[#E8E8E8] shadow-md py-4 px-6 z-50">
             <div className="w-4/6 mx-auto flex flex-col items-center">
                 <div className="w-full flex justify-between items-center">
                     <div className="flex items-center gap-2 text-gray-700 text-sm">
@@ -150,24 +150,24 @@ export default function RequestBookButton() {
                     </div>
 
                     <div className="text-right">
-                        <p className="text-gray-900 font-semibold">Total price: <span className="text-black">£{totalPrice.toFixed(2)}</span></p>
+                        <p className="text-gray-900 font-semibold !mb-3">Total price: <span className="text-black">£{totalPrice.toFixed(2)}</span></p>
 
                         {/* ✅ Show Mobile Travel Fee only if greater than 0 */}
-                        {mobileTravelFee > 0 && (
-                            <p className="text-gray-600 text-sm">
-                                Mobile Travel Fee: <span className="font-medium text-black">£{mobileTravelFee.toFixed(2)}</span>
-                            </p>
-                        )}
+                        {/*{mobileTravelFee > 0 && (*/}
+                        {/*    <p className="text-gray-600 text-sm">*/}
+                        {/*        Mobile Travel Fee: <span className="font-medium text-black">£{mobileTravelFee.toFixed(2)}</span>*/}
+                        {/*    </p>*/}
+                        {/*)}*/}
 
-                        <p className="text-gray-600 text-sm">Deposit due today: <span className="font-medium text-black">£{depositDueToday}</span></p>
-                        <p className="text-gray-600 text-sm">Service duration: <span className="font-medium">{serviceDuration}</span></p>
+                        <p className="text-gray-600 text-sm !mb-3">Deposit due today: <span className="font-medium text-black">£{depositDueToday.toFixed(2)}</span></p>
+                        <p className="text-gray-600 text-sm !mb-3">Service duration: <span className="font-medium">{serviceDuration}</span></p>
                         <input name="service-duration" type="hidden" value={serviceDuration} />
                     </div>
 
                     <button
                         onClick={handleProceedToPayment}
                         disabled={loading || booked}
-                        className={`bg-gray-300 text-black font-medium px-6 py-2 rounded-full transition flex items-center justify-center ${loading || booked ? 'cursor-not-allowed opacity-75' : 'hover:bg-gray-400'}`}
+                        className={`bg-[#E05748] !text-white font-medium px-6 py-2 rounded-sm transition flex items-center justify-center ${loading || booked ? 'cursor-not-allowed opacity-75' : 'hover:bg-gray-400'}`}
                         style={{ minWidth: "150px", height: "40px" }}
                     >
                         {loading ? (
