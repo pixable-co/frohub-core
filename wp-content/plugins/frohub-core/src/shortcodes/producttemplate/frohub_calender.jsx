@@ -6,6 +6,7 @@ import frohubStore from "../../frohubStore.js";
 const FrohubCalender = () => {
     const productIdRef = useRef(null);
     const [bookingNotice, setBookingNotice] = useState(null);
+    const selectedAddonsRef = useRef([]);
 
     const {
         availabilityData,
@@ -33,13 +34,34 @@ const FrohubCalender = () => {
         }
     }, []);
 
-    // ✅ Fetch availability including initial service duration
+    // ✅ Get selected addon IDs from hidden input
+    const getSelectedAddonIds = useCallback(() => {
+        // Get addon IDs from the hidden input
+        let addonIds = [];
+        const hiddenInput = document.getElementById('frohub-selected-addon-ids');
+
+        if (hiddenInput && hiddenInput.value) {
+            try {
+                addonIds = JSON.parse(hiddenInput.value);
+            } catch (e) {
+                console.error("Error parsing addon IDs", e);
+                addonIds = [];
+            }
+        }
+
+        return addonIds;
+    }, []);
+
+    // ✅ Fetch availability based on date or addon changes
     const fetchAvailability = useCallback(async () => {
         const productId = productIdRef.current;
         if (!productId) return;
-        if (!addonsChanged && availabilityData.length > 0) return; // ✅ Prevent unnecessary calls
 
         setLoading(true);
+
+        // Get selected addon IDs from hidden input
+        const addonIds = getSelectedAddonIds();
+
         fetchData(
             "frohub/get_availibility",
             (response) => {
@@ -51,21 +73,57 @@ const FrohubCalender = () => {
                 }
                 setLoading(false);
             },
-            { product_id: productId, date: selectedDate }
+            {
+                product_id: productId,
+                date: selectedDate,
+                addons_id: addonIds
+            }
         );
 
-        resetAddonsChanged(); // ✅ Reset after fetching
-    }, [selectedDate, addonsChanged, availabilityData.length, setAvailabilityData, setLoading, resetAddonsChanged]); // ✅ Removed `productIdRef.current`
+        resetAddonsChanged();
+    }, [selectedDate, setAvailabilityData, setLoading, resetAddonsChanged, getSelectedAddonIds]);
 
+    // ✅ Fetch when date changes or addons change
     useEffect(() => {
         fetchAvailability();
-    }, [fetchAvailability]);
+    }, [fetchAvailability, selectedDate, addonsChanged]);
+
+    // ✅ Handle date change
+    const handleDateChange = (newDate) => {
+        setSelectedDate(newDate);
+
+        const productId = productIdRef.current;
+        if (!productId) return;
+
+        setLoading(true);
+
+        // Get selected addon IDs from hidden input
+        const addonIds = getSelectedAddonIds();
+
+        fetchData(
+            "frohub/get_availibility",
+            (response) => {
+                if (response.success) {
+                    setAvailabilityData(response.data.availability);
+                    setBookingNotice(response.data.booking_notice);
+                } else {
+                    console.error("Error fetching availability:", response.message);
+                }
+                setLoading(false);
+            },
+            {
+                product_id: productId,
+                date: newDate,
+                addons_id: addonIds
+            }
+        );
+    };
 
     return (
         <div className="relative">
             <FhCalender
                 data={availabilityData}
-                onDateChange={setSelectedDate}
+                onDateChange={handleDateChange}
                 bookingNotice={bookingNotice}
             />
         </div>

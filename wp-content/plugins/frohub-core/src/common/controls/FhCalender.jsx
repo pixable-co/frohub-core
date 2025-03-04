@@ -79,7 +79,7 @@ const FhCalender = ({ onDateChange,bookingNotice,initialServiceDuration }) => {
         setSelectedDate(newDate);
         setSelectedTime(null);
         setSelectedPrice(0); // ✅ Reset extra charge
-        setSelectedDuration(0);
+        // setSelectedDuration(0);
         document.getElementById("extra-charge-container").setAttribute("data-extra-charge", "0");
 
         if (onDateChange) {

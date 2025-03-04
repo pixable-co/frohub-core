@@ -161,6 +161,7 @@ export default function RequestBookButton() {
 
                         <p className="text-gray-600 text-sm">Deposit due today: <span className="font-medium text-black">£{depositDueToday}</span></p>
                         <p className="text-gray-600 text-sm">Service duration: <span className="font-medium">{serviceDuration}</span></p>
+                        <input name="service-duration" type="hidden" value={serviceDuration} />
                     </div>
 
                     <button

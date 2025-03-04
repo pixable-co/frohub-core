@@ -41,28 +41,23 @@ export default function RenderProductAddOns({ productId, setProductId, selectedA
                 }
             );
         };
-        // const fetchProductData = async () => {
-        //     try {
-        //         setLoading(true); // ✅ Show skeleton while fetching add-ons
-        //         const response = await fetch(`/wp-json/frohub/v1/product-attributes?product_id=${productId}`);
-        //         if (!response.ok) {
-        //             const errorText = await response.text();
-        //             throw new Error(`Network response was not ok: ${errorText}`);
-        //         }
-        //         const data = await response.json();
-        //         setAddOns(data.add_ons || []);
-        //         setProductPrice(parseFloat(data.product_price) || 0);
-        //         setLoading(false); // ✅ Stop loading after fetch
-        //     } catch (error) {
-        //         setError(error.message);
-        //         setLoading(false);
-        //     }
-        // };
 
         if (productId) {
             fetchProductData();
         }
     }, [productId, setProductPrice]);
+
+    // Update hidden input whenever selectedAddOns changes
+    useEffect(() => {
+        // Extract selected add-on IDs
+        const selectedAddOnIds = selectedAddOns.map(item => item.id);
+
+        // Update hidden input with selected addon IDs
+        const hiddenInput = document.getElementById('frohub-selected-addon-ids');
+        if (hiddenInput) {
+            hiddenInput.value = JSON.stringify(selectedAddOnIds);
+        }
+    }, [selectedAddOns]);
 
     const handleSelectAddOn = (addOn) => {
         frohubStore.setState({ loading: true });
@@ -107,6 +102,14 @@ export default function RenderProductAddOns({ productId, setProductId, selectedA
 
     return (
         <div>
+            {/* Hidden input to store selected addon IDs */}
+            <input
+                type="hidden"
+                id="frohub-selected-addon-ids"
+                name="frohub-selected-addon-ids"
+                value={JSON.stringify(selectedAddOns.map(item => item.id))}
+            />
+
             <div className="mb-3">Select add-ons</div>
             {loading ? (
                 <div className="flex gap-2 !mb-3">

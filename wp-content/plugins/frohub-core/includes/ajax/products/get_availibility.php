@@ -149,6 +149,7 @@ class GetAvailibility {
             'next_available_date' => $next_available_date,
             'service_duration' => $total_duration_minutes,
             'booking_notice'   => $booking_notice_days,
+            'google_calendar_booked_slots' => $google_calendar_booked_slots
         ]);
     }
 
@@ -168,7 +169,7 @@ class GetAvailibility {
     }
 
     private function get_google_calendar_bookings($partner_id, $date) {
-        $url = "https://frohubpartners.mystagingwebsite.com/wp-json/fpserver/v1/google-calendar-events?partner_id=" . $partner_id . "&date=" . $date;
+        $url = "http://localhost:10028/wp-json/fpserver/v1/google-calendar-events?partner_id=" . $partner_id . "&date=" . $date;
         $response = wp_remote_get($url);
 
         if (is_wp_error($response)) {
