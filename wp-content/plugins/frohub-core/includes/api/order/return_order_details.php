@@ -86,7 +86,7 @@ class ReturnOrderDetails {
                 'total'      => $order->get_total(),
                 'currency'   => $order->get_currency(),
                 'created_at' => $order->get_date_created() ? $order->get_date_created()->date('Y-m-d H:i:s') : '',
-                'customer_note' => $order->get_customer_note();
+                'customer_note' => $order->get_customer_note(),
                 'billing'    => $order->get_address('billing'),
                 'shipping'   => $order->get_address('shipping'),
                 'line_items' => [],
