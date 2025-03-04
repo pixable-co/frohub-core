@@ -17,6 +17,7 @@ const frohubStore = create((set) => {
 
         // ✅ New state for Mobile Travel Fee
         mobileTravelFee: 0,
+        readyForMobile: false,
 
         // ✅ Existing actions
         setAvailabilityData: (data) => set({ availabilityData: data, loading: false }),
@@ -30,6 +31,7 @@ const frohubStore = create((set) => {
 
         // ✅ New action to set Mobile Travel Fee
         setMobileTravelFee: (fee) => set({ mobileTravelFee: fee }),
+        setReadyForMobile: (isReady) => set({ readyForMobile: isReady }),
         setAddonsChanged: () => set({ addonsChanged: true }),
 
         // ✅ Reset addonsChanged after fetch

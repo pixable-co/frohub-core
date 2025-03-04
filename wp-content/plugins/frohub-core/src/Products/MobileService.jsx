@@ -17,7 +17,7 @@ export default function MobileService({ partnerId }) {
     const [error, setError] = useState("");
     const [staticLocation, setStaticLocation] = useState(null);
 
-    const { setMobileTravelFee } = frohubStore();
+    const { setMobileTravelFee, setReadyForMobile } = frohubStore();
 
     useEffect(() => {
         // Get static location data from cookie using the imported function
@@ -116,6 +116,7 @@ export default function MobileService({ partnerId }) {
                 return { latitude: location.lat, longitude: location.lng };
             }
             throw new Error("Invalid postcode");
+            frohubStore.setState((state) => ({ readyForMobile: false }));
         } catch (err) {
             console.error("Error fetching coordinates:", err);
             return null;
@@ -169,10 +170,12 @@ export default function MobileService({ partnerId }) {
             setIsValid(true);
             setTravelFee(applicablePrice);
             setMobileTravelFee(applicablePrice);
+            frohubStore.setState((state) => ({ readyForMobile: true }));
         } else {
             setIsValid(false);
             setError("Sorry, you are outside the service area.");
             setMobileTravelFee(0);
+            frohubStore.setState((state) => ({ readyForMobile: false }));
         }
 
         setLoading(false);
@@ -189,9 +192,9 @@ export default function MobileService({ partnerId }) {
             setError("");
             setMobileTravelFee(0);
             setLoading(false);
+            frohubStore.setState((state) => ({ readyForMobile: false }));
             return;
         }
-
         setTravelFee(null);
         setIsValid(false);
         setError("");
@@ -207,6 +210,7 @@ export default function MobileService({ partnerId }) {
         if (!userLocation) {
             setError("Invalid postcode.");
             setLoading(false);
+            frohubStore.setState((state) => ({ readyForMobile: false }));
             return;
         }
 
@@ -230,10 +234,12 @@ export default function MobileService({ partnerId }) {
             setIsValid(true);
             setTravelFee(applicablePrice);
             setMobileTravelFee(applicablePrice);
+            frohubStore.setState((state) => ({ readyForMobile: true }));
         } else {
             setIsValid(false);
             setError("Sorry, you are outside the service area.");
             setMobileTravelFee(0);
+            frohubStore.setState((state) => ({ readyForMobile: false }));
         }
 
         setLoading(false);
