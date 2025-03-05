@@ -119,6 +119,14 @@ class CreatePartnerPost {
         update_field('booking_scope', $advanceBooking, $partner_post_id);
     }
 
+    // Extract buffer time and split into hours and minutes
+    if (!empty($bufferTime)) {
+        list($bufferHours, $bufferMinutes) = explode(':', $bufferTime);
+    
+        update_field('buffer_period_hours', intval($bufferHours), $partner_post_id);
+        update_field('buffer_period_minutes', intval($bufferMinutes), $partner_post_id);
+    }
+
     $serviceTypes = [];
     if ($homeBased) $serviceTypes[] = 'Home-based';
     if ($salonBased) $serviceTypes[] = 'Salon-based';
@@ -145,7 +153,6 @@ class CreatePartnerPost {
         'WordPress_ID'   => $wordpressUserId,
         'Service_Name'   => $serviceName,
         'Duration'       => $duration, // New Duration Field
-        'Buffer_Time'    => $bufferTime, // New Buffer Time Field
         'Price'          => $price,
         'Partner_ID'     => $partner_post_id,
         'Partner_Name'   => $businessName,
