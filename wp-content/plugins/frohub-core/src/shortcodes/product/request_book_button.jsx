@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Spin } from 'antd';
+import { Spin, Skeleton } from 'antd';
 import { Check } from 'lucide-react'; // ✅ Import check icon
 import frohubStore from "../../frohubStore.js";
 import {fetchData} from "../../services/fetchData.js";
@@ -13,12 +13,15 @@ export default function RequestBookButton() {
     const [booked, setBooked] = useState(false);
     const [serviceDuration, setServiceDuration] = useState("0h 0m"); // ✅ Track duration in hours & minutes
     const [baseDuration, setBaseDuration] = useState(0); // Track base service duration in minutes
+    const [loadingServiceDuration, setLoadingServiceDuration] = useState(false); // ✅ Track service duration loading
 
     const depositDueToday = totalPrice * 0.30;
 
     useEffect(() => {
         const fetchServiceDuration = () => {
             if (!productId) return;
+
+            setLoadingServiceDuration(true); // ✅ Show skeleton before fetching
 
             fetchData(
                 "frohub/get_duration",
@@ -38,12 +41,14 @@ export default function RequestBookButton() {
 
                         // Update service duration display
                         setServiceDuration(`${totalHours}h ${remainingMinutes}m`);
+                        setLoadingServiceDuration(false); // ✅ Hide skeleton after fetching
                     } else {
                         console.error("Error fetching service duration:", response.message);
+                        setLoadingServiceDuration(false); // ✅ Hide skeleton after fetching
                     }
                 },
                 { product_id: productId }
-            );
+            )
         };
 
         fetchServiceDuration();
@@ -83,12 +88,11 @@ export default function RequestBookButton() {
                 // Get base duration from input
                 const baseMinutes = parseInt(durationInput.value, 10) || 0;
                 setBaseDuration(baseMinutes);
-
                 // Add addon time to calculate total duration
                 const totalMinutes = baseMinutes + (addonTotalTime || 0);
                 const hours = Math.floor(totalMinutes / 60);
                 const minutes = totalMinutes % 60;
-                setServiceDuration(`${hours}h ${minutes}m`); // ✅ Convert to hours & minutes
+                // setServiceDuration(`${hours}h ${minutes}m`); // ✅ Convert to hours & minutes
             }
             else if (initialServiceDuration) {
                 // Use initialServiceDuration if input not available
@@ -182,8 +186,9 @@ export default function RequestBookButton() {
                         {/*)}*/}
 
                         <p className="text-gray-600 text-sm !mb-3">Deposit due today: <span className="font-medium text-black">£{depositDueToday.toFixed(2)}</span></p>
-                        <p className="text-gray-600 text-sm !mb-3">Service duration: <span className="font-medium">{serviceDuration}</span></p>
+                        <p className="text-gray-600 text-sm !mb-3">Service duration: <span className="font-medium">{loadingServiceDuration ? <Skeleton.Button active size="small" style={{ width: "60px", height: "20px" }} /> : serviceDuration}</span></p>
                         <input name="service-duration" type="hidden" value={serviceDuration} />
+
                     </div>
 
                     <button
