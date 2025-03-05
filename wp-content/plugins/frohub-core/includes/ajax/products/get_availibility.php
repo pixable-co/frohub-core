@@ -15,7 +15,6 @@ class GetAvailibility {
         add_action('wp_ajax_nopriv_frohub/get_availibility', array($self, 'get_availibility'));
     }
 
-
     public function get_availibility() {
         check_ajax_referer('frohub_nonce');
 
@@ -32,7 +31,6 @@ class GetAvailibility {
         $partner_id = get_field('partner_id', $product_id);
 
         $availability = get_field('availability', $product_id);
-
         if (empty($availability)) {
             $availability = get_field('availability', $partner_id);
         }
@@ -41,6 +39,11 @@ class GetAvailibility {
             wp_send_json_error(['message' => 'No availability data found.']);
         }
 
+        // ✅ Fetch buffer period from ACF
+        $buffer_hours = get_field('buffer_period_hours', $partner_id);
+        $buffer_minutes = get_field('buffer_period_minutes', $partner_id);
+        $buffer_total_minutes = (intval($buffer_hours) * 60) + intval($buffer_minutes); // ✅ Convert to minutes
+
         // Fetch product duration from ACF and convert to minutes
         $duration_hours = get_field('duration_hours', $product_id);
         $duration_minutes = get_field('duration_minutes', $product_id);
@@ -48,15 +51,11 @@ class GetAvailibility {
 
         // Handle multiple addons_id passed as array
         $addons_ids = isset($_POST['addons_id']) ? $_POST['addons_id'] : [];
-
-        // Ensure $addons_ids is an array even if one ID is passed
         if (!is_array($addons_ids)) {
             $addons_ids = [$addons_ids];
         }
 
-        $addon_duration_minutes = 0;  // Initialize total addon duration
-
-        // Fetch add-ons from the partner post type and sum their durations
+        $addon_duration_minutes = 0;
         $addons = get_field('add_ons', $partner_id);
         if ($addons && is_array($addons)) {
             foreach ($addons as $addon) {
@@ -66,7 +65,6 @@ class GetAvailibility {
             }
         }
 
-        // Total duration includes product and add-on durations
         $total_duration_minutes = $product_duration_minutes + $addon_duration_minutes;
 
         // Get booked slots from WooCommerce orders
@@ -83,25 +81,25 @@ class GetAvailibility {
         $google_calendar_booked_slots = $this->get_google_calendar_bookings($partner_id, $date);
         $booked_slots = array_merge($booked_slots, $google_calendar_booked_slots);
 
-        // Convert booked slots to timestamps for easier comparison
+        // Convert booked slots to timestamps
         $booked_slots_timestamps = $this->convert_slots_to_timestamps($booked_slots);
 
         $final_slots = [];
         $available_dates = [];
 
-        // Generate all possible slots based on total duration
+        // ✅ Generate slots with buffer period
         foreach ($availability as $slot) {
             $day = $slot['day'];
             $extra_charge = !empty($slot['extra_charge']) ? $slot['extra_charge'] : 0;
             $start_time = strtotime($slot['from']);
             $end_time = strtotime($slot['to']);
 
-            while (($start_time + ($total_duration_minutes * 60)) <= $end_time) {
+            while (($start_time + ($total_duration_minutes * 60) + ($buffer_total_minutes * 60)) <= $end_time) {
                 $slot_from = date('H:i', $start_time);
                 $slot_to = date('H:i', $start_time + ($total_duration_minutes * 60));
                 $time_range = "$slot_from - $slot_to";
 
-                // Add all slots initially
+                // ✅ Add timeslot with buffer period
                 $final_slots[] = [
                     'day'                     => $day,
                     'from'                    => $slot_from,
@@ -117,10 +115,11 @@ class GetAvailibility {
                 // Collect available dates
                 $date_available = date('Y-m-d', strtotime("next $day"));
                 if (!in_array($date_available, $available_dates)) {
-                   $available_dates[] = $date_available;
+                    $available_dates[] = $date_available;
                 }
 
-                $start_time += ($total_duration_minutes * 60);
+                // ✅ Move to next available slot with buffer period
+                $start_time += ($total_duration_minutes * 60) + ($buffer_total_minutes * 60);
             }
         }
 
@@ -149,11 +148,11 @@ class GetAvailibility {
             'next_available_date' => $next_available_date,
             'service_duration' => $total_duration_minutes,
             'booking_notice'   => $booking_notice_days,
-            'google_calendar_booked_slots' => $google_calendar_booked_slots
+            'google_calendar_booked_slots' => $google_calendar_booked_slots,
+            'buffer_period_minutes' => $buffer_total_minutes, // ✅ Return buffer period in response
         ]);
     }
 
-    // Convert booked slots into timestamps for easier comparison
     private function convert_slots_to_timestamps($booked_slots) {
         $booked_slots_timestamps = [];
 
@@ -187,7 +186,6 @@ class GetAvailibility {
 
         foreach ($data['events'] as $event) {
             if (!empty($event['start']) && !empty($event['end'])) {
-                // Convert Google Calendar timestamps to match your slot format (e.g., "10:00 AM - 11:00 AM")
                 $start_time = date('H:i', strtotime($event['start']));
                 $end_time = date('H:i', strtotime($event['end']));
                 $booked_slots[] = "$start_time - $end_time";
