@@ -29,7 +29,7 @@ class Helper {
                 INNER JOIN {$wpdb->prefix}woocommerce_order_itemmeta AS im2 ON oi.order_item_id = im2.order_item_id
                 INNER JOIN {$wpdb->prefix}woocommerce_order_itemmeta AS product_meta ON oi.order_item_id = product_meta.order_item_id
                 WHERE p.post_type = 'shop_order'
-                AND p.post_status IN ('wc-completed', 'wc-processing', 'wc-on-hold')
+                AND p.post_status IN ('wc-rescheduling', 'wc-processing', 'wc-on-hold')
                 AND im1.meta_key = 'Start Date Time'
                 AND im1.meta_value LIKE %s  -- ✅ Match only the date part
                 AND im2.meta_key = 'End Date Time'
