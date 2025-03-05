@@ -58,6 +58,9 @@ class GetPartnerData {
             'bookingNotice'    => get_field('booking_notice', $partner_post_id),
             'bookingPeriod'    => get_field('booking_period', $partner_post_id),
             'email'            => get_field('partner_email', $partner_post_id),
+            'bufferPeriodMin'    => get_field('buffer_period_minutes', $partner_post_id),
+            'bufferPeriodHour'    => get_field('buffer_period_hours', $partner_post_id),
+
         ];
 
         return rest_ensure_response($acf_fields);
