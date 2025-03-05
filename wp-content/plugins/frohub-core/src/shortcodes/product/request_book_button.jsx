@@ -59,7 +59,8 @@ export default function RequestBookButton() {
             const container = document.getElementById('extra-charge-container');
             if (container) {
                 const extraCharge = parseFloat(container.getAttribute('data-extra-charge')) || 0;
-                setTotalPrice(productPrice + extraCharge + (mobileTravelFee || 0)); // ✅ Include mobileTravelFee
+                const isMobileService = selectedServiceType === 'mobile';
+                setTotalPrice(productPrice + extraCharge + (isMobileService ? (mobileTravelFee || 0) : 0));
             }
         };
 
@@ -79,7 +80,7 @@ export default function RequestBookButton() {
         }
 
         return () => observer.disconnect();
-    }, [productPrice, mobileTravelFee]); // ✅ Include mobileTravelFee dependency
+    }, [productPrice, mobileTravelFee, selectedServiceType]); // ✅ Include mobileTravelFee dependency
 
     useEffect(() => {
         const getServiceDuration = () => {
@@ -177,13 +178,6 @@ export default function RequestBookButton() {
 
                     <div className="text-right">
                         <p className="text-gray-900 font-semibold !mb-3">Total price: <span className="text-black">£{totalPrice.toFixed(2)}</span></p>
-
-                        {/* ✅ Show Mobile Travel Fee only if greater than 0 */}
-                        {/*{mobileTravelFee > 0 && (*/}
-                        {/*    <p className="text-gray-600 text-sm">*/}
-                        {/*        Mobile Travel Fee: <span className="font-medium text-black">£{mobileTravelFee.toFixed(2)}</span>*/}
-                        {/*    </p>*/}
-                        {/*)}*/}
 
                         <p className="text-gray-600 text-sm !mb-3">Deposit due today: <span className="font-medium text-black">£{depositDueToday.toFixed(2)}</span></p>
                         <p className="text-gray-600 text-sm !mb-3">Service duration: <span className="font-medium">{loadingServiceDuration ? <Skeleton.Button active size="small" style={{ width: "60px", height: "20px" }} /> : serviceDuration}</span></p>
