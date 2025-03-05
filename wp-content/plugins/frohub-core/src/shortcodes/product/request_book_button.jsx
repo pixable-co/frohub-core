@@ -7,11 +7,12 @@ import { createData } from "../../services/createData.js";
 import { toastNotification } from "../../utils/toastNotification.js";
 
 export default function RequestBookButton() {
-    const { selectedAddOns, productPrice, productId, selectedServiceType, mobileTravelFee, readyForMobile, initialServiceDuration } = frohubStore(); // ✅ Get mobileTravelFee from Zustand
+    const { selectedAddOns, productPrice, productId, selectedServiceType, addonTotalTime, mobileTravelFee, readyForMobile, initialServiceDuration } = frohubStore(); // ✅ Get mobileTravelFee from Zustand
     const [totalPrice, setTotalPrice] = useState(productPrice);
     const [loading, setLoading] = useState(false);
     const [booked, setBooked] = useState(false);
     const [serviceDuration, setServiceDuration] = useState("0h 0m"); // ✅ Track duration in hours & minutes
+    const [baseDuration, setBaseDuration] = useState(0); // Track base service duration in minutes
 
     const depositDueToday = totalPrice * 0.30;
 
@@ -26,8 +27,17 @@ export default function RequestBookButton() {
                         const hours = response.data.duration_hours || 0;
                         const minutes = response.data.duration_minutes || 0;
 
-                        // ✅ Update service duration display
-                        setServiceDuration(`${hours}h ${minutes}m`);
+                        // Calculate base duration in minutes
+                        const baseDurationMinutes = (hours * 60) + minutes;
+                        setBaseDuration(baseDurationMinutes);
+
+                        // Calculate total duration with addons
+                        const totalMinutes = baseDurationMinutes + (addonTotalTime || 0);
+                        const totalHours = Math.floor(totalMinutes / 60);
+                        const remainingMinutes = totalMinutes % 60;
+
+                        // Update service duration display
+                        setServiceDuration(`${totalHours}h ${remainingMinutes}m`);
                     } else {
                         console.error("Error fetching service duration:", response.message);
                     }
@@ -37,7 +47,7 @@ export default function RequestBookButton() {
         };
 
         fetchServiceDuration();
-    }, [productId]); // ✅ Runs when `productId` changes
+    }, [productId, addonTotalTime]); // ✅ Runs when productId or addonTotalTime changes
 
     useEffect(() => {
         const getExtraCharge = () => {
@@ -70,14 +80,21 @@ export default function RequestBookButton() {
         const getServiceDuration = () => {
             const durationInput = document.querySelector('input[name="total_duration_time"]');
             if (durationInput) {
-                const totalMinutes = parseInt(durationInput.value, 10) || 0;
+                // Get base duration from input
+                const baseMinutes = parseInt(durationInput.value, 10) || 0;
+                setBaseDuration(baseMinutes);
+
+                // Add addon time to calculate total duration
+                const totalMinutes = baseMinutes + (addonTotalTime || 0);
                 const hours = Math.floor(totalMinutes / 60);
                 const minutes = totalMinutes % 60;
                 setServiceDuration(`${hours}h ${minutes}m`); // ✅ Convert to hours & minutes
             }
-            else {
-                const hours = Math.floor(initialServiceDuration / 60);
-                const minutes = initialServiceDuration % 60;
+            else if (initialServiceDuration) {
+                // Use initialServiceDuration if input not available
+                const totalMinutes = initialServiceDuration + (addonTotalTime || 0);
+                const hours = Math.floor(totalMinutes / 60);
+                const minutes = totalMinutes % 60;
                 setServiceDuration(`${hours}h ${minutes}m`);
             }
         };
@@ -91,7 +108,7 @@ export default function RequestBookButton() {
         }
 
         return () => durationObserver.disconnect();
-    }, []);
+    }, [addonTotalTime, initialServiceDuration]); // Add addonTotalTime as dependency
 
     const handleProceedToPayment = async () => {
         const selectedDate = document.querySelector('input[name="selectedDate"]')?.value || "";

@@ -90,7 +90,7 @@ const FhCalender = ({ onDateChange,bookingNotice,initialServiceDuration }) => {
     const handleTimeSelect = (time, price, duration) => {
         setSelectedTime(time);
         setSelectedPrice(price);
-        setSelectedDuration(duration); // ✅ Store duration
+        // setSelectedDuration(duration); // ✅ Store duration
         document.getElementById("extra-charge-container").setAttribute("data-extra-charge", price);
     };
 

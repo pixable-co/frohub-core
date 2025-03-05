@@ -61,18 +61,27 @@ export default function RenderProductAddOns({ productId, setProductId, selectedA
 
     const handleSelectAddOn = (addOn) => {
         frohubStore.setState({ loading: true });
+        const addonMinutes = parseInt(addOn.duration_minutes, 10) || 0;
         setSelectedAddOns((prevSelectedAddOns) => {
             let updatedAddOns;
             if (prevSelectedAddOns.some(item => item.id === addOn.id)) {
                 setProductPrice((prevPrice) => prevPrice - parseFloat(addOn.price));
+                // When removing an addon, subtract its time from the total
+                frohubStore.setState(prevState => ({
+                    addonTotalTime: (prevState.addonTotalTime || 0) - addonMinutes
+                }));
                 updatedAddOns = prevSelectedAddOns.filter((item) => item.id !== addOn.id);
             } else {
                 setProductPrice((prevPrice) => prevPrice + parseFloat(addOn.price));
+                frohubStore.setState(prevState => ({
+                    addonTotalTime: (prevState.addonTotalTime || 0) + addonMinutes
+                }));
                 updatedAddOns = [...prevSelectedAddOns, addOn];
             }
 
             // Extract selected add-on IDs
             const selectedAddOnIds = updatedAddOns.map(item => item.id);
+
 
             // Send selected add-on IDs to the API
             fetchData(
