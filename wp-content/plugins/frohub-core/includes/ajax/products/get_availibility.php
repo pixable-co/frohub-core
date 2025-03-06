@@ -137,6 +137,18 @@ class GetAvailibility {
             return true;  // No overlap, keep the slot
         });
 
+        // Get booking scope from ACF
+        $booking_scope = get_field('booking_scope', $partner_id);
+        $booking_scope = is_numeric($booking_scope) ? intval($booking_scope) : 30; // Default to 30 if not set
+
+        // Filter available dates based on booking scope
+        $current_date = date('Y-m-d');
+        $max_date = date('Y-m-d', strtotime($current_date . ' + ' . $booking_scope . ' days'));
+
+        $available_dates = array_filter($available_dates, function($date) use ($current_date, $max_date) {
+            return $date >= $current_date && $date <= $max_date;
+        });
+
         sort($available_dates);
         $next_available_date = count($available_dates) > 0 ? $available_dates[0] : null;
         $booking_notice = get_field('booking_notice', $product_id);
@@ -149,7 +161,9 @@ class GetAvailibility {
             'service_duration' => $total_duration_minutes,
             'booking_notice'   => $booking_notice_days,
             'google_calendar_booked_slots' => $google_calendar_booked_slots,
-            'buffer_period_minutes' => $buffer_total_minutes, // ✅ Return buffer period in response
+            'buffer_period_minutes' => $buffer_total_minutes,
+            'booking_scope' => $booking_scope,
+            'max_date' => $max_date
         ]);
     }
 
