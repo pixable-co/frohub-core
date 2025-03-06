@@ -1,7 +1,7 @@
 <?php
 namespace FECore;
 
-if ( ! defined( 'ABSPATH' ) ) {
+if (!defined('ABSPATH')) {
     exit;
 }
 
@@ -20,7 +20,7 @@ class GetPartnerData {
             'methods'             => 'POST',
             'callback'            => array($this, 'get_partner_acf_fields'),
             'permission_callback' => function () {
-                return current_user_can('manage_options');
+                return current_user_can('manage_options'); // Modify permissions as needed
             },
             'args' => [
                 'partner_post_id' => [
@@ -33,7 +33,7 @@ class GetPartnerData {
     }
 
     /**
-     * Retrieves ACF fields for a given 'partner' post type.
+     * Retrieves ACF fields for a given 'partner' post type, keeping existing keys while adding new fields.
      *
      * @param \WP_REST_Request $request
      * @return \WP_REST_Response
@@ -47,22 +47,27 @@ class GetPartnerData {
             return new \WP_REST_Response(['error' => 'Invalid partner post ID'], 400);
         }
 
-        // Get Partner Post information
-        $acf_fields = [
-            'id'               => $partner_post->ID,
-            'title'            => $partner_post->post_title,
-            'partnerName'      => get_the_title($partner_post_id),
-            'serviceTypes'     => get_field('service_types', $partner_post_id),
-            'partnerProfileUrl'=> get_field('partner_profile_url', $partner_post_id),
-            'availability'     => get_field('availability', $partner_post_id),
-            'bookingNotice'    => get_field('booking_notice', $partner_post_id),
-            'bookingPeriod'    => get_field('booking_period', $partner_post_id),
-            'email'            => get_field('partner_email', $partner_post_id),
-            'bufferPeriodMin'    => get_field('buffer_period_minutes', $partner_post_id),
-            'bufferPeriodHour'    => get_field('buffer_period_hours', $partner_post_id),
 
+        // Get Featured Image URL
+        $featured_image_url = get_the_post_thumbnail_url($partner_post_id, 'full') ?: '';
+
+        // Keep existing keys while adding new ones
+        $partner_data = [
+            'id'                 => $partner_post->ID,
+            'title'              => $partner_post->post_title,
+            'content'            => apply_filters('the_content', $partner_post->post_content),
+            'featuredImage'      => $featured_image_url,
+            'partnerName'        => get_the_title($partner_post_id),
+            'serviceTypes'       => get_field('service_types', $partner_post_id),
+            'partnerProfileUrl'  => get_field('partner_profile_url', $partner_post_id),
+            'availability'       => get_field('availability', $partner_post_id),
+            'bookingNotice'      => get_field('booking_notice', $partner_post_id),
+            'bookingPeriod'      => get_field('booking_scope', $partner_post_id),
+            'email'              => get_field('partner_email', $partner_post_id),
+            'bufferPeriodMin'    => get_field('buffer_period_minutes', $partner_post_id),
+            'bufferPeriodHour'   => get_field('buffer_period_hours', $partner_post_id),
         ];
 
-        return rest_ensure_response($acf_fields);
+        return rest_ensure_response($partner_data);
     }
 }
