@@ -47,7 +47,6 @@ class GetPartnerData {
             return new \WP_REST_Response(['error' => 'Invalid partner post ID'], 400);
         }
 
-
         // Get Featured Image URL
         $featured_image_url = get_the_post_thumbnail_url($partner_post_id, 'full') ?: '';
 
@@ -57,6 +56,7 @@ class GetPartnerData {
             'title'              => $partner_post->post_title,
             'content'            => apply_filters('the_content', $partner_post->post_content),
             'featuredImage'      => $featured_image_url,
+            'bannerImage'        => get_field('hero_image', $partner_post_id),
             'partnerName'        => get_the_title($partner_post_id),
             'serviceTypes'       => get_field('service_types', $partner_post_id),
             'partnerProfileUrl'  => get_field('partner_profile_url', $partner_post_id),
