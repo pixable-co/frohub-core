@@ -68,6 +68,9 @@ class GetPartnerData {
             'bufferPeriodHour'   => get_field('buffer_period_hours', $partner_post_id),
             'address'           => get_field('partner_address', $partner_post_id),
             'phone'            => get_field('phone', $partner_post_id),
+            'terms'            => get_field('terms_and_conditions', $partner_post_id),
+            'lateFees'         => get_field('late_fees', $partner_post_id),
+            'payments'         => get_field('payments', $partner_post_id),
         ];
 
         return rest_ensure_response($partner_data);
