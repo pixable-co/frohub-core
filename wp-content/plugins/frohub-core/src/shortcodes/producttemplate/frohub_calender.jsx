@@ -6,6 +6,7 @@ import frohubStore from "../../frohubStore.js";
 const FrohubCalender = () => {
     const productIdRef = useRef(null);
     const [bookingNotice, setBookingNotice] = useState(null);
+    const [maxDate, setMaxDate] = useState(null);
     const selectedAddonsRef = useRef([]);
 
     const {
@@ -68,6 +69,7 @@ const FrohubCalender = () => {
                 if (response.success) {
                     setAvailabilityData(response.data.availability);
                     setBookingNotice(response.data.booking_notice);
+                    setMaxDate(response.data.max_date);
                 } else {
                     console.error("Error fetching availability:", response.message);
                 }
@@ -106,6 +108,7 @@ const FrohubCalender = () => {
                 if (response.success) {
                     setAvailabilityData(response.data.availability);
                     setBookingNotice(response.data.booking_notice);
+                    setMaxDate(response.data.max_date);
                 } else {
                     console.error("Error fetching availability:", response.message);
                 }
@@ -125,6 +128,7 @@ const FrohubCalender = () => {
                 data={availabilityData}
                 onDateChange={handleDateChange}
                 bookingNotice={bookingNotice}
+                maxDate={maxDate}
             />
         </div>
     );
