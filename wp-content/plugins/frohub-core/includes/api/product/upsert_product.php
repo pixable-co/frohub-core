@@ -64,9 +64,9 @@ class UpsertProduct {
 
         // Map service types to WooCommerce attributes
         $service_types_map = [
-            "Home-based" => ['id' => 152, 'slug' => 'home-based'],
-            "Salon-based" => ['id' => 153, 'slug' => 'salon-based'],
-            "Mobile" => ['id' => 154, 'slug' => 'mobile']
+            "Home-based" => ['id' => 152, 'slug' => 'home-based', 'virtual' => true],
+            "Salon-based" => ['id' => 153, 'slug' => 'salon-based', 'virtual' => true],
+            "Mobile" => ['id' => 154, 'slug' => 'mobile', 'virtual' => false] // Mobile is not virtual
         ];
 
         // Create or Update WooCommerce Product
@@ -124,6 +124,9 @@ class UpsertProduct {
                 update_post_meta($variation_id, 'attribute_pa_service-type', $term_slug);
                 update_post_meta($variation_id, '_regular_price', $variation_price);
                 update_post_meta($variation_id, '_price', $variation_price);
+
+                // **Set Virtual Status for Home & Salon, but Not Mobile**
+                update_post_meta($variation_id, '_virtual', $data['virtual'] ? 'yes' : 'no');
             }
         }
 
