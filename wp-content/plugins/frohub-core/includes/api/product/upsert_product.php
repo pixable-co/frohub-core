@@ -35,6 +35,7 @@ class UpsertProduct {
 
         // Extract values from JSON payload
         $partnerId = isset($params["partner_id"]) ? sanitize_text_field($params["partner_id"]) : '';
+        $partnerName = get_the_title($partnerId);
         $serviceName = isset($params["service_name"]) ? sanitize_text_field($params["service_name"]) : '';
         $size_id = isset($params["size"]) ? intval($params["size"]) : 0;
         $length_id = isset($params["length"]) ? intval($params["length"]) : 0;
@@ -42,10 +43,8 @@ class UpsertProduct {
         $variation_price = round($price * 0.30, 2);
         $description = isset($params["service_description"]) ? sanitize_textarea_field($params["service_description"]) : '';
         $bookingDuration = isset($params["service_duration"]) ? sanitize_text_field($params["service_duration"]) : '';
-        $bookingDurationHours = explode(':', $bookingDuration)[0];
-        $bookingDurationMinutes = explode(':', $bookingDuration)[1];
-        $bookingNotice = isset($params["booking_notice"]) ? intval($params["booking_notice"]) : 0;
-        $futureBookingScope = isset($params["future_booking"]) ? intval($params["future_booking"]) : 0;
+        $bookingNotice = isset($params["booking_notice"]) ? sanitize_text_field($params["booking_notice"]) : '';
+        $futureBooking = isset($params["future_booking"]) ? sanitize_text_field($params["future_booking"]) : '';
 
         $categories = isset($params["categories"]) ? (is_array($params["categories"]) ? $params["categories"] : json_decode($params["categories"], true)) : [];
         $tags = isset($params["tags"]) ? (is_array($params["tags"]) ? $params["tags"] : json_decode($params["tags"], true)) : [];
@@ -53,24 +52,21 @@ class UpsertProduct {
         $faqs = isset($params["faqs"]) ? (is_array($params["faqs"]) ? $params["faqs"] : json_decode($params["faqs"], true)) : [];
         $serviceTypes = isset($params["service_types"]) ? (is_array($params["service_types"]) ? $params["service_types"] : json_decode($params["service_types"], true)) : [];
 
+        $overrideAvailability = isset($params["override_availability"]) ? sanitize_text_field($params["override_availability"]) : 'no';
+
         // Availability extraction
-        $availability = [];
-        if (isset($params["availability"]["days"]) && is_array($params["availability"]["days"])) {
-            foreach ($params["availability"]["days"] as $index => $day) {
-                $availability[] = [
-                    "day"          => sanitize_text_field($day),
-                    "from"         => sanitize_text_field($params["availability"]["start_times"][$index] ?? ''),
-                    "to"           => sanitize_text_field($params["availability"]["end_times"][$index] ?? ''),
-                    "extra_charge" => floatval($params["availability"]["extra_charge"][$index] ?? 0),
-                ];
-            }
-        }
+        $availability = [
+            "days" => isset($params["availability"]["days"]) ? (is_array($params["availability"]["days"]) ? $params["availability"]["days"] : []) : [],
+            "start_times" => isset($params["availability"]["start_times"]) ? (is_array($params["availability"]["start_times"]) ? $params["availability"]["start_times"] : []) : [],
+            "end_times" => isset($params["availability"]["end_times"]) ? (is_array($params["availability"]["end_times"]) ? $params["availability"]["end_times"] : []) : [],
+            "extra_charge" => isset($params["availability"]["extra_charge"]) ? (is_array($params["availability"]["extra_charge"]) ? $params["availability"]["extra_charge"] : []) : [],
+        ];
 
         // Map service types to WooCommerce attributes
         $service_types_map = [
-            "Home-based" => ['id' => 152, 'slug' => 'home-based', 'virtual' => true],
-            "Salon-based" => ['id' => 153, 'slug' => 'salon-based', 'virtual' => true],
-            "Mobile" => ['id' => 154, 'slug' => 'mobile', 'virtual' => false] // Mobile is not virtual
+            "Home-based" => ['id' => 152, 'slug' => 'home-based'],
+            "Salon-based" => ['id' => 153, 'slug' => 'salon-based'],
+            "Mobile" => ['id' => 154, 'slug' => 'mobile']
         ];
 
         // Create or Update WooCommerce Product
@@ -98,15 +94,24 @@ class UpsertProduct {
 
         $product_id = $product->save();
 
-        // **Ensure Product is In Stock**
-        update_post_meta($product_id, '_manage_stock', 'no');
-        update_post_meta($product_id, '_stock_status', 'instock');
-        wc_update_product_stock_status($product_id, 'instock');
+        // Assign Attributes
+        $attributes = [
+            'pa_service-type' => [
+                'name'         => 'pa_service-type',
+                'value'        => implode('|', array_column($service_types_map, 'slug')),
+                'is_visible'   => 1,
+                'is_variation' => 1,
+                'is_taxonomy'  => 1
+            ]
+        ];
+
+        wp_set_object_terms($product_id, array_column($service_types_map, 'slug'), 'pa_service-type');
+        update_post_meta($product_id, '_product_attributes', $attributes);
 
         // Generate Variations for all 3 service types
         foreach ($service_types_map as $key => $data) {
             $term_slug = $data['slug'];
-            $status = in_array($key, $serviceTypes) ? 'publish' : 'private';
+            $status = in_array($key, $serviceTypes) ? 'publish' : 'private'; // Enable if in payload, otherwise disable
 
             $variation_id = wp_insert_post([
                 'post_title'  => $serviceName . ' - ' . ucfirst(str_replace('-', ' ', $term_slug)),
@@ -119,16 +124,11 @@ class UpsertProduct {
                 update_post_meta($variation_id, 'attribute_pa_service-type', $term_slug);
                 update_post_meta($variation_id, '_regular_price', $variation_price);
                 update_post_meta($variation_id, '_price', $variation_price);
-
-                // **Ensure Each Variation is In Stock**
-                update_post_meta($variation_id, '_manage_stock', 'no');
-                update_post_meta($variation_id, '_stock_status', 'instock');
-                wc_update_product_stock_status($variation_id, 'instock');
-
-                // **Set Virtual Status for Home & Salon, but Not Mobile**
-                update_post_meta($variation_id, '_virtual', $data['virtual'] ? 'yes' : 'no');
             }
         }
+
+        update_post_meta($product_id, '_stock_status', 'instock');
+        update_post_meta($product_id, '_manage_stock', 'no');
 
         return new \WP_REST_Response(['message' => 'Product created/updated successfully', 'product_id' => $product_id], 200);
     }
