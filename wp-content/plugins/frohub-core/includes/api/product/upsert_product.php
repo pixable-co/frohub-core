@@ -138,7 +138,15 @@ class UpsertProduct {
         update_post_meta($product_id, '_stock_status', 'instock');
         update_post_meta($product_id, '_manage_stock', 'no');
 
-        
+        // **Handle Add ons, Length and Size Attribute**/
+
+        // Get term names from size & length IDs
+        $size_term = $size_id ? get_term($size_id, 'pa_size') : null;
+        $length_term = $length_id ? get_term($length_id, 'pa_length') : null;
+
+        $size_name = ($size_term && !is_wp_error($size_term)) ? $size_term->name : '';
+        $length_name = ($length_term && !is_wp_error($length_term)) ? $length_term->name : '';
+
         if ($size_id) {
             $attributes['pa_size'] = [
                 'name'         => 'pa_size',
@@ -172,7 +180,7 @@ class UpsertProduct {
                 $assigned_add_ons[] = $add_on_term->slug; // Store the term slug
             }
         }
-        
+
         if (!empty($addOns)) {
             $attributes['pa_add-on'] = [
                 'name'         => 'pa_add-on',
@@ -184,7 +192,10 @@ class UpsertProduct {
             wp_set_object_terms($product_id, $addOns, 'pa_add-on');
         }
 
-        // Update ACF Fields
+        update_post_meta($product_id, '_product_attributes', $attributes);
+
+
+        // ** UPDATE ACF FIELDS ** 
         update_field('partner_id', $partnerId, $product_id);
         update_field('partner_name', $partnerId, $product_id);
         update_field('service_price', $price, $product_id);
