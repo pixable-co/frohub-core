@@ -35,21 +35,18 @@ class UpsertProduct {
 
         // Extract values from JSON payload
         $partnerId = isset($params["partner_id"]) ? sanitize_text_field($params["partner_id"]) : '';
+        $partnerName = get_the_title($partnerId);
         $serviceName = isset($params["service_name"]) ? sanitize_text_field($params["service_name"]) : '';
         $size_id = isset($params["size"]) ? intval($params["size"]) : 0;
         $length_id = isset($params["length"]) ? intval($params["length"]) : 0;
         $price = isset($params["service_price"]) ? floatval($params["service_price"]) : 0;
         $variation_price = round($price * 0.30, 2);
         $description = isset($params["service_description"]) ? sanitize_textarea_field($params["service_description"]) : '';
-        $bookingDuration = isset($params["service_duration"]) ? sanitize_text_field($params["service_duration"]) : '00:00';
-        
-        // **Fix Duration Parsing**
-        $bookingDurationParts = explode(':', $bookingDuration);
-        $bookingDurationHours = isset($bookingDurationParts[0]) ? intval($bookingDurationParts[0]) : 0;
-        $bookingDurationMinutes = isset($bookingDurationParts[1]) ? intval($bookingDurationParts[1]) : 0;
-
-        $bookingNotice = isset($params["booking_notice"]) ? intval($params["booking_notice"]) : 0;
-        $futureBooking = isset($params["future_booking"]) ? intval($params["future_booking"]) : 0;
+        $bookingDuration = isset($params["service_duration"]) ? sanitize_text_field($params["service_duration"]) : '';
+        $bookingDurationHours = explode(':', $bookingDuration)[0] ?? 0;
+        $bookingDurationMinutes = explode(':', $bookingDuration)[1] ?? 0;
+        $bookingNotice = isset($params["booking_notice"]) ? sanitize_text_field($params["booking_notice"]) : '';
+        $futureBooking = isset($params["future_booking"]) ? sanitize_text_field($params["future_booking"]) : '';
 
         $categories = isset($params["categories"]) ? (is_array($params["categories"]) ? $params["categories"] : json_decode($params["categories"], true)) : [];
         $tags = isset($params["tags"]) ? (is_array($params["tags"]) ? $params["tags"] : json_decode($params["tags"], true)) : [];
@@ -102,6 +99,46 @@ class UpsertProduct {
 
         $product_id = $product->save();
 
+        // Assign Attributes
+        $attributes = [
+            'pa_service-type' => [
+                'name'         => 'pa_service-type',
+                'value'        => implode('|', array_column($service_types_map, 'slug')),
+                'is_visible'   => 1,
+                'is_variation' => 1,
+                'is_taxonomy'  => 1
+            ]
+        ];
+
+        wp_set_object_terms($product_id, array_column($service_types_map, 'slug'), 'pa_service-type');
+        update_post_meta($product_id, '_product_attributes', $attributes);
+
+        // Generate Variations for all 3 service types
+        foreach ($service_types_map as $key => $data) {
+            $term_slug = $data['slug'];
+            $status = in_array($key, $serviceTypes) ? 'publish' : 'private'; // Enable if in payload, otherwise disable
+
+            $variation_id = wp_insert_post([
+                'post_title'  => $serviceName . ' - ' . ucfirst(str_replace('-', ' ', $term_slug)),
+                'post_status' => $status,
+                'post_parent' => $product_id,
+                'post_type'   => 'product_variation'
+            ]);
+
+            if (!is_wp_error($variation_id)) {
+                update_post_meta($variation_id, 'attribute_pa_service-type', $term_slug);
+                update_post_meta($variation_id, '_regular_price', $variation_price);
+                update_post_meta($variation_id, '_price', $variation_price);
+
+                // **Set Virtual Status for Home & Salon, but Not Mobile**
+                update_post_meta($variation_id, '_virtual', $data['virtual'] ? 'yes' : 'no');
+            }
+        }
+
+        update_post_meta($product_id, '_stock_status', 'instock');
+        update_post_meta($product_id, '_manage_stock', 'no');
+
+        
         // **Assign Attributes (Size, Length, Add-ons)**
         $attributes = [
             'pa_size' => [
@@ -128,8 +165,10 @@ class UpsertProduct {
         ];
         update_post_meta($product_id, '_product_attributes', $attributes);
 
-        // **ACF Updates**
+
+        // Update ACF Fields
         update_field('partner_id', $partnerId, $product_id);
+        update_field('partner_name', $partnerId, $product_id);
         update_field('service_price', $price, $product_id);
         update_field('booking_notice', $bookingNotice, $product_id);
         update_field('future_booking_scope', $futureBooking, $product_id);
@@ -137,12 +176,13 @@ class UpsertProduct {
         update_field('duration_hours', $bookingDurationHours, $product_id);
         update_field('duration_minutes', $bookingDurationMinutes, $product_id);
 
-        // **Update FAQ Repeater**
+        // Update FAQ Repeater
         $faqs_repeater = [];
         foreach ($faqs as $faq_id) {
             $faqs_repeater[] = ["faq_post" => intval($faq_id)];
         }
         update_field('faqs', $faqs_repeater, $product_id);
+
 
         return new \WP_REST_Response(['message' => 'Product created/updated successfully', 'product_id' => $product_id], 200);
     }
