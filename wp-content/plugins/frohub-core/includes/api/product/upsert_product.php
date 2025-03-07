@@ -28,37 +28,52 @@ class UpsertProduct {
      */
     public function create_custom_woocommerce_product_new(\WP_REST_Request $request) {
         $params = $request->get_json_params();
-	
+
         // Check if we're updating an existing product
-        $product_id = isset($params["30"]) && !empty($params["30"]) ? intval($params["30"]) : 0;
+        $product_id = isset($params["product_id"]) && !empty($params["product_id"]) ? intval($params["product_id"]) : 0;
         $is_update = $product_id > 0;
 
         // Extract values from JSON payload
-        $partnerId = isset($params["28"]) ? sanitize_text_field($params["28"]) : '';
+        $partnerId = isset($params["partner_id"]) ? sanitize_text_field($params["partner_id"]) : '';
         $partnerName = get_the_title($partnerId);
-        $serviceName = isset($params["1"]) ? sanitize_text_field($params["1"]) : '';
-        $size_id = isset($params["2"]) ? intval($params["2"]) : 0;
-        $length_id = isset($params["3"]) ? intval($params["3"]) : 0;
-        $price = isset($params["17"]) ? floatval($params["17"]) : 0;
+        $serviceName = isset($params["service_name"]) ? sanitize_text_field($params["service_name"]) : '';
+        $size_id = isset($params["size"]) ? intval($params["size"]) : 0;
+        $length_id = isset($params["length"]) ? intval($params["length"]) : 0;
+        $price = isset($params["service_price"]) ? floatval($params["service_price"]) : 0;
         $variation_price = round($price * 0.30, 2);
-        $description = isset($params["19"]) ? sanitize_text_field($params["19"]) : '';
-        $bookingDuration = isset($params["27"]) ? sanitize_text_field($params["27"]) : '';
-        $categories = isset($params["9"]) ? (is_array($params["9"]) ? $params["9"] : json_decode($params["9"], true)) : [];
-        $tags = isset($params["10"]) ? (is_array($params["10"]) ? $params["10"] : json_decode($params["10"], true)) : [];
+        $description = isset($params["service_description"]) ? sanitize_textarea_field($params["service_description"]) : '';
+        $bookingDuration = isset($params["service_duration"]) ? sanitize_text_field($params["service_duration"]) : '';
+        $bookingNotice = isset($params["booking_notice"]) ? sanitize_text_field($params["booking_notice"]) : '';
+        $futureBooking = isset($params["future_booking"]) ? sanitize_text_field($params["future_booking"]) : '';
 
-        // Service Types
-        $fixed_service_types = [
-            "11.1" => ['id' => 152, 'slug' => 'home-based'],
-            "11.2" => ['id' => 153, 'slug' => 'salon-based'],
-            "11.3" => ['id' => 154, 'slug' => 'mobile']
+        $categories = isset($params["categories"]) ? (is_array($params["categories"]) ? $params["categories"] : json_decode($params["categories"], true)) : [];
+        $tags = isset($params["tags"]) ? (is_array($params["tags"]) ? $params["tags"] : json_decode($params["tags"], true)) : [];
+        $addOns = isset($params["add_ons"]) ? (is_array($params["add_ons"]) ? $params["add_ons"] : json_decode($params["add_ons"], true)) : [];
+        $faqs = isset($params["faqs"]) ? (is_array($params["faqs"]) ? $params["faqs"] : json_decode($params["faqs"], true)) : [];
+        $serviceTypes = isset($params["service_types"]) ? (is_array($params["service_types"]) ? $params["service_types"] : json_decode($params["service_types"], true)) : [];
+
+        $overrideAvailability = isset($params["override_availability"]) ? sanitize_text_field($params["override_availability"]) : 'no';
+
+        // Availability extraction
+        $availability = [
+            "days" => isset($params["availability"]["days"]) ? (is_array($params["availability"]["days"]) ? $params["availability"]["days"] : []) : [],
+            "start_times" => isset($params["availability"]["start_times"]) ? (is_array($params["availability"]["start_times"]) ? $params["availability"]["start_times"] : []) : [],
+            "end_times" => isset($params["availability"]["end_times"]) ? (is_array($params["availability"]["end_times"]) ? $params["availability"]["end_times"] : []) : [],
+            "extra_charge" => isset($params["availability"]["extra_charge"]) ? (is_array($params["availability"]["extra_charge"]) ? $params["availability"]["extra_charge"] : []) : [],
         ];
-        $enabled_service_types = [];
-        foreach ($fixed_service_types as $payload_key => $data) {
-            if (!empty($params[$payload_key])) {
-                $enabled_service_types[$data['id']] = sanitize_text_field($params[$payload_key]);
-            }
-        }
 
+        // Map service types to WooCommerce attributes
+        $service_types_map = [
+            "Home-based" => ['id' => 152, 'slug' => 'home-based'],
+            "Salon-based" => ['id' => 153, 'slug' => 'salon-based'],
+            "Mobile" => ['id' => 154, 'slug' => 'mobile']
+        ];
+
+        $selected_service_types = array_filter($service_types_map, function ($key) use ($serviceTypes) {
+            return in_array($key, $serviceTypes);
+        }, ARRAY_FILTER_USE_KEY);
+
+        // Create or Update WooCommerce Product
         if ($is_update) {
             $product = wc_get_product($product_id);
             if (!$product) {
@@ -87,22 +102,22 @@ class UpsertProduct {
         $attributes = [
             'pa_service-type' => [
                 'name'         => 'pa_service-type',
-                'value'        => implode('|', array_column($fixed_service_types, 'slug')),
+                'value'        => implode('|', array_column($selected_service_types, 'slug')),
                 'is_visible'   => 1,
                 'is_variation' => 1,
                 'is_taxonomy'  => 1
             ]
         ];
 
-        wp_set_object_terms($product_id, array_column($fixed_service_types, 'slug'), 'pa_service-type');
+        wp_set_object_terms($product_id, array_column($selected_service_types, 'slug'), 'pa_service-type');
         update_post_meta($product_id, '_product_attributes', $attributes);
 
-        // Generate Variations
-        foreach ($fixed_service_types as $data) {
+        // Generate Variations based on selected service types
+        foreach ($selected_service_types as $key => $data) {
             $term_slug = $data['slug'];
             $variation_id = wp_insert_post([
                 'post_title' => $serviceName . ' - ' . ucfirst(str_replace('-', ' ', $term_slug)),
-                'post_status' => isset($enabled_service_types[$data['id']]) ? 'publish' : 'private',
+                'post_status' => 'publish',
                 'post_parent' => $product_id,
                 'post_type' => 'product_variation'
             ]);
@@ -120,4 +135,3 @@ class UpsertProduct {
         return new \WP_REST_Response(['message' => 'Product created/updated successfully', 'product_id' => $product_id], 200);
     }
 }
-
