@@ -69,10 +69,6 @@ class UpsertProduct {
             "Mobile" => ['id' => 154, 'slug' => 'mobile']
         ];
 
-        $selected_service_types = array_filter($service_types_map, function ($key) use ($serviceTypes) {
-            return in_array($key, $serviceTypes);
-        }, ARRAY_FILTER_USE_KEY);
-
         // Create or Update WooCommerce Product
         if ($is_update) {
             $product = wc_get_product($product_id);
@@ -102,24 +98,26 @@ class UpsertProduct {
         $attributes = [
             'pa_service-type' => [
                 'name'         => 'pa_service-type',
-                'value'        => implode('|', array_column($selected_service_types, 'slug')),
+                'value'        => implode('|', array_column($service_types_map, 'slug')),
                 'is_visible'   => 1,
                 'is_variation' => 1,
                 'is_taxonomy'  => 1
             ]
         ];
 
-        wp_set_object_terms($product_id, array_column($selected_service_types, 'slug'), 'pa_service-type');
+        wp_set_object_terms($product_id, array_column($service_types_map, 'slug'), 'pa_service-type');
         update_post_meta($product_id, '_product_attributes', $attributes);
 
-        // Generate Variations based on selected service types
-        foreach ($selected_service_types as $key => $data) {
+        // Generate Variations for all 3 service types
+        foreach ($service_types_map as $key => $data) {
             $term_slug = $data['slug'];
+            $status = in_array($key, $serviceTypes) ? 'publish' : 'private'; // Enable if in payload, otherwise disable
+
             $variation_id = wp_insert_post([
-                'post_title' => $serviceName . ' - ' . ucfirst(str_replace('-', ' ', $term_slug)),
-                'post_status' => 'publish',
+                'post_title'  => $serviceName . ' - ' . ucfirst(str_replace('-', ' ', $term_slug)),
+                'post_status' => $status,
                 'post_parent' => $product_id,
-                'post_type' => 'product_variation'
+                'post_type'   => 'product_variation'
             ]);
 
             if (!is_wp_error($variation_id)) {
