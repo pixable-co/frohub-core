@@ -43,6 +43,8 @@ class UpsertProduct {
         $variation_price = round($price * 0.30, 2);
         $description = isset($params["service_description"]) ? sanitize_textarea_field($params["service_description"]) : '';
         $bookingDuration = isset($params["service_duration"]) ? sanitize_text_field($params["service_duration"]) : '';
+        $bookingDurationHours = explode(':', $bookingDuration)[0];
+        $bookingDurationMinutes = explode(':', $bookingDuration)[1];
         $bookingNotice = isset($params["booking_notice"]) ? intval($params["booking_notice"]) : 0;
         $futureBookingScope = isset($params["future_booking"]) ? intval($params["future_booking"]) : 0;
 
@@ -101,12 +103,14 @@ class UpsertProduct {
 
         // Update ACF Fields
         update_field('partner_id', $partnerId, $product_id);
-        update_field('partner_name', $partnerName, $product_id);
+        update_field('partner_name', $partnerId, $product_id);
         update_field('service_price', $price, $product_id);
         update_field('booking_notice', $bookingNotice, $product_id);
         update_field('future_booking_scope', $futureBookingScope, $product_id);
         update_field('availability', $availability, $product_id);
-
+        update_field('booking_duration_hours', $bookingDurationHours, $product_id);
+        update_field('booking_duration_minutes', $bookingDurationMinutes, $product_id);
+        
         // Update FAQ Repeater
         $faqs_repeater = [];
         foreach ($faqs as $faq_id) {
