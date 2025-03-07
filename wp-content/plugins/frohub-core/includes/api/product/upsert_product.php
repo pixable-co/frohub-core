@@ -35,7 +35,6 @@ class UpsertProduct {
 
         // Extract values from JSON payload
         $partnerId = isset($params["partner_id"]) ? sanitize_text_field($params["partner_id"]) : '';
-        $partnerName = get_the_title($partnerId);
         $serviceName = isset($params["service_name"]) ? sanitize_text_field($params["service_name"]) : '';
         $size_id = isset($params["size"]) ? intval($params["size"]) : 0;
         $length_id = isset($params["length"]) ? intval($params["length"]) : 0;
@@ -54,8 +53,6 @@ class UpsertProduct {
         $faqs = isset($params["faqs"]) ? (is_array($params["faqs"]) ? $params["faqs"] : json_decode($params["faqs"], true)) : [];
         $serviceTypes = isset($params["service_types"]) ? (is_array($params["service_types"]) ? $params["service_types"] : json_decode($params["service_types"], true)) : [];
 
-        $overrideAvailability = isset($params["override_availability"]) ? sanitize_text_field($params["override_availability"]) : 'no';
-
         // Availability extraction
         $availability = [];
         if (isset($params["availability"]["days"]) && is_array($params["availability"]["days"])) {
@@ -71,9 +68,9 @@ class UpsertProduct {
 
         // Map service types to WooCommerce attributes
         $service_types_map = [
-            "Home-based" => ['id' => 152, 'slug' => 'home-based'],
-            "Salon-based" => ['id' => 153, 'slug' => 'salon-based'],
-            "Mobile" => ['id' => 154, 'slug' => 'mobile']
+            "Home-based" => ['id' => 152, 'slug' => 'home-based', 'virtual' => true],
+            "Salon-based" => ['id' => 153, 'slug' => 'salon-based', 'virtual' => true],
+            "Mobile" => ['id' => 154, 'slug' => 'mobile', 'virtual' => false] // Mobile is not virtual
         ];
 
         // Create or Update WooCommerce Product
@@ -101,38 +98,10 @@ class UpsertProduct {
 
         $product_id = $product->save();
 
-        // Update ACF Fields
-        update_field('partner_id', $partnerId, $product_id);
-        update_field('partner_name', $partnerId, $product_id);
-        update_field('service_price', $price, $product_id);
-        update_field('booking_notice', $bookingNotice, $product_id);
-        update_field('future_booking_scope', $futureBookingScope, $product_id);
-        update_field('availability', $availability, $product_id);
-        update_field('booking_duration_hours', $bookingDurationHours, $product_id);
-        update_field('booking_duration_minutes', $bookingDurationMinutes, $product_id);
-        
-        // Update FAQ Repeater
-        $faqs_repeater = [];
-        foreach ($faqs as $faq_id) {
-            $faqs_repeater[] = ["faq_post" => intval($faq_id)];
-        }
-        update_field('faqs', $faqs_repeater, $product_id);
-
-        // Update Marketplace Visibility (default false)
-        update_field('marketplace_visibility', 1, $product_id);
-
-        // Assign Attributes
-        $attributes = [
-            'pa_service-type' => [
-                'name'         => 'pa_service-type',
-                'value'        => implode('|', array_column($service_types_map, 'slug')),
-                'is_visible'   => 1,
-                'is_variation' => 1,
-                'is_taxonomy'  => 1
-            ]
-        ];
-        wp_set_object_terms($product_id, array_column($service_types_map, 'slug'), 'pa_service-type');
-        update_post_meta($product_id, '_product_attributes', $attributes);
+        // **Ensure Product is In Stock**
+        update_post_meta($product_id, '_manage_stock', 'no');
+        update_post_meta($product_id, '_stock_status', 'instock');
+        wc_update_product_stock_status($product_id, 'instock');
 
         // Generate Variations for all 3 service types
         foreach ($service_types_map as $key => $data) {
@@ -150,6 +119,14 @@ class UpsertProduct {
                 update_post_meta($variation_id, 'attribute_pa_service-type', $term_slug);
                 update_post_meta($variation_id, '_regular_price', $variation_price);
                 update_post_meta($variation_id, '_price', $variation_price);
+
+                // **Ensure Each Variation is In Stock**
+                update_post_meta($variation_id, '_manage_stock', 'no');
+                update_post_meta($variation_id, '_stock_status', 'instock');
+                wc_update_product_stock_status($variation_id, 'instock');
+
+                // **Set Virtual Status for Home & Salon, but Not Mobile**
+                update_post_meta($variation_id, '_virtual', $data['virtual'] ? 'yes' : 'no');
             }
         }
 
