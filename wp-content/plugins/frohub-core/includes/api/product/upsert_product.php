@@ -54,8 +54,6 @@ class UpsertProduct {
         $faqs = isset($params["faqs"]) ? (is_array($params["faqs"]) ? $params["faqs"] : json_decode($params["faqs"], true)) : [];
         $serviceTypes = isset($params["service_types"]) ? (is_array($params["service_types"]) ? $params["service_types"] : json_decode($params["service_types"], true)) : [];
 
-        $overrideAvailability = isset($params["override_availability"]) ? sanitize_text_field($params["override_availability"]) : 'no';
-
         // Availability extraction
         $availability = [
             "days" => isset($params["availability"]["days"]) ? (is_array($params["availability"]["days"]) ? $params["availability"]["days"] : []) : [],
