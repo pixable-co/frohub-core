@@ -156,7 +156,7 @@ class UpsertProduct {
                 'is_taxonomy'  => 0
             ],
             'pa_addons' => [
-                'name'         => 'pa_addons',
+                'name'         => 'pa_add-on',
                 'value'        => implode('|', $addOns),
                 'is_visible'   => 1,
                 'is_variation' => 0,
