@@ -43,6 +43,8 @@ class UpsertProduct {
         $variation_price = round($price * 0.30, 2);
         $description = isset($params["service_description"]) ? sanitize_textarea_field($params["service_description"]) : '';
         $bookingDuration = isset($params["service_duration"]) ? sanitize_text_field($params["service_duration"]) : '';
+        $bookingDurationHours = isset($params["service_duration_hours"]) ? intval($params["service_duration_hours"]) : 0;
+        $bookingDurationMinutes = isset($params["service_duration_minutes"]) ? intval($params["service_duration_minutes"]) : 0;
         $bookingNotice = isset($params["booking_notice"]) ? sanitize_text_field($params["booking_notice"]) : '';
         $futureBooking = isset($params["future_booking"]) ? sanitize_text_field($params["future_booking"]) : '';
 
@@ -132,6 +134,17 @@ class UpsertProduct {
 
         update_post_meta($product_id, '_stock_status', 'instock');
         update_post_meta($product_id, '_manage_stock', 'no');
+
+        // Update ACF Fields
+        update_field('partner_id', $partnerId, $product_id);
+        update_field('partner_name', $partnerId, $product_id);
+        update_field('service_price', $price, $product_id);
+        update_field('booking_notice', $bookingNotice, $product_id);
+        update_field('future_booking_scope', $futureBookingScope, $product_id);
+        update_field('availability', $availability, $product_id);
+        update_field('booking_duration_hours', $bookingDurationHours, $product_id);
+        update_field('booking_duration_minutes', $bookingDurationMinutes, $product_id);
+
 
         return new \WP_REST_Response(['message' => 'Product created/updated successfully', 'product_id' => $product_id], 200);
     }
