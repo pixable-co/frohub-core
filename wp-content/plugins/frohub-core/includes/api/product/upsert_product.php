@@ -145,8 +145,8 @@ class UpsertProduct {
         update_field('booking_notice', $bookingNotice, $product_id);
         update_field('future_booking_scope', $futureBookingScope, $product_id);
         update_field('availability', $availability, $product_id);
-        update_field('booking_duration_hours', $bookingDurationHours, $product_id);
-        update_field('booking_duration_minutes', $bookingDurationMinutes, $product_id);
+        update_field('duration_hours', $bookingDurationHours, $product_id);
+        update_field('duration_minutes', $bookingDurationMinutes, $product_id);
 
         // Update FAQ Repeater
         $faqs_repeater = [];
