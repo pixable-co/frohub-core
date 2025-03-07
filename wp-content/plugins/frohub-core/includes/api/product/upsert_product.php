@@ -55,12 +55,17 @@ class UpsertProduct {
         $serviceTypes = isset($params["service_types"]) ? (is_array($params["service_types"]) ? $params["service_types"] : json_decode($params["service_types"], true)) : [];
 
         // Availability extraction
-        $availability = [
-            "days" => isset($params["availability"]["days"]) ? (is_array($params["availability"]["days"]) ? $params["availability"]["days"] : []) : [],
-            "start_times" => isset($params["availability"]["start_times"]) ? (is_array($params["availability"]["start_times"]) ? $params["availability"]["start_times"] : []) : [],
-            "end_times" => isset($params["availability"]["end_times"]) ? (is_array($params["availability"]["end_times"]) ? $params["availability"]["end_times"] : []) : [],
-            "extra_charge" => isset($params["availability"]["extra_charge"]) ? (is_array($params["availability"]["extra_charge"]) ? $params["availability"]["extra_charge"] : []) : [],
-        ];
+        $availability = [];
+        if (isset($params["availability"]["days"]) && is_array($params["availability"]["days"])) {
+            foreach ($params["availability"]["days"] as $index => $day) {
+                $availability[] = [
+                    "day"          => sanitize_text_field($day),
+                    "from"         => sanitize_text_field($params["availability"]["start_times"][$index] ?? ''),
+                    "to"           => sanitize_text_field($params["availability"]["end_times"][$index] ?? ''),
+                    "extra_charge" => floatval($params["availability"]["extra_charge"][$index] ?? 0),
+                ];
+            }
+        }
 
         // Map service types to WooCommerce attributes
         $service_types_map = [
@@ -142,6 +147,13 @@ class UpsertProduct {
         update_field('availability', $availability, $product_id);
         update_field('booking_duration_hours', $bookingDurationHours, $product_id);
         update_field('booking_duration_minutes', $bookingDurationMinutes, $product_id);
+
+        // Update FAQ Repeater
+        $faqs_repeater = [];
+        foreach ($faqs as $faq_id) {
+            $faqs_repeater[] = ["faq_post" => intval($faq_id)];
+        }
+        update_field('faqs', $faqs_repeater, $product_id);
 
 
         return new \WP_REST_Response(['message' => 'Product created/updated successfully', 'product_id' => $product_id], 200);
