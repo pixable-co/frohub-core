@@ -43,8 +43,8 @@ class UpsertProduct {
         $variation_price = round($price * 0.30, 2);
         $description = isset($params["service_description"]) ? sanitize_textarea_field($params["service_description"]) : '';
         $bookingDuration = isset($params["service_duration"]) ? sanitize_text_field($params["service_duration"]) : '';
-        $bookingDurationHours = isset($params["service_duration_hours"]) ? intval($params["service_duration_hours"]) : 0;
-        $bookingDurationMinutes = isset($params["service_duration_minutes"]) ? intval($params["service_duration_minutes"]) : 0;
+        $bookingDurationHours = explode(':', $bookingDuration)[0] ?? 0;
+        $bookingDurationMinutes = explode(':', $bookingDuration)[1] ?? 0;
         $bookingNotice = isset($params["booking_notice"]) ? sanitize_text_field($params["booking_notice"]) : '';
         $futureBooking = isset($params["future_booking"]) ? sanitize_text_field($params["future_booking"]) : '';
 
