@@ -139,32 +139,50 @@ class UpsertProduct {
         update_post_meta($product_id, '_manage_stock', 'no');
 
         
-        // **Assign Attributes (Size, Length, Add-ons)**
-        $attributes = [
-            'pa_size' => [
+        if ($size_id) {
+            $attributes['pa_size'] = [
                 'name'         => 'pa_size',
-                'value'        => $size_id,
+                'value'        => $size_name,
                 'is_visible'   => 1,
                 'is_variation' => 0,
-                'is_taxonomy'  => 0
-            ],
-            'pa_length' => [
+                'is_taxonomy'  => 1
+            ];
+            wp_set_object_terms($product_id, [$size_id], 'pa_size');
+        }
+    
+        if ($length_id) {
+            $attributes['pa_length'] = [
                 'name'         => 'pa_length',
-                'value'        => $length_id,
+                'value'        => $length_name,
                 'is_visible'   => 1,
                 'is_variation' => 0,
-                'is_taxonomy'  => 0
-            ],
-            'pa_addons' => [
+                'is_taxonomy'  => 1
+            ];
+            wp_set_object_terms($product_id, [$length_id], 'pa_length');
+        }
+
+        // Extract Add-Ons
+        $assigned_add_ons = [];
+
+        foreach ($addOns as $add_on_id) {
+        $add_on_id = intval($add_on_id); // Ensure it's an integer
+        $add_on_term = get_term($add_on_id, 'pa_add-on');
+
+        if ($add_on_term && !is_wp_error($add_on_term)) {
+                $assigned_add_ons[] = $add_on_term->slug; // Store the term slug
+            }
+        }
+        
+        if (!empty($addOns)) {
+            $attributes['pa_add-on'] = [
                 'name'         => 'pa_add-on',
                 'value'        => implode('|', $addOns),
                 'is_visible'   => 1,
-                'is_variation' => 0,
-                'is_taxonomy'  => 0
-            ]
-        ];
-        update_post_meta($product_id, '_product_attributes', $attributes);
-
+                'is_variation' => 0, // 🚨 Not for variations
+                'is_taxonomy'  => 1
+            ];
+            wp_set_object_terms($product_id, $addOns, 'pa_add-on');
+        }
 
         // Update ACF Fields
         update_field('partner_id', $partnerId, $product_id);
