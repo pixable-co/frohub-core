@@ -184,7 +184,7 @@ class UpsertProduct {
         if (!empty($addOns)) {
             $attributes['pa_add-on'] = [
                 'name'         => 'pa_add-on',
-                'value'        => implode('|', $addOns),
+                'value'        => implode('|', $assigned_add_ons),
                 'is_visible'   => 1,
                 'is_variation' => 0, // 🚨 Not for variations
                 'is_taxonomy'  => 1
