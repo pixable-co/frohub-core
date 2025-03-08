@@ -189,7 +189,7 @@ class UpsertProduct {
                 'is_variation' => 0, // 🚨 Not for variations
                 'is_taxonomy'  => 1
             ];
-            wp_set_object_terms($product_id, $addOns, 'pa_add-on');
+            wp_set_object_terms($product_id, $assigned_add_ons, 'pa_add-on');
         }
 
         update_post_meta($product_id, '_product_attributes', $attributes);
