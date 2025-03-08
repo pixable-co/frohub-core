@@ -74,6 +74,24 @@ class UpsertProduct {
             "Mobile" => ['id' => 154, 'slug' => 'mobile', 'virtual' => false] // Mobile is not virtual
         ];
 
+        // Handle Featured Image Upload
+        $featuredImageId = null;
+        if (!empty($params["featuredImage"])) {
+            $featuredImageId = $this->upload_image_to_wordpress($params["featuredImage"], $serviceName);
+        }
+
+        // Handle Gallery Images Upload (Max 5)
+        $galleryImageIds = [];
+        if (!empty($params["galleryImages"]) && is_array($params["galleryImages"])) {
+            $galleryImages = array_slice($params["galleryImages"], 0, 5);
+            foreach ($galleryImages as $index => $galleryImageUrl) {
+                $galleryId = $this->upload_image_to_wordpress($galleryImageUrl, $serviceName, $index);
+                if ($galleryId) {
+                    $galleryImageIds[] = $galleryId;
+                }
+            }
+        }
+
         // Create or Update WooCommerce Product
         if ($is_update) {
             $product = wc_get_product($product_id);
@@ -214,5 +232,57 @@ class UpsertProduct {
 
 
         return new \WP_REST_Response(['message' => 'Product created/updated successfully', 'product_id' => $product_id], 200);
+    }
+
+    /**
+     * Uploads an image to WordPress Media Library.
+     * Renames it for SEO and sets metadata (alt, caption, description).
+     */
+    private function upload_image_to_wordpress($image_url, $service_name, $index = null) {
+        require_once(ABSPATH . 'wp-admin/includes/file.php');
+        require_once(ABSPATH . 'wp-admin/includes/media.php');
+        require_once(ABSPATH . 'wp-admin/includes/image.php');
+
+        $image_name = sanitize_title($service_name);
+        if ($index !== null) {
+            $image_name .= '-' . ($index + 1);
+        }
+        $image_name .= '.jpg'; // Change format if necessary
+
+        // Download Image
+        $tmp = download_url($image_url);
+        if (is_wp_error($tmp)) {
+            return false;
+        }
+
+        // File Information
+        $file_array = [
+            'name'     => $image_name,
+            'tmp_name' => $tmp
+        ];
+
+        // Upload Image to Media Library
+        $attachment_id = media_handle_sideload($file_array, 0);
+
+        // Check for errors
+        if (is_wp_error($attachment_id)) {
+            @unlink($file_array['tmp_name']); // Remove temp file
+            return false;
+        }
+
+        // Get Attachment URL
+        $attachment_url = wp_get_attachment_url($attachment_id);
+
+        // Set Image Meta (SEO)
+        $alt_text = $service_name . ' image'; // Example: "Braid styles image"
+        update_post_meta($attachment_id, '_wp_attachment_image_alt', $alt_text);
+        wp_update_post([
+            'ID'           => $attachment_id,
+            'post_title'   => ucfirst($service_name),
+            'post_excerpt' => 'High-quality image of ' . $service_name,
+            'post_content' => 'This is an image related to ' . $service_name
+        ]);
+
+        return $attachment_id;
     }
 }
