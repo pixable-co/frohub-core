@@ -230,6 +230,16 @@ class UpsertProduct {
         }
         update_field('faqs', $faqs_repeater, $product_id);
 
+        // Set Featured Image
+        if ($featuredImageId) {
+            set_post_thumbnail($product_id, $featuredImageId);
+        }
+
+        // Set Gallery Images
+        if (!empty($galleryImageIds)) {
+            update_post_meta($product_id, '_product_image_gallery', implode(',', $galleryImageIds));
+        }
+        
 
         return new \WP_REST_Response(['message' => 'Product created/updated successfully', 'product_id' => $product_id], 200);
     }
