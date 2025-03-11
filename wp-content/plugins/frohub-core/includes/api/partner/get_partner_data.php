@@ -19,9 +19,6 @@ class GetPartnerData {
         register_rest_route('frohub/v1', '/get-partner-data', array(
             'methods'             => 'POST',
             'callback'            => array($this, 'get_partner_acf_fields'),
-            'permission_callback' => function () {
-                return current_user_can('manage_options'); // Modify permissions as needed
-            },
             'args' => [
                 'partner_post_id' => [
                     'validate_callback' => function ($param) {
@@ -49,6 +46,7 @@ class GetPartnerData {
 
         // Get Featured Image URL
         $featured_image_url = get_the_post_thumbnail_url($partner_post_id, 'full') ?: '';
+        $reviews = $this->get_partner_reviews($partner_post_id);
 
         // Keep existing keys while adding new ones
         $partner_data = [
@@ -71,8 +69,50 @@ class GetPartnerData {
             'terms'            => get_field('terms_and_conditions', $partner_post_id),
             'lateFees'         => get_field('late_fees', $partner_post_id),
             'payments'         => get_field('payments', $partner_post_id),
+            'reviews'         => $reviews,
         ];
 
         return rest_ensure_response($partner_data);
     }
+
+     /**
+      * Fetch reviews related to the given partner ID.
+      *
+      * @param int $partner_id
+      * @return array
+      */
+     private function get_partner_reviews($partner_id) {
+         $reviews = [];
+
+         $args = [
+             'post_type'      => 'review',
+             'posts_per_page' => -1,
+             'meta_query'     => [
+                 [
+                     'key'     => 'partner', // ACF field key for the post object
+                     'value'   => strval($partner_id), // Ensure we match against the ID as a string
+                     'compare' => '='
+                 ]
+             ]
+         ];
+
+         $query = new \WP_Query($args);
+
+         if ($query->have_posts()) {
+             while ($query->have_posts()) {
+                 $query->the_post();
+                 $reviews[] = [
+                     'id'      => get_the_ID(),
+                     'title'   => get_the_title(),
+                     'content' => apply_filters('the_content', get_the_content()),
+                     'rating'  => get_field('overall_rating'), // Assuming there's a rating field in ACF
+                     'author'  => get_the_author(),
+                     'date'    => get_the_date()
+                 ];
+             }
+             wp_reset_postdata();
+         }
+
+         return $reviews;
+     }
 }
