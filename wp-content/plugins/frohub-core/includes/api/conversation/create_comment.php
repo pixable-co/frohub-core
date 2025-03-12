@@ -94,8 +94,10 @@ class CreateComment {
         // Store partner ID as comment meta (optional)
         if ($partner_id) {
             update_comment_meta($comment_id, 'partner', $partner_id);
-            update_comment_meta($comment_id, 'has_been_read_by_customer', 0);
         }
+
+        // Set conversation as unread by customer
+        update_post_meta($post_id, 'unread_by_customer', 1);
 
         return rest_ensure_response([
             'success'    => true,
