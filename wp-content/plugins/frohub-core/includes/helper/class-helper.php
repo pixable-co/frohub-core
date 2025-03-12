@@ -64,6 +64,74 @@ class Helper {
             return $orders;
         }
 
+        public static function get_next_upcoming_order_by_partner($partner_id) {
+            global $wpdb;
+
+            // If partner_id is not provided directly, try to get it from ACF
+            if (!$partner_id) {
+                $partner_id = get_field('partner_id'); // Get partner ID from ACF
+
+                // If still no partner ID, return null
+                if (!$partner_id) {
+                    return null;
+                }
+            }
+
+            // Get the current date and time in a matching format
+            $current_datetime = date('Y-m-d H:i:s');
+
+            $query = $wpdb->prepare("
+                SELECT
+                    p.ID as order_id,
+                    p.post_status,
+                    p.post_date,
+                    im1.meta_value as start_date_time,
+                    im2.meta_value as end_date_time,
+                    oi.order_item_name as service_name
+                FROM {$wpdb->posts} AS p
+                INNER JOIN {$wpdb->prefix}woocommerce_order_items AS oi ON p.ID = oi.order_id
+                INNER JOIN {$wpdb->prefix}woocommerce_order_itemmeta AS im1 ON oi.order_item_id = im1.order_item_id
+                INNER JOIN {$wpdb->prefix}woocommerce_order_itemmeta AS im2 ON oi.order_item_id = im2.order_item_id
+                INNER JOIN {$wpdb->prefix}postmeta AS pm ON p.ID = pm.post_id
+                WHERE p.post_type = 'shop_order'
+                AND p.post_status IN ('wc-rescheduling', 'wc-processing', 'wc-on-hold')
+                AND im1.meta_key = 'Start Date Time'
+                AND im2.meta_key = 'End Date Time'
+                AND pm.meta_key = 'partner_id'
+                AND pm.meta_value = %d
+                AND STR_TO_DATE(im1.meta_value, '%%H:%%i, %%d %%b %%Y') >= %s
+                ORDER BY STR_TO_DATE(im1.meta_value, '%%H:%%i, %%d %%b %%Y') ASC
+                LIMIT 1
+            ", $partner_id, $current_datetime);
+
+            $result = $wpdb->get_row($query);
+
+            if (!$result) {
+                return null;
+            }
+
+            $order = wc_get_order($result->order_id);
+
+            if (!$order) {
+                return null;
+            }
+
+            // Parse the start date time to get separate date and time
+            $start_datetime_parts = explode(', ', $result->start_date_time);
+            $start_time = $start_datetime_parts[0] ?? '';
+            $start_date = $start_datetime_parts[1] ?? '';
+
+            return [
+                'order_id'        => $result->order_id,
+                'start_date'      => $start_date,
+                'start_time'      => $start_time,
+                'service_name'    => $result->service_name,
+                'client_name'     => $order->get_billing_first_name() . ' ' . $order->get_billing_last_name(),
+                'client_phone'    => $order->get_billing_phone(),
+                'client_email'    => $order->get_billing_email()
+            ];
+        }
+
         private static function convert_to_selected_time($start_date_time, $end_date_time) {
             if (!$start_date_time || !$end_date_time) {
                 return null;

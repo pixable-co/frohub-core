@@ -1,6 +1,8 @@
 <?php
 namespace FECore;
 
+use FECore\GetUpcomingBooking;
+
 use FECore\GetLocationData;
 use FECore\UpdateLocationData;
 use FECore\ProductAttributes;
@@ -64,5 +66,6 @@ class API {
 		StripeAccount::init();
 	
 
+		GetUpcomingBooking::init();
 	}
 }
