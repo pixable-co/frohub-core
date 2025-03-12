@@ -22,7 +22,7 @@ use FECore\ReturnPartnerFaqs;
 use FECore\ReturnSpecificPartnerAddOns;
 use FECore\ReturnAllProductTags;
 
-use FECore\Payouts;
+// use FECore\Payouts;
 use FECore\MyServices;
 use FECore\ConfirmOrder;
 use FECore\RescheduleOrder;
@@ -58,7 +58,7 @@ class API {
 		ReturnAllProductTags::init();
 
 
-		Payouts::init();
+// 		Payouts::init();
 		MyServices::init();
 		ConfirmOrder::init();
 		RescheduleOrder::init();
