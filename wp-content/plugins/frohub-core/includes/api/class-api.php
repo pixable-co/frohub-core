@@ -30,7 +30,13 @@ use FECore\RescheduleOrder;
 use FECore\UpdatePartnerStripeDetails;
 use FECore\StripeAccount;
 use FECore\ReturnPayoutsPost;
-
+use FECore\BroadcastMessage;
+use FECore\SubmitReviewReply;
+use FECore\ReturnAllReviewsForPartner;
+use FECore\CheckAddOnSlugAvailability;
+use FECore\AddGlobalAddon;
+use FECore\SingleFaq;
+use FECore\Upsert;
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -57,8 +63,13 @@ class API {
 		ReturnPartnerFaqs::init();
 		ReturnSpecificPartnerAddOns::init();
 		ReturnAllProductTags::init();
-
-
+		BroadcastMessage::init();
+		SubmitReviewReply::init();
+		ReturnAllReviewsForPartner::init();
+		CheckAddOnSlugAvailability::init();
+		AddGlobalAddon::init();
+		SingleFaq::init();
+		Upsert::init();
 // 		Payouts::init();
 		MyServices::init();
 		ConfirmOrder::init();
