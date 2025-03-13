@@ -22,13 +22,14 @@ use FECore\ReturnPartnerFaqs;
 use FECore\ReturnSpecificPartnerAddOns;
 use FECore\ReturnAllProductTags;
 
+
 // use FECore\Payouts;
 use FECore\MyServices;
 use FECore\ConfirmOrder;
 use FECore\RescheduleOrder;
 use FECore\UpdatePartnerStripeDetails;
 use FECore\StripeAccount;
-
+use FECore\ReturnPayoutsPost;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -64,7 +65,7 @@ class API {
 		RescheduleOrder::init();
 		UpdatePartnerStripeDetails::init();
 		StripeAccount::init();
-	
+		ReturnPayoutsPost::init();
 
 		GetUpcomingBooking::init();
 	}
