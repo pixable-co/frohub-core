@@ -22,6 +22,14 @@ class CreateComment {
             'permission_callback' => function () {
                 return current_user_can('edit_posts');
             },
+            'args' => array(
+                'comment_image' => array(
+                    'required' => false,
+                    'validate_callback' => function ($param, $request, $key) {
+                        return is_string($param);
+                    }
+                ),
+            ),
         ));
     }
 
@@ -51,7 +59,7 @@ class CreateComment {
         }
 
         // Validate comment content
-        if (empty($comment)) {
+        if (empty($comment) && empty($_FILES['comment_image']['name'])) {
             return rest_ensure_response([
                 'error'   => true,
                 'message' => __('Comment cannot be empty.', 'textdomain')
@@ -69,6 +77,40 @@ class CreateComment {
         // Use logged-in user display name if author_name is not provided
         if (empty($author_name)) {
             $author_name = wp_get_current_user()->display_name;
+        }
+
+        // Handle image upload (if provided)
+        $image_url = '';
+        if (!empty($_FILES['comment_image']['name'])) {
+            require_once ABSPATH . 'wp-admin/includes/file.php';
+            require_once ABSPATH . 'wp-admin/includes/media.php';
+            require_once ABSPATH . 'wp-admin/includes/image.php';
+
+            $upload = wp_handle_upload($_FILES['comment_image'], array('test_form' => false));
+
+            if (isset($upload['file'])) {
+                $file_path = $upload['file'];
+                $file_name = basename($file_path);
+                $file_type = wp_check_filetype($file_name);
+
+                $attachment = array(
+                    'post_mime_type' => $file_type['type'],
+                    'post_title'     => sanitize_file_name($file_name),
+                    'post_content'   => '',
+                    'post_status'    => 'inherit'
+                );
+
+                $attachment_id = wp_insert_attachment($attachment, $file_path);
+                wp_update_attachment_metadata($attachment_id, wp_generate_attachment_metadata($attachment_id, $file_path));
+
+                // Get the image URL
+                $image_url = wp_get_attachment_url($attachment_id);
+            }
+        }
+
+        // Append image to comment content if available
+        if (!empty($image_url)) {
+            $comment .= '<br><img src="' . esc_url($image_url) . '" alt="Comment Image" style="max-width:100%; height:auto;">';
         }
 
         // Prepare comment data
@@ -102,7 +144,9 @@ class CreateComment {
         return rest_ensure_response([
             'success'    => true,
             'message'    => __('Comment added successfully.', 'textdomain'),
-            'comment_id' => $comment_id
+            'comment_id' => $comment_id,
+            'image_url'  => $image_url
         ], 200);
     }
 }
+
