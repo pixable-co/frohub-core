@@ -28,7 +28,7 @@ class DisplayComments {
 
         if($comment_partner)
         {
-        update_comment_meta($commentId,'has_been_read_by_customer', true);
+            update_comment_meta($commentId,'read_by_customer', true);
         }
 
         $allComments[] = array(
