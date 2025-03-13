@@ -15,7 +15,8 @@ class DisplayComments {
     public function display_comments_shortcode() {
         ob_start();
 
-        $comments = get_comments(array('post_id' => get_the_ID())); // Get comments for the current post
+        $postId = get_the_ID(); // Get the current post ID
+        $comments = get_comments(array($postId)); // Get comments for the current post
         $currentUserId = get_current_user_id();
         $allComments = array();
 
@@ -23,13 +24,8 @@ class DisplayComments {
         $commentId = $comment->comment_ID; // Store comment ID in a variable
         $comment_meta = get_comment_meta($commentId);
 
-        $comment_partner =  $comment_meta['partner'][0]; // Accessing the first value in the array
-        $has_been_read_by_customer = $comment_meta['has_been_read_by_customer'];
-
-        if($comment_partner)
-        {
-            update_comment_meta($commentId,'read_by_customer', true);
-        }
+        //Mark conversation as read by customer
+        update_field('read_by_customer',1,$postId);
 
         $allComments[] = array(
         'comment_id' => $commentId,
