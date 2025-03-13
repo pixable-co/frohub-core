@@ -96,8 +96,8 @@ class CreateComment {
             update_comment_meta($comment_id, 'partner', $partner_id);
         }
 
-        // Set conversation as unread by customer
-        update_post_meta($post_id, 'unread_by_customer', 1);
+        // Set conversation as read by customer to false
+        update_post_meta($post_id, 'read_by_customer', 0);
 
         return rest_ensure_response([
             'success'    => true,
