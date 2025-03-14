@@ -116,6 +116,9 @@ class Helper {
                 return null;
             }
 
+            $conversationId = get_field('conversation', $result->order_id);
+            $partnerPlatformClientId = get_field('partner_client_post_id',$conversationId);
+
             // Parse the start date time to get separate date and time
             $start_datetime_parts = explode(', ', $result->start_date_time);
             $start_time = $start_datetime_parts[0] ?? '';
@@ -128,7 +131,8 @@ class Helper {
                 'service_name'    => $result->service_name,
                 'client_name'     => $order->get_billing_first_name() . ' ' . $order->get_billing_last_name(),
                 'client_phone'    => $order->get_billing_phone(),
-                'client_email'    => $order->get_billing_email()
+                'client_email'    => $order->get_billing_email(),
+                'partner_platform_client_id' => $partnerPlatformClientId,
             ];
         }
 
