@@ -109,6 +109,16 @@ class ReturnOrderDetails {
                 $booking_date = wc_get_order_item_meta($item_id, 'Start Date Time', true) ?: '';
                 $booking_time = wc_get_order_item_meta($item_id, 'Selected Time', true) ?: '';
                 $duration= wc_get_order_item_meta($item_id, 'Duration', true) ?: '';
+
+                // Extract time and date separately from booking_date (Start Date Time)
+                $extracted_time = '';
+                $extracted_date = '';
+
+                if (!empty($booking_date)) {
+                    $booking_parts = explode(', ', $booking_date, 2);
+                    $extracted_time = isset($booking_parts[0]) ? trim($booking_parts[0]) : ''; // Time
+                    $extracted_date = isset($booking_parts[1]) ? trim($booking_parts[1]) : ''; // Date
+                }
     
                 $order_data['line_items'][] = [
                     'product_id'   => $product_id,
@@ -122,7 +132,7 @@ class ReturnOrderDetails {
                         'deposit_due'      => $deposit_due,
                         'service_type'     => $service_type,
                         'booking_date'     => $booking_date,
-                        'booking_time'     => $booking_time,
+                        'booking_time'     => $extracted_time,
                         'duration'         => $duration,
                     ],
                 ];
