@@ -17,23 +17,47 @@ class GetAllAddOns {
      */
     public function register_rest_routes() {
         register_rest_route('frohub/v1', '/get-all-add-ons', array(
-            'methods'             => 'POST',
-            'callback'            => array($this, 'handle_request'),
-            'permission_callback' => '__return_true',
+            'methods'             => 'GET',
+            'callback'            => array($this, 'get_all_addons'),
+            'permission_callback' => '__return_true', // Restrict if needed
         ));
     }
 
     /**
-     * Handles the API request.
+     * Retrieves all add-ons from the 'pa_add-on' taxonomy.
      *
      * @param \WP_REST_Request $request
      * @return \WP_REST_Response
      */
-    public function handle_request(\WP_REST_Request $request) {
-        // Example logic
-        return new \WP_REST_Response(array(
-            'success' => true,
-            'message' => 'get-all-add-ons API endpoint reached',
-        ), 200);
+    public function get_all_addons(\WP_REST_Request $request) {
+        // Get all terms from 'pa_add-on' taxonomy
+        $addons = get_terms([
+            'taxonomy'   => 'pa_add-on',
+            'hide_empty' => false // Fetch even if no products are linked
+        ]);
+
+        // If no add-ons are found, return an empty response
+        if (empty($addons) || is_wp_error($addons)) {
+            return new \WP_REST_Response([
+                'message' => 'No add-ons found.',
+                'data'    => []
+            ], 200);
+        }
+
+        // Format response
+        $formatted_addons = array_map(function ($addon) {
+            return [
+                'add_on_term_id' => $addon->term_id,
+                'add_on'         => $addon->name,
+                'slug'           => $addon->slug,
+                'description'    => $addon->description
+            ];
+        }, $addons);
+
+        return new \WP_REST_Response([
+            'message' => 'All add-ons fetched successfully.',
+            'data'    => $formatted_addons
+        ], 200);
     }
 }
+
