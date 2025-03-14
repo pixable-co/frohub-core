@@ -37,6 +37,14 @@ use FECore\CheckAddOnSlugAvailability;
 use FECore\AddGlobalAddon;
 use FECore\SingleFaq;
 use FECore\Upsert;
+use FECore\UpdatePartner;
+use FECore\CheckSlug;
+use FECore\Order;
+use FECore\SaveAddOns;
+use FECore\GetAllAddOns;
+use FECore\ConfirmPartnerPayout;
+use FECore\PayoutPartners;
+use FECore\PartnerAddOns;
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -70,6 +78,14 @@ class API {
 		AddGlobalAddon::init();
 		SingleFaq::init();
 		Upsert::init();
+		UpdatePartner::init();
+		CheckSlug::init();
+		Order::init();
+		SaveAddOns::init();
+		GetAllAddOns::init();
+		ConfirmPartnerPayout::init();
+		PayoutPartners::init();
+		PartnerAddOns::init();
 // 		Payouts::init();
 		MyServices::init();
 		ConfirmOrder::init();
