@@ -32,6 +32,13 @@ public function add_to_cart() {
     WC()->cart->empty_cart();
     // Get data from the request
     $product_id = isset($_POST['productId']) ? sanitize_text_field($_POST['productId']) : '';
+
+    // Fetch Partner ID from ACF field
+    $partner_id = get_field('partner_id', $product_id);
+
+    // Get Partner Name
+    $partner_name = $partner_id ? get_the_title($partner_id) : 'Error: Partner not found';
+
     $selected_add_ons = isset($_POST['selectedAddOns']) ? array_map(function($add_on) {
         return array(
             'id' => sanitize_text_field($add_on['id']),
@@ -85,6 +92,7 @@ public function add_to_cart() {
             'booking_time' => $selected_time,
             'size' => $pa_size,
             'length' => $pa_length,
+            'stylist_name' => $partner_name // Adding Stylist Name to cart
         );
 
         $cart_item_key = WC()->cart->add_to_cart($product_id, 1, $variation_id, array(), $cart_item_data);
@@ -179,6 +187,11 @@ public function add_to_cart() {
         if (isset($values['length'])) {
             $cart_item['length'] = $values['length'];
         }
+        if (isset($values['stylist_name'])) {
+            $cart_item['stylist_name'] = $values['stylist_name'];
+        }
+    
+        
         return $cart_item;
     }
 
@@ -225,6 +238,15 @@ public function add_to_cart() {
                     'value' => $cart_item['booking_time'],
                 );
         }
+
+        // Display stylist name
+        if (isset($cart_item['stylist_name']) && !empty($cart_item['stylist_name'])) {
+        $item_data[] = array(
+        'name' => __('Stylist', 'frohub'),
+        'value' => $cart_item['stylist_name'],
+        );
+        }
+
         return $item_data;
     }
 
@@ -280,6 +302,9 @@ public function add_to_cart() {
         }
         if (!empty($values['length'])) {
             wc_add_order_item_meta($item_id, 'Length', ucfirst($values['length']));
+        }
+        if (isset($values['stylist_name']) && !empty($values['stylist_name'])) {
+            wc_add_order_item_meta($item_id, 'Stylist', $values['stylist_name']);
         }
     }
     
