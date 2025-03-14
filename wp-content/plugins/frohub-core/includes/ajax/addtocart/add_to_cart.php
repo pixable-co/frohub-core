@@ -160,6 +160,10 @@ public function add_to_cart() {
     }
 
     public function get_cart_item_from_session($cart_item, $values) {
+        if (isset($values['stylist_name'])) {
+            $cart_item['stylist_name'] = $values['stylist_name'];
+        }
+        
         // Restore custom price from session
         if (isset($values['custom_price'])) {
             $cart_item['custom_price'] = $values['custom_price'];
@@ -187,15 +191,22 @@ public function add_to_cart() {
         if (isset($values['length'])) {
             $cart_item['length'] = $values['length'];
         }
-        if (isset($values['stylist_name'])) {
-            $cart_item['stylist_name'] = $values['stylist_name'];
-        }
+
     
         
         return $cart_item;
     }
 
     public function display_selected_add_ons($item_data, $cart_item) {
+
+            // Display stylist name
+            if (isset($cart_item['stylist_name']) && !empty($cart_item['stylist_name'])) {
+                $item_data[] = array(
+                'name' => __('Stylist', 'frohub'),
+                'value' => $cart_item['stylist_name'],
+                );
+                }
+
         // Display selected add-ons in cart and checkout
         if (isset($cart_item['selected_add_ons']) && ! empty($cart_item['selected_add_ons'])) {
             $add_ons = array_map(function($add_on) {
@@ -239,13 +250,7 @@ public function add_to_cart() {
                 );
         }
 
-        // Display stylist name
-        if (isset($cart_item['stylist_name']) && !empty($cart_item['stylist_name'])) {
-        $item_data[] = array(
-        'name' => __('Stylist', 'frohub'),
-        'value' => $cart_item['stylist_name'],
-        );
-        }
+
 
         return $item_data;
     }
@@ -253,6 +258,10 @@ public function add_to_cart() {
     public function add_order_item_meta($item_id, $values) {
         $order_id = wc_get_order_id_by_order_item_id($item_id);
     
+        if (isset($values['stylist_name']) && !empty($values['stylist_name'])) {
+            wc_add_order_item_meta($item_id, 'Stylist', $values['stylist_name']);
+        }
+
         // Save "Total Due on the Day" with 2 decimal places
         if (isset($values['deposit_due'])) {
             wc_add_order_item_meta($item_id, 'Total Due on the Day', '£' . number_format((float)$values['deposit_due'], 2));
@@ -303,10 +312,6 @@ public function add_to_cart() {
         if (!empty($values['length'])) {
             wc_add_order_item_meta($item_id, 'Length', ucfirst($values['length']));
         }
-        if (isset($values['stylist_name']) && !empty($values['stylist_name'])) {
-            wc_add_order_item_meta($item_id, 'Stylist', $values['stylist_name']);
-        }
+
     }
-    
-    
 }
