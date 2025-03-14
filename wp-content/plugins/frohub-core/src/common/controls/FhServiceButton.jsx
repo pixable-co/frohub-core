@@ -3,9 +3,9 @@ import { Skeleton } from "antd";
 import { Home, Building, Car } from "lucide-react";
 
 const iconMap = {
-    home: <i className="fas fa-home text-[32px]"></i>,
-    salon: <i className="fas fa-chair text-[32px]"></i>, // Use `fa-chair`
-    mobile: <i className="fas fa-car-side text-[32px]"></i>,
+    "home-based": <i className="fas fa-home text-[32px]"></i>,
+    "salon-based": <i className="fas fa-chair-office text-[32px]"></i>,
+    "mobile": <i className="fas fa-car-side text-[32px]"></i>,
 };
 
 
