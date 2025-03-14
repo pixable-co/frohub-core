@@ -3,14 +3,11 @@ import { Skeleton } from "antd";
 import { Home, Building, Car } from "lucide-react";
 
 const iconMap = {
-    // home: <Home size={48} className="text-gray-500" />,
-    // salon: <Building size={48} className="text-gray-500" />,
-    // mobile: <Car size={48} className="text-gray-500" />,
-
     home: <i className="fas fa-home text-[32px]"></i>,
-    salon: <i className="fas fa-chair-office text-[32px]"></i>,
+    salon: <i className="fas fa-chair text-[32px]"></i>, // Use `fa-chair`
     mobile: <i className="fas fa-car-side text-[32px]"></i>,
 };
+
 
 const FhServiceButton = ({service, selectedService, handleSelectService, loading }) => {
     if (loading) {
