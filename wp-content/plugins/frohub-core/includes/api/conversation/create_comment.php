@@ -39,6 +39,7 @@ class CreateComment {
         $comment     = isset($parameters['comment']) ? wp_kses_post($parameters['comment']) : '';
         $author_name = isset($parameters['author_name']) ? sanitize_text_field($parameters['author_name']) : '';
         $email       = isset($parameters['email']) ? sanitize_email($parameters['email']) : '';
+        $image_url   = isset($parameters['image_url']) ? esc_url($parameters['image_url']) : '';
 
         $user_id = get_current_user_id();
 
@@ -51,10 +52,10 @@ class CreateComment {
         }
 
         // Validate comment content
-        if (empty($comment)) {
+        if (empty($comment) && empty($image_url)) {
             return rest_ensure_response([
                 'error'   => true,
-                'message' => __('Comment cannot be empty.', 'textdomain')
+                'message' => __('Comment cannot be empty if no image is provided.', 'textdomain')
             ], 400);
         }
 
@@ -69,6 +70,11 @@ class CreateComment {
         // Use logged-in user display name if author_name is not provided
         if (empty($author_name)) {
             $author_name = wp_get_current_user()->display_name;
+        }
+
+        // Append image to the comment if an image URL is provided
+        if (!empty($image_url)) {
+            $comment .= '<br><img src="' . esc_url($image_url) . '" alt="Comment Image" style="max-width: 100%; height: auto;">';
         }
 
         // Prepare comment data
@@ -94,13 +100,16 @@ class CreateComment {
         // Store partner ID as comment meta (optional)
         if ($partner_id) {
             update_comment_meta($comment_id, 'partner', $partner_id);
-            update_comment_meta($comment_id, 'has_been_read_by_customer', 0);
         }
+
+        // Set conversation as read by customer to false
+        update_post_meta($post_id, 'read_by_customer', 0);
 
         return rest_ensure_response([
             'success'    => true,
             'message'    => __('Comment added successfully.', 'textdomain'),
-            'comment_id' => $comment_id
+            'comment_id' => $comment_id,
+            'image_url'  => $image_url
         ], 200);
     }
 }

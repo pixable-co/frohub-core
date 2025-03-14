@@ -17,6 +17,7 @@ class DisplayExistingConversations {
 
         if (is_user_logged_in()) {
             $current_user_id = get_current_user_id();
+            $current_post_id = get_queried_object_id(); // Get the current viewed post ID
 
             $args = array(
                 'post_type'      => 'conversation',
@@ -33,42 +34,31 @@ class DisplayExistingConversations {
             $query = new \WP_Query($args);
 
             if ($query->have_posts()) {
+                echo '<div class="ongoing-conversations-list">';
+                
                 while ($query->have_posts()) {
-					$query->the_post();
-					$conversation_id = get_the_ID();
-					$unread_comments = Array();
-                    
-					// Fetch unread comments
-					$comments = get_comments(array(
-						'post_id' => $conversation_id, // Ensure this uses the correct conversation post ID
-					));
+                    $query->the_post();
+                    $conversation_id = get_the_ID();
+                    $read_by_customer = get_field('read_by_customer', $conversation_id);
 
-					foreach ($comments as $comment)
-					{
-						$comment_meta = get_comment_meta($comment->comment_ID);
-						
-						$comment_partner =  $comment_meta['partner'][0]; // Accessing the first value in the array
-						$has_been_read_by_customer = $comment_meta['has_been_read_by_customer'][0];
-						
-						if($comment_partner)
-						{
-							if($has_been_read_by_customer == 0 || $has_been_read_by_customer == null)
-							{
-								$unread_comments[] = $comment->comment_ID;
-							}
-						}
-					}
-					
-    				$unread_count = count($unread_comments);
-					 
-                    echo '<div class="ongoing-conversation">';
-                    echo '<h5 class="conversation-title"><a href="' . get_permalink() . '">' . get_the_title() .'</a></h5>';
-					if($unread_count > 0)
-					{
-						echo '<p> You have '.$unread_count.' unread messages. </p>';
-					}
+                    // Highlight class if it's the current post
+                    $highlight_class = ($conversation_id == $current_post_id) ? 'highlight' : '';
+
+                    echo '<a href="' . get_permalink() . '" class="ongoing-conversation ' . $highlight_class . '">';
+                    echo '<div class="conversation-content">';
+                    echo '<h5 class="conversation-title">' . get_the_title();
+
+                    // Add red dot if "read_by_customer" is false
+                    if (!$read_by_customer) {
+                        echo ' <span class="red-dot"></span>';
+                    }
+
+                    echo '</h5>';
                     echo '</div>';
+                    echo '</a>';
                 }
+
+                echo '</div>';
                 wp_reset_postdata();
             } else {
                 echo '<p>No conversations found.</p>';

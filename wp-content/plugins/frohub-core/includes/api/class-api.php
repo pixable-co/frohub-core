@@ -22,14 +22,29 @@ use FECore\ReturnPartnerFaqs;
 use FECore\ReturnSpecificPartnerAddOns;
 use FECore\ReturnAllProductTags;
 
+
 // use FECore\Payouts;
 use FECore\MyServices;
 use FECore\ConfirmOrder;
 use FECore\RescheduleOrder;
 use FECore\UpdatePartnerStripeDetails;
 use FECore\StripeAccount;
-
-
+use FECore\ReturnPayoutsPost;
+use FECore\BroadcastMessage;
+use FECore\SubmitReviewReply;
+use FECore\ReturnAllReviewsForPartner;
+use FECore\CheckAddOnSlugAvailability;
+use FECore\AddGlobalAddon;
+use FECore\SingleFaq;
+use FECore\Upsert;
+use FECore\UpdatePartner;
+use FECore\CheckSlug;
+use FECore\Order;
+use FECore\SaveAddOns;
+use FECore\GetAllAddOns;
+use FECore\ConfirmPartnerPayout;
+use FECore\PayoutPartners;
+use FECore\PartnerAddOns;
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -56,15 +71,28 @@ class API {
 		ReturnPartnerFaqs::init();
 		ReturnSpecificPartnerAddOns::init();
 		ReturnAllProductTags::init();
-
-
+		BroadcastMessage::init();
+		SubmitReviewReply::init();
+		ReturnAllReviewsForPartner::init();
+		CheckAddOnSlugAvailability::init();
+		AddGlobalAddon::init();
+		SingleFaq::init();
+		Upsert::init();
+		UpdatePartner::init();
+		CheckSlug::init();
+		Order::init();
+		SaveAddOns::init();
+		GetAllAddOns::init();
+		ConfirmPartnerPayout::init();
+		PayoutPartners::init();
+		PartnerAddOns::init();
 // 		Payouts::init();
 		MyServices::init();
 		ConfirmOrder::init();
 		RescheduleOrder::init();
 		UpdatePartnerStripeDetails::init();
 		StripeAccount::init();
-	
+		ReturnPayoutsPost::init();
 
 		GetUpcomingBooking::init();
 	}
