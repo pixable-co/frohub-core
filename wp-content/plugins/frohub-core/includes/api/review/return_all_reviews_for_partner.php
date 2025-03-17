@@ -16,11 +16,6 @@ class ReturnAllReviewsForPartner {
      * Registers the REST API routes.
      */
     public function register_rest_routes() {
-        register_rest_route('frohub/v1', '/return-all-reviews-for-partner', array(
-            'methods'             => 'GET',
-            'callback'            => array($this, 'handle_request'),
-            'permission_callback' => '__return_true',
-        ));
 
         register_rest_route('frohub/v1', '/reviews', array(
             'methods'             => 'GET',
@@ -30,20 +25,7 @@ class ReturnAllReviewsForPartner {
     }
 
     /**
-     * Handles the /return-all-reviews-for-partner API request.
-     *
-     * @param \WP_REST_Request $request
-     * @return \WP_REST_Response
-     */
-    public function handle_request(\WP_REST_Request $request) {
-        return new \WP_REST_Response(array(
-            'success' => true,
-            'message' => 'return-all-reviews-for-partner API endpoint reached',
-        ), 200);
-    }
-
-    /**
-     * Fetches all reviews associated with a given partner ID.
+     * Fetches all reviews associated with a given partner ID and calculates averages.
      *
      * @param \WP_REST_Request $request
      * @return \WP_REST_Response|\WP_Error
@@ -74,6 +56,11 @@ class ReturnAllReviewsForPartner {
         }
 
         $reviews = [];
+        $total_reviews = 0;
+        $total_overall_rating = 0;
+        $total_reliability = 0;
+        $total_skill = 0;
+        $total_professionalism = 0;
 
         while ($query->have_posts()) {
             $query->the_post();
@@ -89,6 +76,28 @@ class ReturnAllReviewsForPartner {
 
             $latest_comment = !empty($comments_query) ? $comments_query[0]->comment_content : null;
 
+            // Get ACF fields
+            $overall_rating  = get_field('overall_rating', $post_id);
+            $reliability     = get_field('reliability', $post_id);
+            $skill           = get_field('skill', $post_id);
+            $professionalism = get_field('professionalism', $post_id);
+
+            // Ensure values are numeric before adding to totals
+            if (is_numeric($overall_rating)) {
+                $total_overall_rating += $overall_rating;
+            }
+            if (is_numeric($reliability)) {
+                $total_reliability += $reliability;
+            }
+            if (is_numeric($skill)) {
+                $total_skill += $skill;
+            }
+            if (is_numeric($professionalism)) {
+                $total_professionalism += $professionalism;
+            }
+
+            $total_reviews++;
+
             $reviews[] = [
                 'id'                => $post_id,
                 'title'             => get_the_title(),
@@ -96,16 +105,31 @@ class ReturnAllReviewsForPartner {
                 'date'              => get_the_date(),
                 'author'            => get_the_author(),
                 'service_booked'    => get_field('service_booked', $post_id),
-                'overall_rating'    => get_field('overall_rating', $post_id),
-                'reliability'       => get_field('reliability', $post_id),
-                'skill'             => get_field('skill', $post_id),
-                'professionalism'   => get_field('professionalism', $post_id),
+                'overall_rating'    => $overall_rating,
+                'reliability'       => $reliability,
+                'skill'             => $skill,
+                'professionalism'   => $professionalism,
                 'reply'             => $latest_comment // Return the latest reply (if exists)
             ];
         }
 
         wp_reset_postdata();
 
-        return rest_ensure_response($reviews);
+        // Calculate averages (handle division by zero)
+        $stylist_overall_rating_average  = $total_reviews ? $total_overall_rating / $total_reviews : 0;
+        $stylist_reliability_average     = $total_reviews ? $total_reliability / $total_reviews : 0;
+        $stylist_skill_average           = $total_reviews ? $total_skill / $total_reviews : 0;
+        $stylist_professionalism_average = $total_reviews ? $total_professionalism / $total_reviews : 0;
+
+        // Prepare response
+        $response = [
+            'stylist_overall_rating_average'  => round($stylist_overall_rating_average, 2),
+            'stylist_reliability_average'     => round($stylist_reliability_average, 2),
+            'stylist_skill_average'           => round($stylist_skill_average, 2),
+            'stylist_professionalism_average' => round($stylist_professionalism_average, 2),
+            'reviews'                         => $reviews
+        ];
+
+        return rest_ensure_response($response);
     }
 }
