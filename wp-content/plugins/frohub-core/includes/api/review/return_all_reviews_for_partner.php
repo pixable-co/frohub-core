@@ -98,19 +98,50 @@ class ReturnAllReviewsForPartner {
 
             $total_reviews++;
 
+            // Fetch the order object from ACF
+            $order = get_field('order', $post_id);
+            $filtered_service = null;
+            $start_date_time = null;
+
+            if (!empty($order) && is_object($order)) {
+            $order_id = $order->ID; // Ensure we are working with an order ID
+
+            // Get order items
+            $order_items = wc_get_order($order_id)->get_items();
+
+            foreach ($order_items as $item) {
+            $product_id = $item->get_product_id();
+
+            if ($product_id == 2600) {
+            continue; // Ignore product ID 2600
+            }
+
+            // Get product title
+            $filtered_service = get_the_title($product_id);
+
+            // Fetch the start date time from line item meta
+            $start_date_time = wc_get_order_item_meta($item->get_id(), 'start_date_time', true);
+
+            // If a valid service is found, break out of the loop
+            break;
+            }
+            }
+
+
             $reviews[] = [
                 'id'                => $post_id,
                 'title'             => get_the_title(),
                 'content'           => get_the_content(),
                 'date'              => get_the_date(),
                 'author'            => get_the_author(),
-                'service_booked'    => get_field('service_booked', $post_id),
+                'service_booked'    => $filtered_service, // Return only the Post Title
+                'start_date_time'   => $start_date_time,  // Return Start Date Time
                 'overall_rating'    => $overall_rating,
                 'reliability'       => $reliability,
                 'skill'             => $skill,
                 'professionalism'   => $professionalism,
                 'reply'             => $latest_comment // Return the latest reply (if exists)
-            ];
+                ];
         }
 
         wp_reset_postdata();
