@@ -16,30 +16,11 @@ class SubmitReviewReply {
      * Registers the REST API routes.
      */
     public function register_rest_routes() {
-        register_rest_route('frohub/v1', '/submit-review-reply', array(
-            'methods'             => 'POST',
-            'callback'            => array($this, 'handle_request'),
-            'permission_callback' => '__return_true',
-        ));
-
         register_rest_route('frohub/v1', '/submit-reply', array(
             'methods'             => 'POST',
             'callback'            => array($this, 'submit_review_reply'),
             'permission_callback' => '__return_true',
         ));
-    }
-
-    /**
-     * Handles the /submit-review-reply API request.
-     *
-     * @param \WP_REST_Request $request
-     * @return \WP_REST_Response
-     */
-    public function handle_request(\WP_REST_Request $request) {
-        return new \WP_REST_Response(array(
-            'success' => true,
-            'message' => 'submit-review-reply API endpoint reached',
-        ), 200);
     }
 
     /**
@@ -49,6 +30,7 @@ class SubmitReviewReply {
      * @return \WP_REST_Response|\WP_Error
      */
     public function submit_review_reply(\WP_REST_Request $request) {
+        // Review ID being the Review Post ID
         $review_id  = $request->get_param('review_id');
         $reply_text = sanitize_textarea_field($request->get_param('reply_text'));
         $partner_id = sanitize_text_field($request->get_param('partner_id')); // Accept Partner ID
