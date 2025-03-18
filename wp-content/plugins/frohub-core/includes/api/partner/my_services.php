@@ -105,7 +105,7 @@ public function handle_my_services(\WP_REST_Request $request) {
 
             // Product Price (from ACF 'display_price', formatted)
             $display_price = get_field('service_price', $product_id);
-            $price = $display_price ? '£ ' . number_format((float)$display_price, 2, '.', '') : '£ 0.00';
+            $price = $display_price ? '£' . number_format((float)$display_price, 2, '.', '') : '£ 0.00';
 
             // Product Status
             $status = get_post_status($product_id);
