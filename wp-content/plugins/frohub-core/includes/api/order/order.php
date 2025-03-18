@@ -93,10 +93,10 @@ class Order {
             'customer_note' => $customer_note,
             'customer_phone'=> $customer_phone, // Added Customer Phone
             'conversation_id'=> $partner_conversation_id, // Added ACF Conversation ID
-            'street_address' => $streetAddress,
-            'town' => $town,
-            'countydistrict' => $countyDistrict,
-            'postcode' => $postcode,
+            'partner_street_address' => $streetAddress,
+            'partner_town' => $town,
+            'partner_countydistrict' => $countyDistrict,
+            'partner_postcode' => $postcode,
             'billing'       => $order_data['billing'],
             'shipping'      => $order_data['shipping'],
             'items'         => $items,
