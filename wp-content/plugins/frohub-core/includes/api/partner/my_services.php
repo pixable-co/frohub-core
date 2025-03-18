@@ -33,6 +33,7 @@ class MyServices {
         ]);
     }
 
+
     /**
      * Handles retrieving services linked to a partner.
      *
@@ -112,38 +113,45 @@ class MyServices {
                 // Product Thumbnail URL
                 $thumbnail = get_the_post_thumbnail_url($product_id, 'full');
 
-                // Retrieve variations
+                // Retrieve variations (Only return if published & "marketplace_visibility" is true)
                 $variations = [];
                 if ($product->is_type('variable')) {
                     $variation_ids = $product->get_children();
 
                     foreach ($variation_ids as $variation_id) {
                         $variation = wc_get_product($variation_id);
-                        if ($variation) {
-                            // Get attributes including label values
-                            $attributes = $variation->get_attributes();
-                            $service_type_label = '';
+                        if ($variation && $variation->get_status() === 'publish') {
+                            
+                            // Check ACF field 'marketplace_visibility' for variations
+                            $variation_visibility = get_field('marketplace_visibility', $variation_id);
 
-                            if (isset($attributes['pa_service-type'])) {
-                                $service_type_slug = $attributes['pa_service-type'];
-                                
-                                // Convert slug to human-readable label
-                                $service_type_label = wc_attribute_label('pa_service-type');
-                                $service_type_terms = get_terms([
-                                    'taxonomy'   => 'pa_service-type',
-                                    'slug'       => $service_type_slug,
-                                    'hide_empty' => false,
-                                ]);
+                            if ($variation_visibility) { // Only include variations if visibility is enabled
+                                // Get attributes including label values
+                                $attributes = $variation->get_attributes();
+                                $service_type_label = '';
 
-                                if (!is_wp_error($service_type_terms) && !empty($service_type_terms)) {
-                                    $service_type_label = $service_type_terms[0]->name;
+                                if (isset($attributes['pa_service-type'])) {
+                                    $service_type_slug = $attributes['pa_service-type'];
+
+                                    // Convert slug to human-readable label
+                                    $service_type_label = wc_attribute_label('pa_service-type');
+                                    $service_type_terms = get_terms([
+                                        'taxonomy'   => 'pa_service-type',
+                                        'slug'       => $service_type_slug,
+                                        'hide_empty' => false,
+                                    ]);
+
+                                    if (!is_wp_error($service_type_terms) && !empty($service_type_terms)) {
+                                        $service_type_label = $service_type_terms[0]->name;
+                                    }
                                 }
-                            }
 
-                            $variations[] = [
-                                'variation_id'      => $variation_id,
-                                'variation_option'  => $service_type_label
-                            ];
+                                $variations[] = [
+                                    'variation_id'      => $variation_id,
+                                    'variation_option'  => $service_type_label,
+                                    'marketplace_visibility' => (bool) $variation_visibility
+                                ];
+                            }
                         }
                     }
                 }
@@ -170,4 +178,5 @@ class MyServices {
             'products'  => $products_data
         ], 200);
     }
+
 }
