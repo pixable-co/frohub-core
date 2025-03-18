@@ -68,7 +68,7 @@ class GetPartnerData {
             // New ACF fields added
             'streetAddress'      => get_field('street_address', $partner_post_id),
             'town'               => get_field('town', $partner_post_id),
-            'countryDistrict'    => get_field('country_district', $partner_post_id),
+            'countryDistrict'    => get_field('county_district', $partner_post_id),
             'postcode'           => get_field('postcode', $partner_post_id),
             'phone'            => get_field('phone', $partner_post_id),
             'terms'            => get_field('terms_and_conditions', $partner_post_id),
