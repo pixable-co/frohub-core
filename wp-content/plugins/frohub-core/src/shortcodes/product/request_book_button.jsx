@@ -126,7 +126,7 @@ export default function RequestBookButton() {
         }
 
         if ('mobile' === selectedServiceType && false === readyForMobile) {
-            toastNotification('error', 'Missing Information', errorMessage);
+            toastNotification('error', 'Validation Error', errorMessage);
             return;
         }
 

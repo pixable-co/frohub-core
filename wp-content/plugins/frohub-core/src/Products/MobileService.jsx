@@ -4,6 +4,7 @@ import { Skeleton } from "antd";
 import frohubStore from "../frohubStore.js";
 import { getLocationDataFromCookie } from "../utils/locationUtils.js"; // Import the cookie function
 import {fetchData} from "../services/fetchData.js";
+import {toastNotification} from "../utils/toastNotification.js";
 
 const GOOGLE_MAPS_API_KEY = "AIzaSyA_myRdC3Q1OUQBmZ22dxxd3rGtwrVC1sI";
 

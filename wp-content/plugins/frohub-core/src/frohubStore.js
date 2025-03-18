@@ -19,7 +19,7 @@ const frohubStore = create((set) => {
         mobileTravelFee: 0,
         readyForMobile: false,
         addonTotalTime: 0,
-        errorMessage: "",
+        errorMessage: "Postcode cannot be empty",
 
         // ✅ Existing actions
         setAvailabilityData: (data) => set({ availabilityData: data, loading: false }),
