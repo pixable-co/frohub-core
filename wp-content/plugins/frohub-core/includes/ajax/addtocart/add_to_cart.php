@@ -261,10 +261,20 @@ public function add_to_cart() {
         if (isset($values['stylist_name']) && !empty($values['stylist_name'])) {
             wc_add_order_item_meta($item_id, 'Stylist', $values['stylist_name']);
         }
-
+    
         // Save "Total Due on the Day" with 2 decimal places
         if (isset($values['deposit_due'])) {
             wc_add_order_item_meta($item_id, 'Total Due on the Day', '£' . number_format((float)$values['deposit_due'], 2));
+        }
+    
+        // Save "Selected Add-Ons"
+        if (!empty($values['selected_add_ons']) && is_array($values['selected_add_ons'])) {
+            $add_ons_list = [];
+            foreach ($values['selected_add_ons'] as $add_on) {
+                $add_ons_list[] = $add_on['name'] . ' (+' . wc_price(floatval($add_on['price'])) . ')';
+            }
+            $formatted_add_ons = implode(', ', $add_ons_list);
+            wc_add_order_item_meta($item_id, 'Selected Add-Ons', $formatted_add_ons);
         }
     
         // Ensure "Selected Date" and "Selected Time" exist
@@ -312,6 +322,6 @@ public function add_to_cart() {
         if (!empty($values['length'])) {
             wc_add_order_item_meta($item_id, 'Length', ucfirst($values['length']));
         }
-
     }
+    
 }

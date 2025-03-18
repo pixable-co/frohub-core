@@ -103,7 +103,7 @@ class ReturnOrderDetails {
                 }
     
                 // Retrieve stored product meta from order item
-                $selected_add_ons = wc_get_order_item_meta($item_id, 'Selected Add-Ons', true) ?: '';
+                $selected_add_ons = wc_get_order_item_meta($item_id, 'selected_add_ons', true) ?: '';
                 $deposit_due = wc_get_order_item_meta($item_id, 'Total Due on the Day', true) ?: '';
                 $service_type = wc_get_order_item_meta($item_id, 'pa_service-type', true) ?: '';
                 $booking_date = wc_get_order_item_meta($item_id, 'Start Date Time', true) ?: '';
