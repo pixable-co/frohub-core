@@ -60,6 +60,7 @@ class Order {
         $countyDistrict = get_field('county_district',$partner_id);    
         $postcode = get_field('postcode',$partner_id);        
 
+        $review = get_field('review', $order_id) ?? 'No review available';
 
         // Get items and their meta
         $items = [];
@@ -116,7 +117,8 @@ class Order {
         'shipping'      => $order_data['shipping'],
         'items'         => $items,
         'meta'          => $order_meta,
-        'payout'        => $payouts
+        'payout'        => $payouts,
+        'review'        => $review
         ], 200);
 
     }
