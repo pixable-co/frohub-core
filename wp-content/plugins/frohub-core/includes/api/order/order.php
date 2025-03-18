@@ -52,7 +52,14 @@ class Order {
 
         // Fetch ACF fields: "conversation" and "partner_name"
         $conversation_id = get_field('conversation', $order_id) ?? 'N/A';
-        $partner_name = get_field('partner_name', $order_id) ?? 'N/A';
+        $partner_conversation_id = get_field('partner_client_post_id',$conversation_id);
+
+        $partner_id = get_field('partner_name', $order_id);
+        $town  = get_field('town',$partner_id);    
+        $streetAddress  = get_field('street_address',$partner_id);    
+        $countyDistrict = get_field('county_district',$partner_id);    
+        $postcode = get_field('postcode',$partner_id);        
+
 
         // Get items and their meta
         $items = [];
@@ -85,8 +92,11 @@ class Order {
             'customer_id'   => $order_data['customer_id'],
             'customer_note' => $customer_note,
             'customer_phone'=> $customer_phone, // Added Customer Phone
-            'conversation_id'=> $conversation_id, // Added ACF Conversation ID
-            'partner_name'  => $partner_name, // Added ACF Partner Name
+            'conversation_id'=> $partner_conversation_id, // Added ACF Conversation ID
+            'street_address' = $streetAddress,
+            'town' = $town,
+            'countydistrict' => $countyDistrict,
+            'postcode' => $postcode,
             'billing'       => $order_data['billing'],
             'shipping'      => $order_data['shipping'],
             'items'         => $items,
