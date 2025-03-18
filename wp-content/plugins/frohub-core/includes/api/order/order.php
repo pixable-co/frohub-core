@@ -82,27 +82,43 @@ class Order {
         // Get payout data
         $payouts = $this->get_payout_data($order_id);
 
-        // Prepare response
+        // Get the customer ID from the order
+        $customer_id = $order_data['customer_id'];
+
+        $customer_first_name = '';
+        $customer_last_name = '';
+
+        if ($customer_id) {
+        $user_info = get_userdata($customer_id);
+        if ($user_info) {
+            $customer_first_name = $user_info->first_name;
+            $customer_last_name = $user_info->last_name;
+        }
+        }
+
         return new \WP_REST_Response([
-            'order_id'      => $order_id,
-            'status'        => $order_data['status'],
-            'created'       => $order_data['date_created']->date('Y-m-d H:i:s'),
-            'total'         => $order_data['total'],
-            'currency'      => $order_data['currency'],
-            'customer_id'   => $order_data['customer_id'],
-            'customer_note' => $customer_note,
-            'customer_phone'=> $customer_phone, // Added Customer Phone
-            'conversation_id'=> $partner_conversation_id, // Added ACF Conversation ID
-            'partner_street_address' => $streetAddress,
-            'partner_town' => $town,
-            'partner_countydistrict' => $countyDistrict,
-            'partner_postcode' => $postcode,
-            'billing'       => $order_data['billing'],
-            'shipping'      => $order_data['shipping'],
-            'items'         => $items,
-            'meta'          => $order_meta,
-            'payout'        => $payouts
+        'order_id'      => $order_id,
+        'status'        => $order_data['status'],
+        'created'       => $order_data['date_created']->date('Y-m-d H:i:s'),
+        'total'         => $order_data['total'],
+        'currency'      => $order_data['currency'],
+        'customer_id'   => $customer_id,
+        'customer_first_name' => $customer_first_name, // ✅ From WP user profile
+        'customer_last_name'  => $customer_last_name,  // ✅ From WP user profile
+        'customer_note' => $customer_note,
+        'customer_phone'=> $customer_phone,
+        'conversation_id'=> $partner_conversation_id,
+        'partner_street_address' => $streetAddress,
+        'partner_town' => $town,
+        'partner_countydistrict' => $countyDistrict,
+        'partner_postcode' => $postcode,
+        'billing'       => $order_data['billing'],
+        'shipping'      => $order_data['shipping'],
+        'items'         => $items,
+        'meta'          => $order_meta,
+        'payout'        => $payouts
         ], 200);
+
     }
 
     /**
