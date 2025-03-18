@@ -4,6 +4,7 @@ import { Skeleton } from "antd";
 import frohubStore from "../frohubStore.js";
 import { getLocationDataFromCookie } from "../utils/locationUtils.js"; // Import the cookie function
 import {fetchData} from "../services/fetchData.js";
+import {toastNotification} from "../utils/toastNotification.js";
 
 const GOOGLE_MAPS_API_KEY = "AIzaSyA_myRdC3Q1OUQBmZ22dxxd3rGtwrVC1sI";
 
@@ -16,7 +17,6 @@ export default function MobileService({ partnerId }) {
     const [loadingPartner, setLoadingPartner] = useState(true);
     const [error, setError] = useState("");
     const [staticLocation, setStaticLocation] = useState(null);
-
     const { setMobileTravelFee, setReadyForMobile } = frohubStore();
 
     useEffect(() => {
@@ -184,6 +184,7 @@ export default function MobileService({ partnerId }) {
     // Handle postcode validation and price calculation
     const handleCheckPostcode = async (value) => {
         setPostcode(value);
+        const { setErrorMessage } = frohubStore.getState(); // ✅ Get from Zustand
 
         // If postcode is empty, clear everything and don't show validation messages
         if (!value.trim()) {
@@ -202,6 +203,7 @@ export default function MobileService({ partnerId }) {
 
         if (!partnerLocation) {
             setError("Partner location not loaded.");
+            setErrorMessage("Partner location not loaded.");
             setLoading(false);
             return;
         }
@@ -209,6 +211,7 @@ export default function MobileService({ partnerId }) {
         const userLocation = await getCoordinatesFromPostcode(value);
         if (!userLocation) {
             setError("Invalid postcode.");
+            setErrorMessage("Invalid postcode.");
             setLoading(false);
             frohubStore.setState((state) => ({ readyForMobile: false }));
             return;
@@ -238,6 +241,7 @@ export default function MobileService({ partnerId }) {
         } else {
             setIsValid(false);
             setError("Sorry, you are outside the service area.");
+            setErrorMessage("Sorry, you are outside the service area.");
             setMobileTravelFee(0);
             frohubStore.setState((state) => ({ readyForMobile: false }));
         }
