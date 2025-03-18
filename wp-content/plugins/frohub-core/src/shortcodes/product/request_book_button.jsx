@@ -7,7 +7,7 @@ import { createData } from "../../services/createData.js";
 import { toastNotification } from "../../utils/toastNotification.js";
 
 export default function RequestBookButton() {
-    const { selectedAddOns, productPrice, productId, selectedServiceType, addonTotalTime, mobileTravelFee, readyForMobile, initialServiceDuration } = frohubStore(); // ✅ Get mobileTravelFee from Zustand
+    const { selectedAddOns, productPrice, productId, selectedServiceType, addonTotalTime, mobileTravelFee, readyForMobile, initialServiceDuration, errorMessage } = frohubStore(); // ✅ Get mobileTravelFee from Zustand
     const [totalPrice, setTotalPrice] = useState(productPrice);
     const [loading, setLoading] = useState(false);
     const [booked, setBooked] = useState(false);
@@ -126,7 +126,7 @@ export default function RequestBookButton() {
         }
 
         if ('mobile' === selectedServiceType && false === readyForMobile) {
-            toastNotification('error', 'Not Available', 'Service is not available to your area.');
+            toastNotification('error', 'Missing Information', errorMessage);
             return;
         }
 

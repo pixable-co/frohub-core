@@ -19,6 +19,7 @@ const frohubStore = create((set) => {
         mobileTravelFee: 0,
         readyForMobile: false,
         addonTotalTime: 0,
+        errorMessage: "",
 
         // ✅ Existing actions
         setAvailabilityData: (data) => set({ availabilityData: data, loading: false }),
@@ -37,6 +38,7 @@ const frohubStore = create((set) => {
 
         // ✅ Reset addonsChanged after fetch
         resetAddonsChanged: () => set({ addonsChanged: false }),
+        setErrorMessage: (message) => set({ errorMessage: message }),
     };
 });
 
