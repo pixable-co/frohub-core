@@ -70,6 +70,7 @@ class GetPartnerData {
             'lateFees'         => get_field('late_fees', $partner_post_id),
             'payments'         => get_field('payments', $partner_post_id),
             'reviews'         => $reviews,
+            'mobileServiceFee' => get_field('radius_fees', $partner_post_id)
         ];
 
         return rest_ensure_response($partner_data);
