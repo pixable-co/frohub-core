@@ -47,6 +47,13 @@ class Order {
         $order_meta = get_post_meta($order_id);
         $customer_note = $order->get_customer_note();
 
+        // Fetch customer's phone number
+        $customer_phone = $order_data['billing']['phone'] ?? '';
+
+        // Fetch ACF fields: "conversation" and "partner_name"
+        $conversation_id = get_field('conversation', $order_id) ?? 'N/A';
+        $partner_name = get_field('partner_name', $order_id) ?? 'N/A';
+
         // Get items and their meta
         $items = [];
         foreach ($order->get_items() as $item_id => $item) {
@@ -77,6 +84,9 @@ class Order {
             'currency'      => $order_data['currency'],
             'customer_id'   => $order_data['customer_id'],
             'customer_note' => $customer_note,
+            'customer_phone'=> $customer_phone, // Added Customer Phone
+            'conversation_id'=> $conversation_id, // Added ACF Conversation ID
+            'partner_name'  => $partner_name, // Added ACF Partner Name
             'billing'       => $order_data['billing'],
             'shipping'      => $order_data['shipping'],
             'items'         => $items,
