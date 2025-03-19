@@ -119,7 +119,6 @@ class UpsertProduct {
 
         // Ensure unique values and update product metadata
         $finalGalleryImageIds = array_unique($finalGalleryImageIds);
-        update_post_meta($product_id, '_product_image_gallery', implode(',', $finalGalleryImageIds));
 
 
         // Create or Update WooCommerce Product
@@ -146,6 +145,8 @@ class UpsertProduct {
         }
 
         $product_id = $product->save();
+
+        update_post_meta($product_id, '_product_image_gallery', implode(',', $finalGalleryImageIds));
 
         // Assign Attributes
         $attributes = [
