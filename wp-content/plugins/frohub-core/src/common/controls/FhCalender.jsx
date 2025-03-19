@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
 import dayjs from "dayjs";
+import isBetween from "dayjs/plugin/isBetween";
+dayjs.extend(isBetween); // ✅ Extend dayjs with the plugin
 import { Skeleton } from "antd";
 import frohubStore from "../../frohubStore.js";
 import './style.css';
 
-const FhCalender = ({ onDateChange, bookingNotice, initialServiceDuration, maxDate }) => {
+const FhCalender = ({ onDateChange, bookingNotice, initialServiceDuration, maxDate, unavailableDates }) => {
     const { availabilityData, loading } = frohubStore();
     const [selectedDate, setSelectedDate] = useState(dayjs());
     const [selectedTime, setSelectedTime] = useState(null);
@@ -40,9 +42,28 @@ const FhCalender = ({ onDateChange, bookingNotice, initialServiceDuration, maxDa
         // Add maxDate check
         const isWithinBookingScope = maxDate ? date.isBefore(dayjs(maxDate).add(1, 'day')) : true;
 
+        const isUnavailable = unavailableDates.some(({ start_date, end_date }) => {
+            if (!start_date || !end_date) return false; // Ensure dates exist
+
+            // ✅ Convert "20/03/2025" → "2025-03-20"
+            const formattedStart = start_date.split("/").reverse().join("-");
+            const formattedEnd = end_date.split("/").reverse().join("-");
+
+            // ✅ Parse corrected format
+            const start = dayjs(formattedStart, "YYYY-MM-DD", true);
+            const end = dayjs(formattedEnd, "YYYY-MM-DD", true);
+
+            if (!start.isValid() || !end.isValid()) {
+                return false;
+            }
+
+            return date.isBetween(start, end, "day", "[]");
+        });
+
         return availableDays.includes(date.format("dddd")) &&
             date.isAfter(noticeCutoffDate, "day") &&
-            isWithinBookingScope;
+            isWithinBookingScope &&
+            !isUnavailable;
     };
 
     const getDaysInMonth = () => {

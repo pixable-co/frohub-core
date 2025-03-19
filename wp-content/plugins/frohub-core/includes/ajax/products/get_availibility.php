@@ -154,6 +154,21 @@ class GetAvailibility {
         $booking_notice = get_field('booking_notice', $product_id);
         $booking_notice_days = is_numeric($booking_notice) ? intval($booking_notice) : 0;
 
+        // Fetch unavailable dates from ACF repeater field
+        $unavailable_dates = get_field('unavailable_dates', $partner_id);
+        $formatted_unavailable_dates = [];
+
+        if (!empty($unavailable_dates) && is_array($unavailable_dates)) {
+              foreach ($unavailable_dates as $date) {
+                    if (!empty($date['start_date']) && !empty($date['end_date'])) {
+                         $formatted_unavailable_dates[] = [
+                           'start_date' => $date['start_date'],
+                            'end_date'   => $date['end_date']
+                         ];
+                   }
+             }
+        }
+
         wp_send_json_success([
             'availability' => array_values($available_slots),
             'booked_slots' => $booked_slots,
@@ -163,7 +178,8 @@ class GetAvailibility {
             'google_calendar_booked_slots' => $google_calendar_booked_slots,
             'buffer_period_minutes' => $buffer_total_minutes,
             'booking_scope' => $booking_scope,
-            'max_date' => $max_date
+            'max_date' => $max_date,
+            'unavailable_dates' => $formatted_unavailable_dates
         ]);
     }
 

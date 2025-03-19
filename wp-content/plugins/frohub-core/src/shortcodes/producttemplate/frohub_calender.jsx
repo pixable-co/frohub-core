@@ -7,6 +7,7 @@ const FrohubCalender = () => {
     const productIdRef = useRef(null);
     const [bookingNotice, setBookingNotice] = useState(null);
     const [maxDate, setMaxDate] = useState(null);
+    const [unavailableDates, setUnavailableDates] = useState([]);
     const selectedAddonsRef = useRef([]);
 
     const {
@@ -70,6 +71,7 @@ const FrohubCalender = () => {
                     setAvailabilityData(response.data.availability);
                     setBookingNotice(response.data.booking_notice);
                     setMaxDate(response.data.max_date);
+                    setUnavailableDates(response.data.unavailable_dates || []);
                 } else {
                     console.error("Error fetching availability:", response.message);
                 }
@@ -129,6 +131,7 @@ const FrohubCalender = () => {
                 onDateChange={handleDateChange}
                 bookingNotice={bookingNotice}
                 maxDate={maxDate}
+                unavailableDates={unavailableDates}
             />
         </div>
     );
