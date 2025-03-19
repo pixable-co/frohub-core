@@ -80,17 +80,47 @@ class UpsertProduct {
             $featuredImageId = $this->upload_image_to_wordpress($params["featuredImage"], $serviceName);
         }
 
-        // Handle Gallery Images Upload (Max 5)
-        $galleryImageIds = [];
-        if (!empty($params["galleryImages"]) && is_array($params["galleryImages"])) {
-            $galleryImages = array_slice($params["galleryImages"], 0, 5);
-            foreach ($galleryImages as $index => $galleryImageUrl) {
-                $galleryId = $this->upload_image_to_wordpress($galleryImageUrl, $serviceName, $index);
-                if ($galleryId) {
-                    $galleryImageIds[] = $galleryId;
-                }
+        // Handle Gallery Images Upload & Cleanup
+        $existingGalleryImageIds = get_post_meta($product_id, '_product_image_gallery', true);
+        $existingGalleryImageIds = !empty($existingGalleryImageIds) ? explode(',', $existingGalleryImageIds) : [];
+
+        // Convert existing gallery IDs to URLs
+        $existingGalleryImages = [];
+        foreach ($existingGalleryImageIds as $imageId) {
+            $imageUrl = wp_get_attachment_url($imageId);
+            if ($imageUrl) {
+                $existingGalleryImages[$imageId] = $imageUrl;
             }
         }
+
+        // Extract images from payload
+        $receivedGalleryImages = !empty($params["galleryImages"]) && is_array($params["galleryImages"]) ? $params["galleryImages"] : [];
+
+        // Find images that need to be deleted and new ones to upload
+        $imagesToDelete = array_diff($existingGalleryImages, $receivedGalleryImages);
+        $imagesToUpload = array_diff($receivedGalleryImages, $existingGalleryImages);
+
+        // Delete old images that are no longer in the payload
+        foreach ($imagesToDelete as $imageId => $imageUrl) {
+            wp_delete_attachment($imageId, true);
+        }
+
+        // Upload new images
+        $newGalleryImageIds = [];
+        foreach ($imagesToUpload as $imageUrl) {
+            $uploadedImageId = $this->upload_image_to_wordpress($imageUrl, $serviceName);
+            if ($uploadedImageId) {
+                $newGalleryImageIds[] = $uploadedImageId;
+            }
+        }
+
+        // Merge remaining images with newly uploaded images
+        $finalGalleryImageIds = array_merge(array_diff($existingGalleryImageIds, array_keys($imagesToDelete)), $newGalleryImageIds);
+
+        // Ensure unique values and update product metadata
+        $finalGalleryImageIds = array_unique($finalGalleryImageIds);
+        update_post_meta($product_id, '_product_image_gallery', implode(',', $finalGalleryImageIds));
+
 
         // Create or Update WooCommerce Product
         if ($is_update) {
