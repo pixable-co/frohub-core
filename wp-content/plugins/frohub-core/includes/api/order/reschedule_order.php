@@ -41,9 +41,6 @@ class RescheduleOrder {
                         return preg_match('/^\d{2}:\d{2}$/', $param); // HH:MM format validation
                     }
                 ],
-                'duration' => [
-                    'required' => true,
-                ],
                 'formatted_proposed_end_datetime' => [
                     'required' => true,
                     'validate_callback' => function ($param) {
@@ -74,7 +71,6 @@ class RescheduleOrder {
         $order_id   = intval($request->get_param('order_id'));
         $date       = sanitize_text_field($request->get_param('date'));
         $start_time = sanitize_text_field($request->get_param('start_time'));
-        $duration   = sanitize_text_field($request->get_param('duration'));
         $formatted_proposed_end_datetime = sanitize_text_field($request->get_param('formatted_proposed_end_datetime'));
 
         // Format the proposed start date time
