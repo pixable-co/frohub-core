@@ -150,7 +150,7 @@ class Order {
                 $payouts[] = [
                     'appointment_date_time' => get_field('appointment_date_time'),
                     'deposit'               => get_field('deposit'),
-                    'commission'            => get_field('commission'),
+                    'commission'            => get_field('frohub_commission'),
                     'payout_amount'         => get_field('payout_amount'),
                     'scheduled_date'        => get_field('scheduled_date'),
                     'payout_date'           => get_field('payout_date'),
