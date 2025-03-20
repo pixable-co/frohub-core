@@ -99,7 +99,7 @@ class Order {
 
         return new \WP_REST_Response([
         'order_id'      => $order_id,
-        'status'        => $order_data['status'],
+        'status'     => $order->get_status(),
         'created'       => $order_data['date_created']->date('Y-m-d H:i:s'),
         'total'         => $order_data['total'],
         'currency'      => $order_data['currency'],
