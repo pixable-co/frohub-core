@@ -38,6 +38,7 @@ class Order {
 
 
         wc_delete_shop_order_transients($order_id); // Clears cached order data
+        wp_cache_delete($order_id, 'orders');
 
         $order = wc_get_order($order_id);
 
