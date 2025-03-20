@@ -41,10 +41,13 @@ class RescheduleOrder {
                         return preg_match('/^\d{2}:\d{2}$/', $param); // HH:MM format validation
                     }
                 ],
-                'end_time' => [
+                'duration' => [
+                    'required' => true,
+                ],
+                'formatted_proposed_end_datetime' => [
                     'required' => true,
                     'validate_callback' => function ($param) {
-                        return preg_match('/^\d{2}:\d{2}$/', $param); // HH:MM format validation
+                        return preg_match('/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/', $param); // YYYY-MM-DD HH:MM format
                     }
                 ],
             ],
@@ -71,7 +74,8 @@ class RescheduleOrder {
         $order_id   = intval($request->get_param('order_id'));
         $date       = sanitize_text_field($request->get_param('date'));
         $start_time = sanitize_text_field($request->get_param('start_time'));
-        $end_time   = sanitize_text_field($request->get_param('end_time'));
+        $duration   = sanitize_text_field($request->get_param('duration'));
+        $formatted_proposed_end_datetime = sanitize_text_field($request->get_param('formatted_proposed_end_datetime'));
 
         // Get the WooCommerce order object
         $order = wc_get_order($order_id);
@@ -108,12 +112,9 @@ class RescheduleOrder {
             ], 400);
         }
 
-        // Set Proposed Start and End Date Time without modifying existing fields
-        // Convert proposed start and end date-time to the correct format
+        // Store the proposed start and end times in order meta
         $formatted_proposed_start_datetime = date('H:i, d M Y', strtotime($date . ' ' . $start_time));
-        $formatted_proposed_end_datetime = date('H:i, d M Y', strtotime($date . ' ' . $end_time));
 
-        // Store the formatted proposed start and end times in order meta
         wc_update_order_item_meta($item_id, 'Proposed Start Date Time', $formatted_proposed_start_datetime);
         wc_update_order_item_meta($item_id, 'Proposed End Date Time', $formatted_proposed_end_datetime);
 
