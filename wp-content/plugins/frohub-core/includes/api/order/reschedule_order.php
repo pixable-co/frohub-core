@@ -77,6 +77,12 @@ class RescheduleOrder {
         $duration   = sanitize_text_field($request->get_param('duration'));
         $formatted_proposed_end_datetime = sanitize_text_field($request->get_param('formatted_proposed_end_datetime'));
 
+        // Format the proposed start date time
+        $formatted_proposed_start_datetime = date('H:i, d M Y', strtotime("$date $start_time"));
+
+        // Format the proposed end date time to match the start date format
+        $formatted_proposed_end_datetime = date('H:i, d M Y', strtotime($formatted_proposed_end_datetime));
+
         // Get the WooCommerce order object
         $order = wc_get_order($order_id);
 
@@ -112,9 +118,7 @@ class RescheduleOrder {
             ], 400);
         }
 
-        // Store the proposed start and end times in order meta
-        $formatted_proposed_start_datetime = date('H:i, d M Y', strtotime($date . ' ' . $start_time));
-
+        // Store the formatted proposed start and end times in order meta
         wc_update_order_item_meta($item_id, 'Proposed Start Date Time', $formatted_proposed_start_datetime);
         wc_update_order_item_meta($item_id, 'Proposed End Date Time', $formatted_proposed_end_datetime);
 
