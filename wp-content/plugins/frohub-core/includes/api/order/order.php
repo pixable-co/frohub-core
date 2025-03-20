@@ -40,8 +40,6 @@ class Order {
         wc_delete_shop_order_transients($order_id); // Clears cached order data
 
         $order = wc_get_order($order_id);
-        $order->read(); // Force WooCommerce to reload the latest status
-
 
         if (!$order || !is_a($order, 'WC_Order')) {
             return new \WP_Error('invalid_order', 'Invalid order ID', ['status' => 404]);
