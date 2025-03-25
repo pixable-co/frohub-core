@@ -86,7 +86,7 @@ class RenderSearchFilters {
 
         if (simpleText && simpleText.value.trim()) params.append("text", simpleText.value.trim());
         if (dropdown && dropdown.value) params.append("dropdown", dropdown.value);
-        if (category && category.value) params.append("category", category.value);
+        if (category && category.value) params.append("_categories", category.value);
         if (startDate && startDate.value) params.append("start_date", startDate.value);
         if (endDate && endDate.value) params.append("end_date", endDate.value);
         if (radius && radius.value) params.append("radius", radius.value);
