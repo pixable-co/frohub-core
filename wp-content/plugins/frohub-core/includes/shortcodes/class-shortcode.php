@@ -1,6 +1,8 @@
 <?php
 namespace FECore;
 
+use FECore\FhServiceAverageRating;
+
 use FECore\RequestBookButton;
 
 // Product Template Shortcodes
@@ -69,5 +71,6 @@ class Shortcodes {
 		RadiusFilter::init();
 		LocationFilter::init();
 		RequestBookButton::init();
+		FhServiceAverageRating::init();
 	}
 }
