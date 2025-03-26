@@ -23,10 +23,9 @@ class FrohubGetPartnerLocation {
         $street     = get_field('street_address', $partner_id);
         $town       = get_field('town', $partner_id);
         $county     = get_field('county_district', $partner_id);
-        $postcode   = get_field('postcode', $partner_id);
 
         // Build address string (skip empty parts gracefully)
-        $address_parts = array_filter([$street, $town, $county, $postcode]);
+        $address_parts = array_filter([$street, $town, $county]);
         $full_address = implode(', ', $address_parts);
 
         if (!$full_address) {
