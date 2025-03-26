@@ -13,15 +13,26 @@ class FrohubGetPartnerLocation {
     }
 
     public function frohub_get_partner_location_shortcode() {
-        $unique_key = 'frohub_get_partner_location' . uniqid();
-        $partner_id = get_field('partner_id'); 
-        if ($partner_id) {
-            $partner_address = get_field('partner_address', $partner_id);
-            return '<span><i class="fas fa-map-marker-alt"></i> ' . esc_html($partner_address) . '</span>';
-        } else {
+        $partner_id = get_field('partner_id');
+
+        if (!$partner_id) {
             return '';
         }
-        
-        // return '<div class="frohub_get_partner_location" data-key="' . esc_attr($unique_key) . '"></div>';
+
+        // Get individual address fields
+        $street     = get_field('street_address', $partner_id);
+        $town       = get_field('town', $partner_id);
+        $county     = get_field('county_district', $partner_id);
+        $postcode   = get_field('postcode', $partner_id);
+
+        // Build address string (skip empty parts gracefully)
+        $address_parts = array_filter([$street, $town, $county, $postcode]);
+        $full_address = implode(', ', $address_parts);
+
+        if (!$full_address) {
+            return '';
+        }
+
+        return '<span class="frohub-partner-location"><i class="fas fa-map-marker-alt"></i> ' . esc_html($full_address) . '</span>';
     }
 }
