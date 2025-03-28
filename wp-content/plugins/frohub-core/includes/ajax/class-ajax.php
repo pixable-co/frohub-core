@@ -1,6 +1,24 @@
 <?php
 namespace FECore;
 
+use FECore\SubmitComment;
+
+use FECore\SubmitLike;
+
+use FECore\SubmitDislike;
+
+use FECore\GetCategoryTerms;
+
+use FECore\AcceptNewTime;
+
+use FECore\CancelOrder;
+
+use FECore\EarlyCancelOrder;
+
+use FECore\LateCancelOrder;
+
+use FECore\DeclineNewProposedTime;
+
 use FECore\GetDuration;
 
 
@@ -29,5 +47,13 @@ class Ajax {
 		GetMobileLocationData::init();
 		GetAddons::init();
 		GetDuration::init();
+		DeclineNewProposedTime::init();
+		LateCancelOrder::init();
+		EarlyCancelOrder::init();
+		AcceptNewTime::init();
+		GetCategoryTerms::init();
+		SubmitDislike::init();
+		SubmitLike::init();
+		SubmitComment::init();
 	}
 }
