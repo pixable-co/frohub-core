@@ -1,6 +1,24 @@
 <?php
 namespace FECore;
 
+use FECore\ShowComments;
+
+use FECore\GetUserAvatar;
+
+use FECore\GetUpcomingBookings;
+
+use FECore\ShowNextBookings;
+
+use FECore\CommunityPostType;
+
+use FECore\CommunityPostGrid;
+
+use FECore\PlayButton;
+
+use FECore\GetUserPastBookings;
+
+use FECore\PartnerVerifiedBadge;
+
 use FECore\OrderMetaData;
 
 use FECore\SubCategoryCarousel;
@@ -134,5 +152,14 @@ class Shortcodes {
 		PrintOrderId::init();
 		SubCategoryCarousel::init();
 		OrderMetaData::init();
+		PartnerVerifiedBadge::init();
+		GetUserPastBookings::init();
+		PlayButton::init();
+		CommunityPostGrid::init();
+		CommunityPostType::init();
+		ShowNextBookings::init();
+		GetUpcomingBookings::init();
+		GetUserAvatar::init();
+		ShowComments::init();
 	}
 }
