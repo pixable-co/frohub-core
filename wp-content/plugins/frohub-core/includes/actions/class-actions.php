@@ -28,7 +28,7 @@ class Actions {
 		CustomizedCheckoutField::init();
 		SendOrderToEndpoint::init();
 		ManagePartnerPostColumn::init();
-		CreateReviewPost:init();
+		CreateReviewPost::init();
 		CreateUpdatePayoutPost:init();
 		CustomOrderStatus:init();
 		CreateConversionProcessPopulate::init();
