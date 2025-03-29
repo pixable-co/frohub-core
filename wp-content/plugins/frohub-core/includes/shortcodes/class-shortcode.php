@@ -1,6 +1,48 @@
 <?php
 namespace FECore;
 
+use FECore\OrderMetaData;
+
+use FECore\SubCategoryCarousel;
+
+use FECore\PrintOrderId;
+
+use FECore\GetOrderStatus;
+
+use FECore\GetOrderStartDate;
+
+use FECore\GetOrderPrices;
+
+use FECore\GetOrderServiceType;
+
+use FECore\GetOrderShippingAddress;
+
+use FECore\GetOrderBeauticianDetails;
+
+use FECore\GetOrderNotes;
+
+use FECore\GetOrderServiceName;
+
+use FECore\GetPartnerName;
+
+use FECore\GetProductRating;
+
+use FECore\PrintOverallRating;
+
+use FECore\ReviewTab;
+
+use FECore\ReviewButton;
+
+use FECore\AllFaqs;
+
+use FECore\MyQna;
+
+use FECore\PartnerLogoAndBio;
+
+use FECore\PoliciesTab;
+
+use FECore\ReviewAuthor;
+
 use FECore\FhServiceAverageRating;
 
 use FECore\RequestBookButton;
@@ -72,5 +114,25 @@ class Shortcodes {
 		LocationFilter::init();
 		RequestBookButton::init();
 		FhServiceAverageRating::init();
+		ReviewAuthor::init();
+		PoliciesTab::init();
+		PartnerLogoAndBio::init();
+		MyQna::init();
+		AllFaqs::init();
+		ReviewButton::init();
+		ReviewTab::init();
+		PrintOverallRating::init();
+		GetProductRating::init();
+		GetOrderServiceName::init();
+		GetOrderNotes::init();
+		GetOrderBeauticianDetails::init();
+		GetOrderShippingAddress::init();
+		GetOrderServiceType::init();
+		GetOrderPrices::init();
+		GetOrderStartDate::init();
+		GetOrderStatus::init();
+		PrintOrderId::init();
+		SubCategoryCarousel::init();
+		OrderMetaData::init();
 	}
 }
