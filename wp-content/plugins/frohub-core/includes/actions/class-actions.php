@@ -29,8 +29,8 @@ class Actions {
 		SendOrderToEndpoint::init();
 		ManagePartnerPostColumn::init();
 		CreateReviewPost::init();
-		CreateUpdatePayoutPost:init();
-		CustomOrderStatus:init();
+		CreateUpdatePayoutPost::init();
+		CustomOrderStatus::init();
 		CreateConversionProcessPopulate::init();
 	}
 }
