@@ -1,6 +1,16 @@
 <?php
 namespace FECore;
 use FECore\ProfileImage;
+use FECore\UpdateOrderStatus;
+use FECore\PayoutTableColumns;
+use FECore\HideJetpackStatColumn;
+use FECore\CustomizedCheckoutField;
+use FECore\SendOrderToEndpoint;
+use FECore\ManagePartnerPostColumn;
+use FECore\CreateReviewPost;
+use FECore\CreateUpdatePayoutPost;
+use FECore\CustomOrderStatus;
+use FECore\CreateConversionProcessPopulate;
 
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -12,5 +22,15 @@ class Actions {
 	public static function init() {
 		$self = new self();
 		ProfileImage::init();
+		UpdateOrderStatus::init();
+		PayoutTableColumns::init();
+		HideJetpackStatColumn::init();
+		CustomizedCheckoutField::init();
+		SendOrderToEndpoint::init();
+		ManagePartnerPostColumn::init();
+		CreateReviewPost:init();
+		CreateUpdatePayoutPost:init();
+		CustomOrderStatus:init();
+		CreateConversionProcessPopulate::init();
 	}
 }
