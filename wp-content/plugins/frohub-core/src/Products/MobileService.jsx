@@ -145,7 +145,7 @@ export default function MobileService({ partnerId }) {
         setLoading(true);
 
         if (!partnerLocation) {
-            setError("Partner location not loaded.");
+            setError("partner location not loaded.");
             setLoading(false);
             return;
         }
@@ -202,8 +202,8 @@ export default function MobileService({ partnerId }) {
         setLoading(true);
 
         if (!partnerLocation) {
-            setError("Partner location not loaded.");
-            setErrorMessage("Partner location not loaded.");
+            setError("partner location not loaded.");
+            setErrorMessage("partner location not loaded.");
             setLoading(false);
             return;
         }
