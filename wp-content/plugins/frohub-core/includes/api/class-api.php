@@ -1,6 +1,24 @@
 <?php
 namespace FECore;
 
+use FECore\PartnersMyPendingOrdersCount;
+
+use FECore\DeleteProduct;
+
+
+use FECore\GetProduct;
+
+use FECore\CustomerMetrics;
+
+use FECore\CustomerOrders;
+
+
+use FECore\UpdateOrderStatus;
+
+use FECore\StylistCancelOrder;
+
+use FECore\StylistDeclineOrder;
+
 use FECore\CustomEvents;
 
 use FECore\GetUpcomingBooking;
@@ -98,5 +116,13 @@ class API {
 
 		GetUpcomingBooking::init();
 		CustomEvents::init();
+		StylistDeclineOrder::init();
+		StylistCancelOrder::init();
+		UpdateOrderStatus::init();
+		CustomerOrders::init();
+		CustomerMetrics::init();
+		GetProduct::init();
+		DeleteProduct::init();
+		PartnersMyPendingOrdersCount::init();
 	}
 }
