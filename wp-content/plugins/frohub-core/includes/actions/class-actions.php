@@ -1,7 +1,7 @@
 <?php
 namespace FECore;
 use FECore\ProfileImage;
-use FECore\UpdateOrderStatus;
+use FECore\UpdatePayoutStatus;
 use FECore\PayoutTableColumns;
 use FECore\HideJetpackStatColumn;
 use FECore\CustomizedCheckoutField;
@@ -22,7 +22,7 @@ class Actions {
 	public static function init() {
 		$self = new self();
 		ProfileImage::init();
-		UpdateOrderStatus::init();
+		UpdatePayoutStatus::init();
 		PayoutTableColumns::init();
 		HideJetpackStatColumn::init();
 		CustomizedCheckoutField::init();

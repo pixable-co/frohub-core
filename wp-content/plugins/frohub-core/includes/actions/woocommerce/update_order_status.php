@@ -5,7 +5,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-class UpdateOrderStatus {
+class UpdatePayoutStatus {
 
     public static function init() {
         $self = new self();
