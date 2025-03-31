@@ -15,9 +15,20 @@ class ReviewButton {
     public function review_button_shortcode() {
         ob_start();
 
-        $order_id = $GLOBALS['single_order_id'];
+        $order_id = isset($GLOBALS['single_order_id']) ? $GLOBALS['single_order_id'] : null;
+
+        if (!$order_id) {
+            echo '<span>Order ID is missing.</span>';
+            return ob_get_clean();
+        }
 
         $order = wc_get_order($order_id);
+
+        if (!$order) {
+            echo '<span>Invalid order.</span>';
+            return ob_get_clean();
+        }
+
         $review = get_field('review', $order_id);
 
         if (empty($review)) {
