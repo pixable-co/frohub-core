@@ -151,7 +151,7 @@ class FrohubProductPartnerPage {
         $product_ids = $query->posts;
         $imploded_ids = implode(',', $product_ids);
 
-        $grid = '[us_grid post_type="ids" ids="' . esc_attr($imploded_ids) . '" items_layout="197" columns="4" el_class="partner_profile_product_grid"]';
+        $grid = '[us_grid post_type="ids" ids="' . esc_attr($imploded_ids) . '" items_layout="28802" columns="4" el_class="partner_profile_product_grid"]';
 
         return do_shortcode($grid);
     }
