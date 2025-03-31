@@ -11,6 +11,11 @@ use FECore\CreateReviewPost;
 use FECore\CreateUpdatePayoutPost;
 use FECore\CustomOrderStatus;
 use FECore\CreateConversionProcessPopulate;
+use FECore\CustomMenuItems;
+use FECore\CustomMessagesContent;
+use FECore\CustomFavouritesContent;
+use FECore\CustomQnAContent;
+use FECore\CustomFlushRewriteRules;
 
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -32,5 +37,10 @@ class Actions {
 		CreateUpdatePayoutPost::init();
 		CustomOrderStatus::init();
 		CreateConversionProcessPopulate::init();
+		CustomMenuItems::init();
+		CustomMessagesContent::init();
+		CustomFavouritesContent::init();
+		CustomQnAContent::init();
+		CustomFlushRewriteRules::init();
 	}
 }
