@@ -16,7 +16,7 @@ class SubCategoryCarousel {
         ob_start();
 
         // Fetch and sanitize URL parameters
-        $category = isset($_GET['category']) ? sanitize_text_field($_GET['category']) : '';
+        $category = isset($_GET['_categories']) ? sanitize_text_field($_GET['_categories']) : '';
 
         if (!empty($category)) {
             if (self::is_parent_product_category($category)) {
@@ -34,7 +34,7 @@ class SubCategoryCarousel {
                                     $term = get_term($subcat_id, 'product_cat');
                                     $thumbnail_id = get_term_meta($subcat_id, 'thumbnail_id', true);
                                     $category_image = ($thumbnail_id) ? wp_get_attachment_url($thumbnail_id) : wc_placeholder_img_src();
-                                    $category_link = "/book-black-afro-hair-stylist-beauty-appointments/?categories=" . rawurlencode($term->name);
+                                    $category_link = "/book-black-afro-hair-stylist-beauty-appointments/?_categories=" . rawurlencode($term->name);
                                     ?>
                                     <div class="swiper-slide">
                                         <div class="category-item text-center">
@@ -119,7 +119,7 @@ class SubCategoryCarousel {
         while ($parent_id != 0) {
             $parent_term = get_term($parent_id, 'product_cat');
             if ($parent_term && !is_wp_error($parent_term)) {
-                $parent_url = "/book-black-afro-hair-stylist-beauty-appointments/?category=" . rawurlencode($parent_term->name);
+                $parent_url = "/book-black-afro-hair-stylist-beauty-appointments/?_categories=" . rawurlencode($parent_term->name);
                 $breadcrumbs[] = '<a href="' . esc_url($parent_url) . '">' . esc_html($parent_term->name) . '</a>';
                 $parent_id = $parent_term->parent;
             } else {
