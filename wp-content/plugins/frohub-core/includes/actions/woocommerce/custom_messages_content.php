@@ -13,6 +13,6 @@ class CustomMessagesContent {
     }
 
     public function display_messages_content() {
-        echo do_shortcode('[us_page_block id="4904" remove_rows="1"]');
+        echo do_shortcode('[us_page_block id="28827" remove_rows="1"]');
     }
 }

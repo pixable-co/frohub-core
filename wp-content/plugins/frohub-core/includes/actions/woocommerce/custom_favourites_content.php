@@ -13,6 +13,6 @@ class CustomFavouritesContent {
     }
 
     public function display_favourites_content() {
-        echo do_shortcode('[us_page_block id="4910" remove_rows="1"]');
+        echo do_shortcode('[us_page_block id="28828" remove_rows="1"]');
     }
 }
