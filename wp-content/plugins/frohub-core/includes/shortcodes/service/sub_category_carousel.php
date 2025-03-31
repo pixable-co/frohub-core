@@ -34,7 +34,7 @@ class SubCategoryCarousel {
                                     $term = get_term($subcat_id, 'product_cat');
                                     $thumbnail_id = get_term_meta($subcat_id, 'thumbnail_id', true);
                                     $category_image = ($thumbnail_id) ? wp_get_attachment_url($thumbnail_id) : wc_placeholder_img_src();
-                                    $category_link = "/book-black-afro-hair-stylist-beauty-appointments/?category=" . rawurlencode($term->name);
+                                    $category_link = "/book-black-afro-hair-stylist-beauty-appointments/?categories=" . rawurlencode($term->name);
                                     ?>
                                     <div class="swiper-slide">
                                         <div class="category-item text-center">
