@@ -16,7 +16,7 @@ use FECore\CustomMessagesContent;
 use FECore\CustomFavouritesContent;
 use FECore\CustomQnAContent;
 use FECore\CustomFlushRewriteRules;
-
+use FECore\CustomRegisterEndpoints;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -42,5 +42,6 @@ class Actions {
 		CustomFavouritesContent::init();
 		CustomQnAContent::init();
 		CustomFlushRewriteRules::init();
+		CustomRegisterEndpoints::init();
 	}
 }
