@@ -28,7 +28,7 @@ class CommunityPostGrid {
 
         $imploded_ids = implode(',', $posts);
 
-        $carousel = '[us_carousel orderby="rand" post_type="ids" ids="' . esc_attr($imploded_ids) . '" items_layout="192" overriding_link="%7B%22url%22%3A%22%22%7D" items="3" arrows="1" items_quantity="9" responsive="%5B%7B%22breakpoint%22%3A%22mobiles%22%2C%22breakpoint_width%22%3A%221024px%22%2C%22items%22%3A%221%22%2C%22items_offset%22%3A%220px%22%2C%22center_item%22%3A%220%22%2C%22autoheight%22%3A%220%22%2C%22loop%22%3A%220%22%2C%22autoplay%22%3A%220%22%2C%22arrows%22%3A%220%22%2C%22dots%22%3A%220%22%7D%5D"]';
+        $carousel = '[us_carousel orderby="rand" post_type="ids" ids="' . esc_attr($imploded_ids) . '" items_layout="28800" overriding_link="%7B%22url%22%3A%22%22%7D" items="3" arrows="1" items_quantity="9" responsive="%5B%7B%22breakpoint%22%3A%22mobiles%22%2C%22breakpoint_width%22%3A%221024px%22%2C%22items%22%3A%221%22%2C%22items_offset%22%3A%220px%22%2C%22center_item%22%3A%220%22%2C%22autoheight%22%3A%220%22%2C%22loop%22%3A%220%22%2C%22autoplay%22%3A%220%22%2C%22arrows%22%3A%220%22%2C%22dots%22%3A%220%22%7D%5D"]';
 
         return do_shortcode($carousel);
     }
