@@ -19,9 +19,7 @@ class MyServices {
         register_rest_route('frohub/v1', '/my-services', [
             'methods'  => 'POST',
             'callback' => [$this, 'handle_my_services'],
-            'permission_callback' => function () {
-                return is_user_logged_in(); // Requires authentication
-            },
+            'permission_callback' => '__return_true', // ⚠️ Be careful, this makes it public!
             'args'     => [
                 'partner_id' => [
                     'required' => true,
