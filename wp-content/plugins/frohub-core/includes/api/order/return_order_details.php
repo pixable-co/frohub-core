@@ -22,6 +22,7 @@ class ReturnOrderDetails {
 //             'permission_callback' => function () {
 //                 return current_user_can('manage_woocommerce'); // Ensures only authorized users can fetch orders
 //             },
+            'permission_callback' => '__return_true', // ⚠️ Be careful, this makes it public!
             'args'                => [
                 'partner_id' => [
                     'required'          => true,
