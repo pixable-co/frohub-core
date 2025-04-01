@@ -47,12 +47,12 @@ class MyServices {
 public function handle_my_services(\WP_REST_Request $request) {
     $user_id = get_current_user_id();
 
-    if (!$user_id) {
-        return new \WP_REST_Response([
-            'success' => false,
-            'message' => 'Authentication failed.'
-        ], 401);
-    }
+    // if (!$user_id) {
+    //     return new \WP_REST_Response([
+    //         'success' => false,
+    //         'message' => 'Authentication failed.'
+    //     ], 401);
+    // }
 
     // Retrieve partner_id from request
     $partner_id = intval($request->get_param('partner_id'));
