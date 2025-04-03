@@ -60,7 +60,7 @@ class GetPartnerData {
             'partnerProfileUrl'  => get_field('partner_profile_url', $partner_post_id),
             'availability'       => get_field('availability', $partner_post_id),
             'bookingNotice'      => get_field('booking_notice', $partner_post_id),
-            'bookingPeriod'      => get_field('booking_scope', $partner_post_id),
+            'bookingScope'      => get_field('booking_scope', $partner_post_id),
             'email'              => get_field('partner_email', $partner_post_id),
             'bufferPeriodMin'    => get_field('buffer_period_minutes', $partner_post_id),
             'bufferPeriodHour'   => get_field('buffer_period_hours', $partner_post_id),
