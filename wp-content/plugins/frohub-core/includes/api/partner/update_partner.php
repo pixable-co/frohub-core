@@ -59,7 +59,7 @@ class UpdatePartner {
             'partner_email'        => sanitize_email($data['email']),
             'service_types'        => $data['serviceTypes'],
             'street_address'       => sanitize_text_field($data['addressLine1']),
-            'town'                 => sanitize_text_field($data['town']),
+            'city'                 => sanitize_text_field($data['city']),
             'county_district'      => sanitize_text_field($data['county']),
             'postcode'             => sanitize_text_field($data['postcode']),
             'phone'                => sanitize_text_field($data['phone']),
