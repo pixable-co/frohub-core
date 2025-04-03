@@ -58,7 +58,7 @@ class GetPartnerData {
             'partnerName'        => get_the_title($partner_post_id),
             'serviceTypes'       => get_field('service_types', $partner_post_id),
             'partnerProfileUrl'  => get_field('partner_profile_url', $partner_post_id),
-            'availability'       => get_field('availability', $partner_post_id),
+            'availability'       => get_field('availability_test', $partner_post_id),
             'bookingNotice'      => get_field('booking_notice', $partner_post_id),
             'bookingScope'      => get_field('booking_scope', $partner_post_id),
             'email'              => get_field('partner_email', $partner_post_id),
