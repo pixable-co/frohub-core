@@ -73,7 +73,7 @@ class PublishPartnerCreateProduct {
         update_field('partner_id', $draft_service_data['Partner_ID'] ?? '', $product_id);
         update_field('duration_hours', $draft_service_data['Duration_Hours'] ?? '', $product_id);
         update_field('duration_minutes', $draft_service_data['Duration_Minutes'] ?? '', $product_id);
-        update_field('partner_name', $draft_service_data['Partner_Name'] ?? '', $product_id);
+        update_field('partner_name', $draft_service_data['Partner_ID'] ?? '', $product_id);
 
         // Update the partner post status to 'publish'
         $update_post = [
