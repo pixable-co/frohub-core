@@ -16,32 +16,12 @@ class ReturnPayoutsPost {
      * Registers the REST API routes.
      */
     public function register_rest_routes() {
-        register_rest_route('frohub/v1', '/return-payouts-post', array(
-            'methods'             => 'POST',
-            'callback'            => array($this, 'handle_request'),
-            'permission_callback' => '__return_true',
-        ));
-
         register_rest_route('frohub/v1', '/payouts', array(
             'methods'             => 'GET',
             'callback'            => array($this, 'get_payouts_with_acf'),
             'permission_callback' => '__return_true',
         ));
     }
-
-    /**
-     * Handles the /return-payouts-post API request.
-     *
-     * @param \WP_REST_Request $request
-     * @return \WP_REST_Response
-     */
-    public function handle_request(\WP_REST_Request $request) {
-        return new \WP_REST_Response(array(
-            'success' => true,
-            'message' => 'return-payouts-post API endpoint reached',
-        ), 200);
-    }
-
     /**
      * Fetches payouts with ACF fields.
      *
