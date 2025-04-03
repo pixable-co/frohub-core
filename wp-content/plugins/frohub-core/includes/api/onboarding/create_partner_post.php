@@ -105,6 +105,7 @@ class CreatePartnerPost {
                 'day'  => $slot['1'] ?? '',
                 'from' => $slot['3'] ?? '',
                 'to'   => $slot['4'] ?? '',
+                'extra_charge' => $slot['5'] ?? 0,
             ];
         }
 
