@@ -93,9 +93,26 @@ class GetProduct {
         $response_data['add_ons'] = !empty($add_on_terms) ? $add_on_terms : [];
 
         // FAQs
-        $faqs = get_field('field_67efe0c25ab08', $product_id);
-        $response_data['faqs'] = !empty($faqs) ? array_column($faqs, 'faq_post') : [];
-
+        $faqs = get_field('field_67efe0c25ab08', $product_id); // ACF repeater or relationship field
+        $response_data['faqs'] = [];
+        
+        if (!empty($faqs)) {
+            foreach ($faqs as $faq) {
+                // If it's a repeater where 'faq_post' is a post object
+                if (is_array($faq) && isset($faq['faq_post']) && is_object($faq['faq_post'])) {
+                    $response_data['faqs'][] = $faq['faq_post']->ID;
+                }
+                // Or if it's a relationship field (already a list of WP_Posts)
+                elseif (is_object($faq)) {
+                    $response_data['faqs'][] = $faq->ID;
+                }
+                // Or direct post ID (fallback)
+                elseif (is_numeric($faq)) {
+                    $response_data['faqs'][] = intval($faq);
+                }
+            }
+        }
+    
         // Service Types from variations
         $enabled_service_types = [];
         $variations = wc_get_products([
