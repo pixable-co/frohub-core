@@ -69,9 +69,9 @@ class UpsertProduct {
 
         // Map service types to WooCommerce attributes
         $service_types_map = [
-            "Home-based" => ['id' => 152, 'slug' => 'home-based', 'virtual' => true],
-            "Salon-based" => ['id' => 153, 'slug' => 'salon-based', 'virtual' => true],
-            "Mobile" => ['id' => 154, 'slug' => 'mobile', 'virtual' => false] // Mobile is not virtual
+            "Home-based" => ['id' => 122, 'slug' => 'home-based', 'virtual' => true],
+            "Salon-based" => ['id' => 124, 'slug' => 'salon-based', 'virtual' => true],
+            "Mobile" => ['id' => 123, 'slug' => 'mobile', 'virtual' => false] // Mobile is not virtual
         ];
 
         // Handle Featured Image Upload
@@ -256,9 +256,10 @@ class UpsertProduct {
 
         // Update FAQ Repeater
         $faqs_repeater = [];
-        foreach ($faqs as $faq_id) {
-            $faqs_repeater[] = ["faq_post" => intval($faq_id)];
+        foreach ($faqs as $index => $faq_id) {
+            $faqs_repeater[$index] = ['faq_post' => intval($faq_id)];
         }
+        
         update_field('faqs', $faqs_repeater, $product_id);
 
         // Set Featured Image
