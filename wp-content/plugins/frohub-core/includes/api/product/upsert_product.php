@@ -255,12 +255,24 @@ class UpsertProduct {
         update_field('duration_minutes', $bookingDurationMinutes, $product_id);
 
         // Update FAQ Repeater
-        $faqs_repeater = [];
-        foreach ($faqs as $index => $faq_id) {
-            $faqs_repeater[$index] = ['faq_post' => intval($faq_id)];
+        if (!empty($faqs) && is_array($faqs)) {
+            $faqs_repeater = [];
+        
+            foreach ($faqs as $index => $faq_id) {
+                $faq_id = intval($faq_id);
+                if ($faq_id > 0 && get_post_type($faq_id) === 'faq') {
+                    $faqs_repeater[] = [
+                        'faq_post' => $faq_id
+                    ];
+                }
+            }
+        
+            update_field('field_67efe0c25ab08', $faqs_repeater, $product_id);
+        } else {
+            // Clear FAQs if none provided
+            update_field('field_67efe0c25ab08', [], $product_id);
         }
         
-        update_field('field_67efe0c25ab08', $faqs_repeater, $product_id);
 
         // Set Featured Image
         if ($featuredImageId) {
