@@ -16,11 +16,12 @@ class PartnerFaqs {
      * Registers the REST API routes.
      */
     public function register_rest_routes() {
-        register_rest_route('frohub/v1', '/partner-faqs/(?P<partner_id>\d+)', array(
+        register_rest_route('frohub/v1', '/partner-faqs', array(
             'methods'             => 'GET',
             'callback'            => array($this, 'get_faqs_by_partner_id'),
             'permission_callback' => '__return_true',
         ));
+        
     }
 
     /**
@@ -29,7 +30,7 @@ class PartnerFaqs {
      * Example usage: /wp-json/frohub/v1/partner-faqs?partner_id=123
      */
     public function get_faqs_by_partner_id(\WP_REST_Request $request) {
-        $partner_id = $request->get_param('partner_id');
+        $partner_id = $request->get_param('partner_id');  
 
         if (!$partner_id) {
             return new \WP_Error('no_partner_id', 'Partner ID is required', array('status' => 400));
@@ -42,7 +43,7 @@ class PartnerFaqs {
                 array(
                     'key'     => 'partner_id',
                     'value'   => $partner_id,
-                    'compare' => '='
+                    'compare' => '=='
                 )
             )
         );
