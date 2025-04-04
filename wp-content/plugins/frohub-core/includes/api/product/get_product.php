@@ -43,7 +43,7 @@ class GetProduct {
         $response_data = [
             'product_id'         => $product_id,
             'service_name'       => $product->get_name(),
-            'service_price'      => get_field()('service_price', $product_id),
+            'service_price'      => get_field('service_price', $product_id),
             'service_description'=> $product->get_description(),
             'categories'         => wp_get_post_terms($product_id, 'product_cat', ['fields' => 'ids']),
             'tags'               => wp_get_post_terms($product_id, 'product_tag', ['fields' => 'ids']),
