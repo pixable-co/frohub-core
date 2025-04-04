@@ -116,13 +116,32 @@ public function add_to_cart() {
                 'size' => $pa_size,
                 'length' => $pa_length,
             );
-
-            // Send success response
+        
             wp_send_json_success($response);
         } else {
-            // Send error response
-            wp_send_json_error(array('message' => 'Failed to add product to cart.'));
+            $errors = [];
+        
+            if (!$cart_item_key) {
+                $errors[] = 'Primary product (ID: ' . $product_id . ', Variation ID: ' . $variation_id . ') failed to add to cart.';
+            }
+        
+            if (!$secondary_cart_item_key) {
+                $errors[] = 'Secondary service fee product (ID: ' . $additional_product_id . ') failed to add to cart.';
+            }
+        
+            // Optional: include debug context for frontend developers
+            $errors[] = 'Selected service type: ' . $selected_service_type;
+            $errors[] = 'Selected date: ' . $selected_date;
+            $errors[] = 'Selected time: ' . $selected_time;
+            $errors[] = 'Size: ' . $pa_size;
+            $errors[] = 'Length: ' . $pa_length;
+        
+            wp_send_json_error(array(
+                'message' => 'Failed to add product to cart.',
+                'details' => $errors
+            ));
         }
+        
     } else {
         // Send error response if no matching variation is found
         wp_send_json_error(array('message' => 'No matching variation found for the selected service type.'));
