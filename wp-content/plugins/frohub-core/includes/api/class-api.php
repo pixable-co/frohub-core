@@ -65,6 +65,7 @@ use FECore\GetAllAddOns;
 use FECore\ConfirmPartnerPayout;
 use FECore\PayoutPartners;
 use FECore\PartnerAddOns;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
