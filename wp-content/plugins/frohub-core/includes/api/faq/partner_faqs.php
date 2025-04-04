@@ -5,7 +5,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-class ReturnPartnerFaqs {
+class PartnerFaqs {
 
     public static function init() {
         $self = new self();
@@ -16,7 +16,7 @@ class ReturnPartnerFaqs {
      * Registers the REST API routes.
      */
     public function register_rest_routes() {
-        register_rest_route('frohub/v1', '/return-partner-faqs', array(
+        register_rest_route('frohub/v1', '/partner-faqs', array(
             'methods'             => 'GET',
             'callback'            => array($this, 'get_faqs_by_partner_id'),
             'permission_callback' => '__return_true',
@@ -26,7 +26,7 @@ class ReturnPartnerFaqs {
     /**
      * Fetches FAQs by Partner ID.
      *
-     * Example usage: /wp-json/frohub/v1/return-partner-faqs?partner_id=123
+     * Example usage: /wp-json/frohub/v1/partner-faqs?partner_id=123
      */
     public function get_faqs_by_partner_id(\WP_REST_Request $request) {
         $partner_id = $request->get_param('partner_id');
@@ -36,7 +36,7 @@ class ReturnPartnerFaqs {
         }
 
         $args = array(
-            'post_type'      => 'faq',  // Assuming 'faq' is your custom post type
+            'post_type'      => 'faq',
             'posts_per_page' => -1,
             'meta_query'     => array(
                 array(
@@ -57,7 +57,7 @@ class ReturnPartnerFaqs {
                     'id'         => get_the_ID(),
                     'title'      => get_the_title(),
                     'content'    => apply_filters('the_content', get_the_content()),
-                    'partner_id' => get_field('partner_id'), // Ensure ACF is loaded
+                    'partner_id' => get_field('partner_id'),
                     'permalink'  => get_permalink(),
                 );
             }

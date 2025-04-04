@@ -65,6 +65,7 @@ use FECore\GetAllAddOns;
 use FECore\ConfirmPartnerPayout;
 use FECore\PayoutPartners;
 use FECore\PartnerAddOns;
+use FECore\PartnerFaqs;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -125,5 +126,6 @@ class API {
 		GetProduct::init();
 		DeleteProduct::init();
 		PartnersMyPendingOrdersCount::init();
+		PartnerFaqs::init();
 	}
 }
