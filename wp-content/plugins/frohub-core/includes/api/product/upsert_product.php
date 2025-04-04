@@ -162,6 +162,19 @@ class UpsertProduct {
         wp_set_object_terms($product_id, array_column($service_types_map, 'slug'), 'pa_service-type');
         update_post_meta($product_id, '_product_attributes', $attributes);
 
+        // ✅ Delete all existing variations before re-creating
+        $existing_variations = get_children([
+            'post_parent' => $product_id,
+            'post_type'   => 'product_variation',
+            'post_status' => 'any',
+            'numberposts' => -1,
+        ]);
+
+        foreach ($existing_variations as $variation) {
+            wp_delete_post($variation->ID, true);
+        }
+
+
         // Generate Variations for all 3 service types
         foreach ($service_types_map as $key => $data) {
             $term_slug = $data['slug'];
