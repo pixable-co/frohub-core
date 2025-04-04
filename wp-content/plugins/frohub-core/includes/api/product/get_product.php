@@ -93,7 +93,7 @@ class GetProduct {
         $response_data['add_ons'] = !empty($add_on_terms) ? $add_on_terms : [];
 
         // FAQs
-        $faqs = get_field('faqs', $product_id);
+        $faqs = get_field('field_67efe0c25ab08', $product_id);
         $response_data['faqs'] = !empty($faqs) ? array_column($faqs, 'faq_post') : [];
 
         // Service Types from variations
