@@ -133,14 +133,14 @@ class ReturnAllReviewsForPartner {
                 'title'             => get_the_title(),
                 'content'           => get_the_content(),
                 'date'              => get_the_date(),
-                'author'            => get_the_author(),
+                'author'            => get_field('user', $post_id),
                 'service_booked'    => $filtered_service, // Return only the Post Title
                 'start_date_time'   => $start_date_time,  // Return Start Date Time
                 'overall_rating'    => $overall_rating,
                 'reliability'       => $reliability,
                 'skill'             => $skill,
                 'professionalism'   => $professionalism,
-                'reply'             => $latest_comment // Return the latest reply (if exists)
+                'reply'             => "test" //$latest_comment // Return the latest reply (if exists)
                 ];
         }
 
