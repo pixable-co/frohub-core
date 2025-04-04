@@ -260,7 +260,7 @@ class UpsertProduct {
             $faqs_repeater[$index] = ['faq_post' => intval($faq_id)];
         }
         
-        update_field('faqs', $faqs_repeater, $product_id);
+        update_field('field_67efe0c25ab08', $faqs_repeater, $product_id);
 
         // Set Featured Image
         if ($featuredImageId) {
