@@ -105,3 +105,18 @@
 .fhcheck-selected {
     background-color: #F1F3F4;
 }
+
+.scrollable-timeslots {
+    max-height: 270px; /* adjust as needed */
+    overflow-y: auto;
+    padding-right: 4px; /* optional: space for scrollbar */
+}
+
+.scrollable-timeslots::-webkit-scrollbar {
+    width: 6px;
+}
+
+.scrollable-timeslots::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+}

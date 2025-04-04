@@ -217,7 +217,7 @@ const FhCalender = ({ onDateChange, bookingNotice, initialServiceDuration, maxDa
                 ) : availableTimeSlots.length === 0 ? (
                     <p className="no-slots-message">No available time slots for this day.</p>
                 ) : (
-                    <div className="timeslots-grid">
+                    <div className="timeslots-grid scrollable-timeslots">
                         {availableTimeSlots.map((slot, index) => (
                             <button
                                 key={index}
