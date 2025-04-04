@@ -16,7 +16,7 @@ class PartnerFaqs {
      * Registers the REST API routes.
      */
     public function register_rest_routes() {
-        register_rest_route('frohub/v1', '/partner-faqs', array(
+        register_rest_route('frohub/v1', '/partner-faqs/(?P<partner_id>\d+)', array(
             'methods'             => 'GET',
             'callback'            => array($this, 'get_faqs_by_partner_id'),
             'permission_callback' => '__return_true',
