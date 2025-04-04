@@ -1,1 +1,47 @@
 @import "tailwindcss";
+
+.bottom-bar {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* desktop: 4 columns */
+    align-items: center;
+    gap: 1rem;
+}
+
+@media only screen and (max-width: 600px) {
+    .bottom-bar {
+        grid-template-columns: repeat(1, 1fr); /* mobile: 3 columns */
+    }
+
+    .bottom-bar-notice {
+        display: none;
+    }
+}
+
+.bottom-bar-text {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* Mobile: 3 columns */
+    text-align: right;
+    gap: 2rem; /* sm:gap-8 = 2rem */
+}
+
+@media only screen and (min-width: 768px) {
+    .bottom-bar-text {
+        grid-template-columns: 1fr; /* Desktop: 1 column */
+        gap: 0; /* md:gap-0 */
+    }
+}
+
+.bottom-bar-notice-mobile {
+    display: flex; /* default: show on mobile */
+    align-items: center;
+    gap: 0.5rem;
+    color: #4a5568; /* Tailwind's text-gray-700 */
+    font-size: 0.875rem; /* Tailwind's text-sm */
+    margin-top: 1rem;
+}
+
+@media only screen and (min-width: 640px) {
+    .bottom-bar-notice-mobile {
+        display: none;
+    }
+}

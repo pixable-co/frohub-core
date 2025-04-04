@@ -119,7 +119,6 @@ export default function RenderProductAddOns({ productId, setProductId, selectedA
                 value={JSON.stringify(selectedAddOns.map(item => item.id))}
             />
 
-            <div className="mb-3">Select add-ons</div>
             {loading ? (
                 <div className="flex gap-2 !mb-3">
                     {Array.from({ length: 3 }).map((_, index) => (
@@ -133,6 +132,8 @@ export default function RenderProductAddOns({ productId, setProductId, selectedA
                     ) : (
                         <>
                             {Array.isArray(addOns) && addOns.length > 0 && (
+                                <>
+                                <div className="mb-3">Select add-ons</div>
                                 <ul className="flex justify-start items-start gap-2 !list-none !p-0 !m-0 !mb-3">
                                     {addOns.map((addOn) => (
                                         <li key={addOn.id}>
@@ -144,6 +145,7 @@ export default function RenderProductAddOns({ productId, setProductId, selectedA
                                         </li>
                                     ))}
                                 </ul>
+                                </>
                             )}
                         </>
                     )}

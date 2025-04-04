@@ -1,6 +1,8 @@
 <?php
 namespace FECore;
 
+use FECore\DisplayPartnerName;
+
 use FECore\ShowComments;
 
 use FECore\GetUserAvatar;
@@ -41,7 +43,6 @@ use FECore\GetOrderNotes;
 
 use FECore\GetOrderServiceName;
 
-use FECore\GetPartnerName;
 
 use FECore\GetProductRating;
 
@@ -161,5 +162,6 @@ class Shortcodes {
 		GetUpcomingBookings::init();
 		GetUserAvatar::init();
 		ShowComments::init();
+		DisplayPartnerName::init();
 	}
 }
