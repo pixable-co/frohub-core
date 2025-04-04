@@ -32,6 +32,13 @@ public function add_to_cart() {
     WC()->cart->empty_cart();
     // Get data from the request
     $product_id = isset($_POST['productId']) ? sanitize_text_field($_POST['productId']) : '';
+
+    // Fetch Partner ID from ACF field
+    $partner_id = get_field('partner_id', $product_id);
+
+    // Get Partner Name
+    $partner_name = $partner_id ? get_the_title($partner_id) : 'Error: Partner not found';
+
     $selected_add_ons = isset($_POST['selectedAddOns']) ? array_map(function($add_on) {
         return array(
             'id' => sanitize_text_field($add_on['id']),
@@ -85,6 +92,7 @@ public function add_to_cart() {
             'booking_time' => $selected_time,
             'size' => $pa_size,
             'length' => $pa_length,
+            'stylist_name' => $partner_name // Adding Stylist Name to cart
         );
 
         $cart_item_key = WC()->cart->add_to_cart($product_id, 1, $variation_id, array(), $cart_item_data);
@@ -116,7 +124,8 @@ public function add_to_cart() {
                 'size' => $pa_size,
                 'length' => $pa_length,
             );
-        
+
+            // Send success response
             wp_send_json_success($response);
         } else {
             $errors = [];
@@ -141,7 +150,6 @@ public function add_to_cart() {
                 'details' => $errors
             ));
         }
-        
     } else {
         // Send error response if no matching variation is found
         wp_send_json_error(array('message' => 'No matching variation found for the selected service type.'));
@@ -198,6 +206,11 @@ public function add_to_cart() {
         if (isset($values['length'])) {
             $cart_item['length'] = $values['length'];
         }
+        if (isset($values['stylist_name'])) {
+            $cart_item['stylist_name'] = $values['stylist_name'];
+        }
+    
+        
         return $cart_item;
     }
 
@@ -225,10 +238,10 @@ public function add_to_cart() {
 
         // Display selected service type in cart and checkout
         if (isset($cart_item['selected_service_type']) && ! empty($cart_item['selected_service_type'])) {
-            $item_data[] = array(
-                'name' => __('Service Type', 'frohub'),
-                'value' => ucfirst($cart_item['selected_service_type']),
-            );
+        $item_data[] = array(
+            'name' => __('Service Type', 'frohub'),
+            'value' => ucwords(str_replace('-', ' ', $cart_item['selected_service_type'])),
+          );
         }
 
         $formatted_date = $this->format_date($cart_item['booking_date']);
@@ -244,43 +257,75 @@ public function add_to_cart() {
                     'value' => $cart_item['booking_time'],
                 );
         }
+
+        // Display stylist name
+        if (isset($cart_item['stylist_name']) && !empty($cart_item['stylist_name'])) {
+        $item_data[] = array(
+        'name' => __('Stylist', 'frohub'),
+        'value' => $cart_item['stylist_name'],
+        );
+        }
+
         return $item_data;
     }
 
     public function add_order_item_meta($item_id, $values) {
         $order_id = wc_get_order_id_by_order_item_id($item_id);
     
-        // Save selected add-ons to order meta
-        // *NOTE SERVICE TYPE NOT ADDED AS IT'S PART OF A VARIATION PRODUCT SO IT'S ADDED AUTOMATICALLY*
-        if (isset($values['selected_add_ons'])) {
-            $add_ons = array_map(function($add_on) {
-                return $add_on['name'];
-            }, $values['selected_add_ons']);
-            wc_add_order_item_meta($item_id, 'Selected Add-Ons', implode(', ', $add_ons));
-        }
-    
+        // Save "Total Due on the Day" with 2 decimal places
         if (isset($values['deposit_due'])) {
-            wc_add_order_item_meta($item_id, 'Total due on day', $values['deposit_due']);
+            wc_add_order_item_meta($item_id, 'Total Due on the Day', '£' . number_format((float)$values['deposit_due'], 2));
         }
     
-        if (isset($values['service_fee'])) {
-            wc_add_order_item_meta($order_id, '_frohub_service_fee', number_format($values['service_fee'], 2));
+        // Ensure "Selected Date" and "Selected Time" exist
+        if (!empty($values['booking_date']) && !empty($values['booking_time'])) {
+            $selected_date = $values['booking_date'];
+            $selected_time = $values['booking_time'];
+    
+            // Validate and split time
+            if (strpos($selected_time, ' - ') !== false) {
+                list($start_time, $end_time) = explode(' - ', $selected_time);
+                $start_time = trim($start_time);
+                $end_time = trim($end_time);
+            } else {
+                return; // Invalid time format, don't save
+            }
+    
+            // Convert Start and End time to DateTime
+            $start_datetime = \DateTime::createFromFormat('H:i Y-m-d', $start_time . ' ' . $selected_date);
+            $end_datetime = \DateTime::createFromFormat('H:i Y-m-d', $end_time . ' ' . $selected_date);
+    
+            if ($start_datetime && $end_datetime) {
+                // Calculate Duration
+                $duration_minutes = ($end_datetime->getTimestamp() - $start_datetime->getTimestamp()) / 60;
+    
+                // Format output
+                $start_formatted = $start_datetime->format('H:i, d M Y');
+                $end_formatted = $end_datetime->format('H:i, d M Y');
+    
+                // Save "Start Date Time" and "End Date Time"
+                wc_add_order_item_meta($item_id, 'Start Date Time', $start_formatted);
+                wc_add_order_item_meta($item_id, 'End Date Time', $end_formatted);
+    
+                // Format "Duration"
+                $hours = floor($duration_minutes / 60);
+                $minutes = $duration_minutes % 60;
+                $duration_string = ($hours > 0 ? "{$hours} hrs " : '') . ($minutes > 0 ? "{$minutes} mins" : '');
+                wc_add_order_item_meta($item_id, 'Duration', trim($duration_string));
+            }
         }
     
-        if (isset($values['booking_date'])) {
-            wc_add_order_item_meta($item_id, 'Selected Date', $values['booking_date']);
+        // Save "Size" & "Length" if available
+        if (!empty($values['size'])) {
+            wc_add_order_item_meta($item_id, 'Size', ucfirst($values['size']));
         }
-        if (isset($values['booking_time'])) {
-            wc_add_order_item_meta($item_id, 'Selected Time', $values['booking_time']);
+        if (!empty($values['length'])) {
+            wc_add_order_item_meta($item_id, 'Length', ucfirst($values['length']));
         }
-    
-        // Save Size & Length as hidden order meta (admin-only)
-        if (isset($values['size']) && !empty($values['size'])) {
-            wc_add_order_item_meta($item_id, 'Size', $values['size']);
-        }
-        if (isset($values['length']) && !empty($values['length'])) {
-            wc_add_order_item_meta($item_id, 'Length', $values['length']);
+        if (isset($values['stylist_name']) && !empty($values['stylist_name'])) {
+            wc_add_order_item_meta($item_id, 'Stylist', $values['stylist_name']);
         }
     }
+    
     
 }
