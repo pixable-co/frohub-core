@@ -140,7 +140,7 @@ class ReturnAllReviewsForPartner {
                 'reliability'       => $reliability,
                 'skill'             => $skill,
                 'professionalism'   => $professionalism,
-                'reply'             => "test" //$latest_comment // Return the latest reply (if exists)
+                'reply'             => $latest_comment // Return the latest reply (if exists)
                 ];
         }
 
