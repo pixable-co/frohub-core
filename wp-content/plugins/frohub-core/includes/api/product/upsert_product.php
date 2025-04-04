@@ -174,7 +174,6 @@ class UpsertProduct {
             wp_delete_post($variation->ID, true);
         }
 
-
         // Generate Variations for all 3 service types
         foreach ($service_types_map as $key => $data) {
             $term_slug = $data['slug'];
@@ -289,8 +288,13 @@ class UpsertProduct {
 
         // Set Featured Image
         if ($featuredImageId) {
-            set_post_thumbnail($product_id, $featuredImageId);
+        // Set new featured image
+        set_post_thumbnail($product_id, $featuredImageId);
+        } else {
+        // Remove existing featured image if none provided
+        delete_post_thumbnail($product_id);
         }
+
 
         // Set Gallery Images
         if (!empty($galleryImageIds)) {
