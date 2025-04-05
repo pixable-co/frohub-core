@@ -70,6 +70,8 @@ class GetPartnerData {
             'city'               => get_field('city', $partner_post_id),
             'countyDistrict'    => get_field('county_district', $partner_post_id),
             'postcode'           => get_field('postcode', $partner_post_id),
+            'latitude'           => get_field('latitude', $partner_post_id),
+            'longitude'         => get_field('longitude', $partner_post_id),
             'phone'            => get_field('phone', $partner_post_id),
             'terms'            => get_field('terms_and_conditions', $partner_post_id),
             'lateFees'         => get_field('late_fees', $partner_post_id),
