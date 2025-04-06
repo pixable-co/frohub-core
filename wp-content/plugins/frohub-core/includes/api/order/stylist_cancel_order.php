@@ -98,9 +98,9 @@ class StylistCancelOrder {
         $payload = json_encode([
             'client_email' => $client_email,
             'client_first_name' => $client_first_name,
-            'partner_name' => $partner_name->post_title,
+            'partner_name' => $partner_name,
             'service_name_value' => $service_name,
-            'booking_date_time_value' => $booking_date_time,
+            'booking_date_time_value' => $selected_date_time,
         ]);
 
         // Webhook endpoint
