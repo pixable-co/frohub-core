@@ -136,6 +136,47 @@ class RescheduleOrder {
         // Save changes
         $order->save();
 
+        foreach ($order->get_items() as $item) {
+
+            $product_id = $item->get_product_id();
+            $item_total = $item->get_total();
+
+            if ($product_id == 28990) {
+
+            } else {
+
+                // Get the service name and strip after ' - '
+                $raw_service_name = $item->get_name();
+                $service_name_parts = explode(' - ', $raw_service_name);
+                $service_name = trim($service_name_parts[0]);
+
+                $partner_post = get_field('partner_name', $product_id);
+                if ($partner_post && is_object($partner_post)) {
+                    $partner_name = get_the_title($partner_post->ID);
+                }
+            }
+        }
+
+         // Payload
+        $payload = json_encode([
+            'client_email' => $client_email,
+            'client_first_name' => $client_first_name,
+            'partner_name' => $partner_name,
+            'service_name' => $service_name,
+            'proposed_date_time' => $proposed_start_datetime,
+        ]);
+
+        // Send to webhook.site
+        $webhook_url = 'https://flow.zoho.eu/20103370577/flow/webhook/incoming?zapikey=1001.07b3be77c8b130450468de3b1b224675.0a399daca8ab79871ee2a7d5fc7e08f3&isdebug=false';
+
+        wp_remote_post($webhook_url, [
+            'method'    => 'POST',
+            'headers'   => [
+                'Content-Type' => 'application/json',
+            ],
+            'body'      => $payload,
+        ]);
+
         // Return a success response
         return new \WP_REST_Response([
             'success' => true,

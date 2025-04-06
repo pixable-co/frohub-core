@@ -71,6 +71,53 @@ class EarlyCancelOrder {
         $order->update_status('cancelled', 'Order cancelled with partial refund');
         update_field('cancellation_status', 'Early Cancellation', $order_id);
 
+        // Pull client data
+        $client_email = $order->get_billing_email();
+        $client_first_name = $order->get_billing_first_name();
+
+        foreach ($order->get_items() as $item) {
+
+            $product_id = $item->get_product_id();
+            $item_total = $item->get_total();
+
+            if ($product_id == 28990) {
+
+            } else {
+
+                // Get the service name and strip after ' - '
+                $raw_service_name = $item->get_name();
+                $service_name_parts = explode(' - ', $raw_service_name);
+                $service_name = trim($service_name_parts[0]);
+
+                $partner_post = get_field('partner_name', $product_id);
+                if ($partner_post && is_object($partner_post)) {
+                    $partner_name = get_the_title($partner_post->ID);
+                }
+                $selected_date_time = wc_get_order_item_meta($item->get_id(), 'Start Date Time', true);
+            }
+        }
+
+         // Build payload
+        $payload = json_encode([
+            'client_email' => $client_email,
+            'client_first_name' => $client_first_name,
+            'partner_name' => $partner_name,
+            'service_name' => $service_name,
+            'booking_date_time' => $selected_date_time,
+        ]);
+
+        // Webhook URL
+        $webhook_url = 'https://flow.zoho.eu/20103370577/flow/webhook/incoming?zapikey=1001.c4690a5e3f8614af33586949f0a712a6.727222d689cd2a034af750b2ac127495&isdebug=false';
+
+        // Send it
+        wp_remote_post($webhook_url, [
+            'method'    => 'POST',
+            'headers'   => [
+                'Content-Type' => 'application/json',
+            ],
+            'body'      => $payload,
+        ]);
+
         wp_send_json_success([
             'message' => 'Order cancelled successfully. Refund issued except for product ID 28990.'
         ]);
