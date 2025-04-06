@@ -61,14 +61,38 @@ class StylistCancelOrder {
             ], 400);
         }
 
-        $order->update_status('cancelled', 'Order cancelled via API by Stylist.');
+       // $order->update_status('cancelled', 'Order cancelled via API by Stylist.');
         update_field('cancellation_status', 'Cancelled by Stylist', $order_id);
         $order->save();
 
-        // Extract relevant data from ACF or fallback to placeholders
-        $partner_name = get_field('partner_name', $order_id) ?: 'partner_name_value';
-        $service_name = get_field('service_name', $order_id) ?: 'service_name_value';
-        $booking_date_time = get_field('booking_date_time', $order_id) ?: 'booking_date_time_value';
+        foreach ($order->get_items() as $item) {
+
+            $reschedule_meta = wc_get_order_item_meta($item->get_id(), 'Has Been Rescheduled', true);
+
+            if (strtolower(trim($reschedule_meta)) === 'yes') {
+                $has_been_rescheduled = true;
+                break;
+            }
+
+            $product_id = $item->get_product_id();
+            $item_total = $item->get_total();
+
+            if ($product_id == 28990) {
+                return; // Skip the booking fee item
+            } else {
+
+                // Get the service name and strip after ' - '
+                $raw_service_name = $item->get_name();
+                $service_name_parts = explode(' - ', $raw_service_name);
+                $service_name = trim($service_name_parts[0]);
+
+                $partner_post = get_field('partner_name', $product_id);
+                if ($partner_post && is_object($partner_post)) {
+                    $partner_name = get_the_title($partner_post->ID);
+                }
+                $selected_date_time = wc_get_order_item_meta($item->get_id(), 'Start Date Time', true);
+            }
+        }
 
         // Create payload
         $payload = json_encode([
