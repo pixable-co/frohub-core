@@ -95,7 +95,7 @@ class StylistDeclineOrder {
             'client_first_name' => $client_first_name,
             'partner_name' => $partner_name->post_title,
             'service_name' => $service_name,
-            'booking_date_time' => $booking_date_time,
+            'booking_date_time' => $selected_date_time,
         ]);
 
         // Send to webhook.site
