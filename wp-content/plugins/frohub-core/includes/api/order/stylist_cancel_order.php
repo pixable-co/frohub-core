@@ -99,8 +99,8 @@ class StylistCancelOrder {
             'client_email' => $client_email,
             'client_first_name' => $client_first_name,
             'partner_name' => $partner_name,
-            'service_name_value' => $service_name,
-            'booking_date_time_value' => $selected_date_time,
+            'service_name' => $service_name,
+            'booking_date_time' => $selected_date_time,
         ]);
 
         // Webhook endpoint
