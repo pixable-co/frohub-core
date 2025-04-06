@@ -30,12 +30,23 @@ class SendOrderToEndpoint {
 
         $order_status = $order->get_status();
 
+        // If the status is 'processing', check for reschedule
+        if ($order_status === 'processing') {
+            $has_been_rescheduled = $order->get_meta('Has Been Rescheduled');
+            if (strtolower(trim($has_been_rescheduled)) === 'yes') {
+                error_log("Order #$order_id has been rescheduled. Skipping webhook.");
+                return;
+            }
+        }
+
         if (!isset($endpoints[$order_status])) {
             error_log("No endpoint defined for status: $order_status");
             return;
         }
 
         $endpoint = $endpoints[$order_status];
+
+
 
         $billing_address = implode(', ', array_filter([
             $order->get_billing_address_1(),
