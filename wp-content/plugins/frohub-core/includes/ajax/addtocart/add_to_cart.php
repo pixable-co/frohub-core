@@ -100,7 +100,7 @@ public function add_to_cart() {
         // Frohub Service Fee
         $additional_product_id = 28990;
         $base_price = $this->get_product_price($additional_product_id);
-        $percentage = $base_price / 100;
+        $percentage = 0.03;
         $secondary_product_price = $total_price * $percentage;
 
         $secondary_cart_item_data = array(
