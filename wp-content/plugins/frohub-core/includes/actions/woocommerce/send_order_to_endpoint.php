@@ -63,7 +63,11 @@ class SendOrderToEndpoint {
                 $frohub_booking_fee = $item_total;
             } else {
                 $deposit = $item_total;
-                $service_name = $item->get_name();
+
+                // Get the service name and strip after ' - '
+                $raw_service_name = $item->get_name();
+                $service_name_parts = explode(' - ', $raw_service_name);
+                $service_name = trim($service_name_parts[0]);
 
                 $partner_post = get_field('partner_name', $product_id);
                 if ($partner_post && is_object($partner_post)) {
@@ -95,7 +99,8 @@ class SendOrderToEndpoint {
                         if (!empty($item_meta_data)) {
                             foreach ($item_meta_data as $meta) {
                                 if ($meta->key === 'pa_service-type') {
-                                    $service_type = $item->get_meta('pa_service-type', true);
+                                    $raw_service_type = $item->get_meta('pa_service-type', true);
+                                    $service_type = ucfirst(strtolower($raw_service_type));
                                 }
                             }
                         }
