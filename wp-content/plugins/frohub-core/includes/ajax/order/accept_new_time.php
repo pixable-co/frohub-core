@@ -184,5 +184,10 @@ class AcceptNewTime {
             'body'      => $payload,
         ]);
         
+        wp_send_json_success([
+            'message'     => 'Appointment confirmed successfully! Order is now processing.',
+            'start_time'  => $formatted_start_datetime,
+            'end_time'    => $formatted_end_datetime
+        ]);
     }
 }
