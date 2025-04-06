@@ -61,7 +61,7 @@ class StylistCancelOrder {
             ], 400);
         }
 
-       // $order->update_status('cancelled', 'Order cancelled via API by Stylist.');
+        $order->update_status('cancelled', 'Order cancelled via API by Stylist.');
         update_field('cancellation_status', 'Cancelled by Stylist', $order_id);
         $order->save();
 
@@ -97,8 +97,8 @@ class StylistCancelOrder {
         ]);
 
         // Webhook endpoint
-        //$webhook_url = 'https://flow.zoho.eu/20103370577/flow/webhook/incoming?zapikey=1001.7f07c99121431dc8e17958ee0dc60a2b.9bdaa8eccc2446b091e2a4eb82f79ee5&isdebug=false';
-        $webhook_url = 'https://webhook.site/9bcb9f9b-596e-4efb-9b99-daa3b26f9bca';
+        $webhook_url = 'https://flow.zoho.eu/20103370577/flow/webhook/incoming?zapikey=1001.7f07c99121431dc8e17958ee0dc60a2b.9bdaa8eccc2446b091e2a4eb82f79ee5&isdebug=false';
+        //$webhook_url = 'https://webhook.site/9bcb9f9b-596e-4efb-9b99-daa3b26f9bca';
 
         // Send POST request
         wp_remote_post($webhook_url, [
