@@ -80,7 +80,7 @@ class StylistDeclineOrder {
         ]);
 
         // Send to webhook.site
-        $webhook_url = 'https://webhook.site/9bcb9f9b-596e-4efb-9b99-daa3b26f9bca';
+        $webhook_url = 'https://flow.zoho.eu/20103370577/flow/webhook/incoming?zapikey=1001.1c24c2378d1cd964d192f3489f72be80.fdb99b1c82bc8acd0691cadf00896830&isdebug=false';
 
         wp_remote_post($webhook_url, [
             'method'    => 'POST',
