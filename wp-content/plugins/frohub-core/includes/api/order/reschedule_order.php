@@ -117,6 +117,7 @@ class RescheduleOrder {
         // Store the formatted proposed start and end times in order meta
         wc_update_order_item_meta($item_id, 'Proposed Start Date Time', $formatted_proposed_start_datetime);
         wc_update_order_item_meta($item_id, 'Proposed End Date Time', $formatted_proposed_end_datetime);
+        wc_update_order_item_meta($item_id, 'Has Been Rescheduled', 'Yes');
 
         // Fetch updated values correctly
         $proposed_start_datetime = wc_get_order_item_meta($item_id, 'Proposed Start Date Time', true);
