@@ -78,7 +78,7 @@ class StylistCancelOrder {
             $item_total = $item->get_total();
 
             if ($product_id == 28990) {
-                return; // Skip the booking fee item
+                
             } else {
 
                 // Get the service name and strip after ' - '
