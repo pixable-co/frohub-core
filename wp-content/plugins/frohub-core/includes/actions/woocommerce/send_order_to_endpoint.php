@@ -77,14 +77,7 @@ class SendOrderToEndpoint {
                 $total_service_fee = ($deposit > 0) ? ($deposit / 0.3) : 0;
                 $balance = $total_service_fee - $deposit;
 
-                $selected_date = wc_get_order_item_meta($item->get_id(), 'Selected Date', true);
-                $selected_time = wc_get_order_item_meta($item->get_id(), 'Selected Time', true);
-
-                if (!empty($selected_date) && !empty($selected_time)) {
-                    $formatted_date = date('d M Y', strtotime($selected_date));
-                    $start_time = explode(' - ', $selected_time)[0];
-                    $booking_date_time = "$start_time, $formatted_date";
-                }
+                $selected_date_time = wc_get_order_item_meta($item->get_id(), 'Start Date Time', true);
 
                 $selected_addons = wc_get_order_item_meta($item->get_id(), 'Selected Add-Ons', true);
                 if (!empty($selected_addons)) {
@@ -125,7 +118,7 @@ class SendOrderToEndpoint {
             'balance'            => $format_currency($balance),
             'total_service_fee'  => $format_currency($total_service_fee),
             'service_name'       => $service_name,
-            'booking_date_time'  => $booking_date_time,
+            'booking_date_time'  => $selected_date_time,
             'addons'             => $addons,
             'service_type'       => $service_type,
         ];
