@@ -41,6 +41,9 @@ class StylistDeclineOrder {
         $order_id = intval($request->get_param('order_id'));
 
         $order = wc_get_order($order_id);
+        // Pull client data
+        $client_email = $order->get_billing_email();
+        $client_first_name = $order->get_billing_first_name();
 
         if (!$order) {
             return new \WP_REST_Response([
@@ -61,6 +64,31 @@ class StylistDeclineOrder {
         $order->update_status('cancelled', 'Order declined via API by Stylist.');
         update_field('cancellation_status', 'Declined by Stylist', $order_id);
         $order->save();
+
+        // Replace with real meta values if available
+        $partner_name = get_field('partner_name', $order_id) ?: 'partner_name_value';
+        $service_name = get_field('service_name', $order_id) ?: 'service_name_value';
+        $booking_date_time = get_field('booking_date_time', $order_id) ?: 'booking_date_time_value';
+
+        // Build payload
+        $payload = json_encode([
+            'client_email' => $client_email,
+            'client_first_name' => $client_first_name,
+            'partner_name' => $partner_name,
+            'service_name' => $service_name,
+            'booking_date_time' => $booking_date_time,
+        ]);
+
+        // Send to webhook.site
+        $webhook_url = 'https://webhook.site/9bcb9f9b-596e-4efb-9b99-daa3b26f9bca';
+
+        wp_remote_post($webhook_url, [
+            'method'    => 'POST',
+            'headers'   => [
+                'Content-Type' => 'application/json',
+            ],
+            'body'      => $payload,
+        ]);
 
         return new \WP_REST_Response([
             'success'            => true,
