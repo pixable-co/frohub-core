@@ -93,7 +93,7 @@ class AcceptNewTime {
            // wc_delete_order_item_meta($item_id, 'Proposed End Date Time');
         }
 
-        //$order->update_status('processing', 'Appointment time confirmed by customer.');
+        $order->update_status('processing', 'Appointment time confirmed by customer.');
         $order->save();
 
         //**Trigger Zeptomail Email Template */
