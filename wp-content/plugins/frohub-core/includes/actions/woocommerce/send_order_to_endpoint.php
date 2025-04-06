@@ -70,6 +70,14 @@ class SendOrderToEndpoint {
         $service_type = 'N/A (Please contact FroHub)';
 
         foreach ($order->get_items() as $item) {
+
+            $reschedule_meta = wc_get_order_item_meta($item->get_id(), 'Has Been Rescheduled', true);
+
+            if (strtolower(trim($reschedule_meta)) === 'yes') {
+                $has_been_rescheduled = true;
+                break;
+            }
+
             $product_id = $item->get_product_id();
             $item_total = $item->get_total();
 
@@ -114,6 +122,11 @@ class SendOrderToEndpoint {
                     }
                 }
             }
+        }
+
+        if ($has_been_rescheduled) {
+            error_log("Order #$order_id has been rescheduled (via line item). Skipping webhook.");
+            return;
         }
 
         $format_currency = function($amount) {
