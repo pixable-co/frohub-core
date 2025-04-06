@@ -47,6 +47,54 @@ class DeclineNewProposedTime {
         // Update ACF cancellation status
         update_field('cancellation_status', 'Declined by Client', $order_id);
 
+        // Pull client data
+        $client_email = $order->get_billing_email();
+        $client_first_name = $order->get_billing_first_name();
+
+        foreach ($order->get_items() as $item) {
+
+            $product_id = $item->get_product_id();
+            $item_total = $item->get_total();
+
+            if ($product_id == 28990) {
+
+            } else {
+
+                // Get the service name and strip after ' - '
+                $raw_service_name = $item->get_name();
+                $service_name_parts = explode(' - ', $raw_service_name);
+                $service_name = trim($service_name_parts[0]);
+
+                $partner_post = get_field('partner_name', $product_id);
+                if ($partner_post && is_object($partner_post)) {
+                    $partner_name = get_the_title($partner_post->ID);
+                }
+                $selected_date_time = wc_get_order_item_meta($item->get_id(), 'Start Date Time', true);
+            }
+        }
+
+            // Build payload
+        $payload = json_encode([
+            'order_id' => $order_id,
+            'client_email' => $client_email,
+            'client_first_name' => $client_first_name,
+            'partner_name' => $partner_name,
+
+        ]);
+
+        // Webhook URL
+        $webhook_url = 'https://flow.zoho.eu/20103370577/flow/webhook/incoming?zapikey=1001.e14c3511f867358f97a4ffc2340ef099.302bd10e4c7fa5fe9841309126bcb1dc&isdebug=false';
+
+        // Send it
+        wp_remote_post($webhook_url, [
+            'method'    => 'POST',
+            'headers'   => [
+                'Content-Type' => 'application/json',
+            ],
+            'body'      => $payload,
+        ]);
+        
+
         wp_send_json_success(['message' => 'Order has been cancelled.']);
     }
 }
