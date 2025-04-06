@@ -89,17 +89,100 @@ class AcceptNewTime {
             wc_update_order_item_meta($item_id, 'Start Date Time', $formatted_start_datetime);
             wc_update_order_item_meta($item_id, 'End Date Time', $formatted_end_datetime);
 
-            wc_delete_order_item_meta($item_id, 'Proposed Start Date Time');
-            wc_delete_order_item_meta($item_id, 'Proposed End Date Time');
+            //wc_delete_order_item_meta($item_id, 'Proposed Start Date Time');
+            //wc_delete_order_item_meta($item_id, 'Proposed End Date Time');
         }
 
-        $order->update_status('processing', 'Appointment time confirmed by customer.');
-        $order->save();
+        //$order->update_status('processing', 'Appointment time confirmed by customer.');
+        //$order->save();
 
-        wp_send_json_success([
-            'message'     => 'Appointment confirmed successfully! Order is now processing.',
-            'start_time'  => $formatted_start_datetime,
-            'end_time'    => $formatted_end_datetime
+        //**Trigger Zeptomail Email Template */
+        // Extract values for webhook payload
+        $frohub_booking_fee = 0;
+        $deposit = 0;
+        $balance = 0;
+        $total_service_fee = 0;
+        $service_name = 'N/A (Please contact FroHub)';
+        $partner_name = 'N/A (Please contact FroHub)';
+        $booking_date_time = $formatted_start_datetime;
+        $addons = 'No Add-Ons';
+        $service_type = 'N/A (Please contact FroHub)';
+        $free_cancellation_deadline_date = (clone $start_datetime)->modify('-7 days')->format('d M Y');
+        
+        // Loop through order items and extract info
+        foreach ($order->get_items() as $item) {
+            $product_id = $item->get_product_id();
+            $item_total = $item->get_total();
+        
+            if ($product_id == 28990) {
+                $frohub_booking_fee = $item_total;
+                continue;
+            }
+        
+            // Deposit and calculated values
+            $deposit = $item_total;
+            $total_service_fee = ($deposit > 0) ? ($deposit / 0.3) : 0;
+            $balance = $total_service_fee - $deposit;
+        
+            // Service name (cut at first dash)
+            $raw_service_name = $item->get_name();
+            $service_name_parts = explode(' - ', $raw_service_name);
+            $service_name = trim($service_name_parts[0]);
+        
+            // Partner from ACF
+            $partner_post = get_field('partner_name', $product_id);
+            if ($partner_post && is_object($partner_post)) {
+                $partner_name = get_the_title($partner_post->ID);
+            }
+        
+            // Add-ons
+            $selected_addons = wc_get_order_item_meta($item->get_id(), 'Selected Add-Ons', true);
+            if (!empty($selected_addons)) {
+                $addons = is_array($selected_addons) ? implode(', ', $selected_addons) : $selected_addons;
+            }
+        
+            // Service type from variation meta
+            $item_meta_data = $item->get_meta_data();
+            foreach ($item_meta_data as $meta) {
+                if ($meta->key === 'pa_service-type') {
+                    $raw_service_type = $item->get_meta('pa_service-type', true);
+                    $service_type = ucfirst(strtolower($raw_service_type));
+                }
+            }
+        
+            break; // Only process the first main item (non-booking-fee)
+        }
+        
+        // Format currency helper
+        $format_currency = function($amount) {
+            return '£' . number_format($amount, 2, '.', ',');
+        };
+        
+        // Final payload
+        $payload = json_encode([
+            'client_email'                    => $order->get_billing_email(),
+            'client_first_name'              => $order->get_billing_first_name(),
+            'service_name'                   => $service_name,
+            'addons'                         => $addons,
+            'booking_date_time'              => $booking_date_time,
+            'free_cancellation_deadline_date'=> $free_cancellation_deadline_date,
+            'service_address'                => implode(', ', array_filter([
+                $order->get_billing_address_1(),
+                $order->get_billing_address_2(),
+                $order->get_billing_city(),
+                $order->get_billing_postcode()
+            ])),
+            'partner_name'                   => $partner_name,
+            'balance'                        => $format_currency($balance),
         ]);
+        
+        // Send webhook
+        $webhook_url = 'https://flow.zoho.eu/20103370577/flow/webhook/incoming?zapikey=1001.e9a2d77f2205d933fefdfa16e52cdd5f.a6502b087ab6174b0c59f7c3f1c586bd&isdebug=false';
+        wp_remote_post($webhook_url, [
+            'method'    => 'POST',
+            'headers'   => ['Content-Type' => 'application/json'],
+            'body'      => $payload,
+        ]);
+        
     }
 }
