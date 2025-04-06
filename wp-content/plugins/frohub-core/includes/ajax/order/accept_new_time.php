@@ -89,12 +89,12 @@ class AcceptNewTime {
             wc_update_order_item_meta($item_id, 'Start Date Time', $formatted_start_datetime);
             wc_update_order_item_meta($item_id, 'End Date Time', $formatted_end_datetime);
 
-            //wc_delete_order_item_meta($item_id, 'Proposed Start Date Time');
-            //wc_delete_order_item_meta($item_id, 'Proposed End Date Time');
+            wc_delete_order_item_meta($item_id, 'Proposed Start Date Time');
+            wc_delete_order_item_meta($item_id, 'Proposed End Date Time');
         }
 
-        //$order->update_status('processing', 'Appointment time confirmed by customer.');
-        //$order->save();
+        $order->update_status('processing', 'Appointment time confirmed by customer.');
+        $order->save();
 
         //**Trigger Zeptomail Email Template */
         // Extract values for webhook payload
