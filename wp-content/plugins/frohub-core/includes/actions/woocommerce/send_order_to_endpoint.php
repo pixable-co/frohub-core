@@ -5,6 +5,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
+// Sends order data to a specified zoho flow to trigger EMAIL TEMPLATE when the order status changes to 'on-hold' or 'processing'.
 class SendOrderToEndpoint {
 
     public static function init() {
@@ -48,11 +49,11 @@ class SendOrderToEndpoint {
         $deposit = 0;
         $balance = 0;
         $total_service_fee = 0;
-        $service_name = 'Unknown';
-        $partner_name = 'Unknown';
-        $booking_date_time = 'Not Set';
-        $addons = 'None';
-        $service_type = 'Unknown';
+        $service_name = 'N/A (Please contact FroHub)';
+        $partner_name = 'N/A (Please contact FroHub)';
+        $booking_date_time = 'N/A (Please contact FroHub)';
+        $addons = 'No Add-Ons';
+        $service_type = 'N/A (Please contact FroHub)';
 
         foreach ($order->get_items() as $item) {
             $product_id = $item->get_product_id();
@@ -85,12 +86,20 @@ class SendOrderToEndpoint {
                 if (!empty($selected_addons)) {
                     $addons = is_array($selected_addons) ? implode(', ', $selected_addons) : $selected_addons;
                 } else {
-                    $addons = 'None';
+                    $addons = 'No Add-Ons';
                 }
 
-                $service_type_meta = wc_get_order_item_meta($item->get_id(), 'Service Type', true);
-                if (!empty($service_type_meta)) {
-                    $service_type = $service_type_meta;
+                if (!empty($order)) {
+                    foreach ($order->get_items() as $item) {
+                        $item_meta_data = $item->get_meta_data();
+                        if (!empty($item_meta_data)) {
+                            foreach ($item_meta_data as $meta) {
+                                if ($meta->key === 'pa_service-type') {
+                                    $service_type = $item->get_meta('pa_service-type', true);
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
