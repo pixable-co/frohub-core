@@ -21,7 +21,7 @@ class GetOrderServiceName {
         if (!empty($order)) {
             foreach ($order->get_items() as $item) {
                 $product_id = $item->get_product_id();
-                if ($product_id != 2600) {
+                if ($product_id != 28990) {
                     $product_link = get_permalink($product_id);
                     echo '<a href="' . esc_url($product_link) . '">' . esc_html($item->get_name()) . '</a>';
                 }

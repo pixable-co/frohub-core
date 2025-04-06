@@ -58,7 +58,7 @@ class SendOrderToEndpoint {
             $product_id = $item->get_product_id();
             $item_total = $item->get_total();
 
-            if ($product_id == 2600) {
+            if ($product_id == 28990) {
                 $frohub_booking_fee = $item_total;
             } else {
                 $deposit = $item_total;

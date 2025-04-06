@@ -112,8 +112,8 @@ class ReturnAllReviewsForPartner {
             foreach ($order_items as $item) {
             $product_id = $item->get_product_id();
 
-            if ($product_id == 2600) {
-            continue; // Ignore product ID 2600
+            if ($product_id == 28990) {
+            continue; // Ignore product ID 28990
             }
 
             // Get product title

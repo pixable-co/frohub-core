@@ -36,7 +36,7 @@ class CreateUpdatePayoutPost {
         $deposit_total = 0;
         foreach ($order->get_items() as $item) {
             $product_id = $item->get_product_id();
-            if ($product_id != 2600) {
+            if ($product_id != 28990) {
                 $deposit_total = $item->get_total();
                 $total_due_raw = $item->get_meta('Total Due on the Day', true);
                 $total_due = (float) preg_replace('/[^0-9.]/', '', $total_due_raw);

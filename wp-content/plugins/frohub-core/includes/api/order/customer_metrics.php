@@ -52,8 +52,8 @@ class CustomerMetrics {
             foreach ($order->get_items() as $item) {
                 $product_id = $item->get_product_id();
 
-                // Skip Frohub Booking Fee (product ID 2600)
-                if ($product_id == 2600) {
+                // Skip Frohub Booking Fee (product ID 28990)
+                if ($product_id == 28990) {
                     continue;
                 }
 

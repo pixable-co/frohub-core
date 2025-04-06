@@ -41,8 +41,8 @@ class EarlyCancelOrder {
             $product_id = $item->get_product_id();
             $item_total = $item->get_total();
 
-            // Exclude product ID 2600 from the refund
-            if ($product_id != 2600) {
+            // Exclude product ID 28990 from the refund
+            if ($product_id != 28990) {
                 $refund_items[$item_id] = [
                     'qty'          => $item->get_quantity(),
                     'refund_total' => $item_total
@@ -72,7 +72,7 @@ class EarlyCancelOrder {
         update_field('cancellation_status', 'Early Cancellation', $order_id);
 
         wp_send_json_success([
-            'message' => 'Order cancelled successfully. Refund issued except for product ID 2600.'
+            'message' => 'Order cancelled successfully. Refund issued except for product ID 28990.'
         ]);
     }
 }

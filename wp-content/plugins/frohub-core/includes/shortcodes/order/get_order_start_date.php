@@ -24,7 +24,7 @@ class GetOrderStartDate {
             foreach ($order->get_items() as $item_id => $item) {
                 $product_id = $item->get_product_id();
 
-                if ($product_id == 2600) continue;
+                if ($product_id == 28990 ) continue;
 
                 $start_date_time = wc_get_order_item_meta($item_id, 'Start Date Time', true);
                 $proposed_start_date_time = wc_get_order_item_meta($item_id, 'Proposed Start Date Time', true);

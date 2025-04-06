@@ -27,7 +27,7 @@ class GetOrderPrices {
             foreach ($order->get_items() as $item) {
                 $product_id = $item->get_product_id();
 
-                if ($product_id != 2600) {
+                if ($product_id != 28990) {
                     $Service_Fee = (float) get_field('service_price', $product_id);
                     $item_meta_data = $item->get_meta_data();
 
@@ -42,7 +42,7 @@ class GetOrderPrices {
                     $deposit_paid += $item->get_total();
                 }
 
-                if ($product_id == 2600) {
+                if ($product_id == 28990) {
                     $product_2600 = wc_get_product($product_id);
                     if ($product_2600) {
                         $price_of_product_2600 = (float) $product_2600->get_price();

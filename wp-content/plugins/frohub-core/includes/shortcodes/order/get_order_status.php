@@ -66,7 +66,7 @@ class GetOrderStatus {
 
                 foreach ($order->get_items() as $item_id => $item) {
                     $product_id = $item->get_product_id();
-                    if ($product_id == 2600) continue;
+                    if ($product_id == 28990) continue;
 
                     $start_date = $item->get_meta('Start Date Time');
                     if (!empty($start_date)) break;

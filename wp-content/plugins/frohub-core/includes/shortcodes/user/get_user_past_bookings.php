@@ -55,7 +55,7 @@ class GetUserPastBookings {
                 $product_id = 0;
 
                 foreach ($order->get_items() as $item) {
-                    if ($item->get_product_id() !== 2600) {
+                    if ($item->get_product_id() !== 28990) {
                         $product_id = $item->get_product_id();
                         $deposit += (float)$item->get_total();
 

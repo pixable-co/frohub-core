@@ -98,8 +98,8 @@ class ReturnOrderDetails {
                 $product = $item->get_product();
                 $product_id = $item->get_product_id();
     
-                // Ignore product with ID 2600
-                if ($product_id == 2600) {
+                // Ignore product with ID 28990
+                if ($product_id == 28990) {
                     continue;
                 }
     

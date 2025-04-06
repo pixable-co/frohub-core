@@ -33,7 +33,7 @@ class ReviewButton {
 
         if (empty($review)) {
             foreach ($order->get_items() as $item) {
-                if ($item->get_product_id() !== 2600) {
+                if ($item->get_product_id() !== 28990) {
                     $product_id = $item->get_product_id();
                     $service_name = esc_html($item->get_name());
 

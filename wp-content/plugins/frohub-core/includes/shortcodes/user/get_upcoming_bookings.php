@@ -56,7 +56,7 @@ class GetUpcomingBookings {
 
                 foreach ($order->get_items() as $item) {
                     $product_id = $item->get_product_id();
-                    if ($product_id === 2600) continue;
+                    if ($product_id === 28990) continue;
 
                     $partner_id = get_field('partner_id', $product_id);
                     $partner_title = get_the_title($partner_id);

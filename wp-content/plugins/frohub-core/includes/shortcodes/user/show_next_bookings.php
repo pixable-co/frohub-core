@@ -33,7 +33,7 @@ class ShowNextBookings {
         foreach ($orders as $order) {
             foreach ($order->get_items() as $item) {
                 $product_id = $item->get_product_id();
-                if ($product_id == 2600) continue;
+                if ($product_id == 28990) continue;
 
                 $meta_data = $item->get_meta_data();
                 $selected_date_time = null;

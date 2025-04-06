@@ -39,7 +39,7 @@ class AcceptNewTime {
 
         // Find proposed start time
         foreach ($order->get_items() as $item_id => $item) {
-            if ($item->get_product_id() == 2600) continue;
+            if ($item->get_product_id() == 28990) continue;
 
             $proposed_start_time = wc_get_order_item_meta($item_id, 'Proposed Start Date Time', true);
             if ($proposed_start_time) break;
@@ -51,7 +51,7 @@ class AcceptNewTime {
 
         // Find duration
         foreach ($order->get_items() as $item_id => $item) {
-            if ($item->get_product_id() == 2600) continue;
+            if ($item->get_product_id() == 28990) continue;
 
             $duration_text = wc_get_order_item_meta($item_id, 'Duration', true);
             if ($duration_text) break;
@@ -84,7 +84,7 @@ class AcceptNewTime {
 
         // Update items and remove proposed times
         foreach ($order->get_items() as $item_id => $item) {
-            if ($item->get_product_id() == 2600) continue;
+            if ($item->get_product_id() == 28990) continue;
 
             wc_update_order_item_meta($item_id, 'Start Date Time', $formatted_start_datetime);
             wc_update_order_item_meta($item_id, 'End Date Time', $formatted_end_datetime);

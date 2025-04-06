@@ -68,7 +68,7 @@ class CustomerOrders {
     }
 
     /**
-     * Helper method to get order items with metadata, excluding product ID 2600.
+     * Helper method to get order items with metadata, excluding product ID 28990.
      *
      * @param \WC_Order $order
      * @return array
@@ -80,7 +80,7 @@ class CustomerOrders {
             $product = $item->get_product();
             $product_id = $product ? $product->get_id() : null;
 
-            if ($product_id == 2600) {
+            if ($product_id == 28990) {
                 continue;
             }
 
