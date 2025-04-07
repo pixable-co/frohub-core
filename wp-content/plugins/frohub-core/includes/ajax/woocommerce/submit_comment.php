@@ -115,7 +115,8 @@ class SubmitComment {
 
         // Get client first name from user field on current post
         $user = get_field('customer', $post_id); // This returns a WP_User object
-        $client_first_name = $user ? get_field('client_first_name', "user_{$user->ID}") : '';
+        $client_first_name = $user ? $user->first_name : '';
+
 
 
         $payload_partner = json_encode([
