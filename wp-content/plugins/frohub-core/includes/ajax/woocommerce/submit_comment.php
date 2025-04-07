@@ -116,17 +116,14 @@ class SubmitComment {
         // Get client first name from user field on current post
         $user = get_field('customer', $post_id); // This returns a WP_User object
         $client_first_name = $user ? $user->first_name : '';
-
-
-
         $payload_partner = json_encode([
             'partner_email' => $partner_email,
             'client_first_name' => $client_first_name,
             'partner_name' => $partner_name,
         ]);
     
-        //$partner_webhook = 'https://flow.zoho.eu/20103370577/flow/webhook/incoming?zapikey=1001.e83523e791d77d7d52578d8a6bf2d8fe.2bd19f022b6f6c88bbf0fa6d7da05c4d&isdebug=false';
-        $partner_webhook = 'https://webhook.site/9bcb9f9b-596e-4efb-9b99-daa3b26f9bca';
+        $partner_webhook = 'https://flow.zoho.eu/20103370577/flow/webhook/incoming?zapikey=1001.e83523e791d77d7d52578d8a6bf2d8fe.2bd19f022b6f6c88bbf0fa6d7da05c4d&isdebug=false';
+        //$partner_webhook = 'https://webhook.site/9bcb9f9b-596e-4efb-9b99-daa3b26f9bca';
 
         wp_remote_post($partner_webhook, [
             'method'  => 'POST',
