@@ -325,6 +325,16 @@ public function add_to_cart() {
         if (isset($values['stylist_name']) && !empty($values['stylist_name'])) {
             wc_add_order_item_meta($item_id, 'Stylist', $values['stylist_name']);
         }
+
+        if(isset($values['selected_add_ons'])) {
+            $add_ons = array_map(function($add_on) {
+                return $add_on['name'];
+            }, $values['selected_add_ons']);
+            
+            // Convert array to comma-separated string
+            $add_ons_string = implode(', ', $add_ons);
+            wc_add_order_item_meta($item_id, 'Selected Add-Ons', $add_ons_string);
+        }
     }
     
     
