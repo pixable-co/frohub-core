@@ -155,7 +155,9 @@ class SubmitComment {
         wp_send_json_success([
             'comment'   => $comment_text,
             'message'   => 'Comment submitted successfully!',
-            'image_url' => $image_url
+            'image_url' => $image_url,
+            'displayName' => $displayName,
+            'email'     => $email,
         ]);
     }
     
