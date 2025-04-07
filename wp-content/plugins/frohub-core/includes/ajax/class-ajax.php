@@ -50,6 +50,7 @@ class Ajax {
 		DeclineNewProposedTime::init();
 		LateCancelOrder::init();
 		EarlyCancelOrder::init();
+		CancelOrder::init();
 		AcceptNewTime::init();
 		GetCategoryTerms::init();
 		SubmitDislike::init();
