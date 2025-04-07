@@ -150,7 +150,7 @@ class RescheduleOrder {
             'proposed_booking_date_time' => $proposed_start_datetime,
         ]);
 
-        $webhook_partner = 'https://webhook.site/9bcb9f9b-596e-4efb-9b99-daa3b26f9bca';
+        $webhook_partner = 'https://flow.zoho.eu/20103370577/flow/webhook/incoming?zapikey=1001.7ed3b56e85b7a0f137d0fee0503756b1.dafe549881529793b605b66682b49100&isdebug=false';
 
         wp_remote_post($webhook_partner, [
             'method' => 'POST',
