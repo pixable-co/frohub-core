@@ -7,10 +7,17 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class ShowComments {
 
+    
     public static function init() {
         $self = new self();
         add_shortcode('show_comments', array($self, 'show_comments_shortcode'));
         add_action('wp_footer', array($self, 'output_scripts'), 99);
+        add_filter('pre_comment_approved', array($self, 'auto_approve_comments'), 10, 2);
+
+    }
+
+    public function auto_approve_comments($approved, $commentdata) {
+        return 1; // Force approval
     }
 
     public function show_comments_shortcode() {
