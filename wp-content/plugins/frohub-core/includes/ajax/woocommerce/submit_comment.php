@@ -72,9 +72,9 @@ class SubmitComment {
         $comment_data = array(
             'comment_post_ID'      => $post_id,
             'comment_content'      => $comment_text,
-            'user_id'              => $user_id,
-            //'comment_author'       => $displayName,
-            //'comment_author_email' => $email,
+            //'user_id'              => $user_id,
+            'comment_author'       => $displayName,
+            'comment_author_email' => $email,
         );
     
         $comment_id = wp_insert_comment($comment_data);
@@ -82,6 +82,8 @@ class SubmitComment {
         if (!$comment_id) {
             wp_send_json_error('Failed to submit comment.');
         }
+
+        update_comment_meta($comment_id, 'submitted_by_user_id', $user_id);
     
         // External API call to mark conversation unread
         $partner_client_post_id = get_field('partner_client_post_id', $post_id);
