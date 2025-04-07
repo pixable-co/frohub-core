@@ -49,15 +49,7 @@ class SendOrderToEndpoint {
 
         $endpoint = $endpoints[$order_status];
 
-
-
-        $billing_address = implode(', ', array_filter([
-            $order->get_billing_address_1(),
-            $order->get_billing_address_2(),
-            $order->get_billing_city(),
-            $order->get_billing_state(),
-            $order->get_billing_postcode()
-        ]));
+        $customer_shipping_address = $order->get_formatted_shipping_address();
 
         $frohub_booking_fee = 0;
         $deposit = 0;
@@ -68,6 +60,7 @@ class SendOrderToEndpoint {
         $booking_date_time = 'N/A (Please contact FroHub)';
         $addons = 'No Add-Ons';
         $service_type = 'N/A (Please contact FroHub)';
+        $partner_address = '';
 
         foreach ($order->get_items() as $item) {
 
@@ -94,6 +87,16 @@ class SendOrderToEndpoint {
                 $partner_post = get_field('partner_name', $product_id);
                 if ($partner_post && is_object($partner_post)) {
                     $partner_name = get_the_title($partner_post->ID);
+
+                    // Save partner address fields for non-mobile fallback
+                    $street = get_field('street_address', $partner_post->ID);
+                    $city = get_field('city', $partner_post->ID);
+                    $county = get_field('county_district', $partner_post->ID);
+                    $postcode = get_field('postcode', $partner_post->ID);
+
+                    // Construct full partner address
+                    $address_parts = array_filter([$street, $city, $county, $postcode]);
+                    $partner_address = implode(', ', $address_parts);
                 }
 
                 $total_service_fee = ($deposit > 0) ? ($deposit / 0.3) : 0;
@@ -124,6 +127,11 @@ class SendOrderToEndpoint {
             }
         }
 
+        // Determine service address
+        $final_service_address = strtolower($service_type) === 'mobile' || empty($service_type)
+        ? $customer_shipping_address
+        : $partner_address;
+
         if ($has_been_rescheduled) {
             error_log("Order #$order_id has been rescheduled (via line item). Skipping webhook.");
             return;
@@ -138,7 +146,7 @@ class SendOrderToEndpoint {
             'status'             => $order_status,
             'client_email'       => $order->get_billing_email(),
             'client_first_name'  => $order->get_billing_first_name(),
-            'service_address'    => $billing_address,
+            'service_address'    => $final_service_address,
             'partner_name'       => $partner_name,
             'frohub_booking_fee' => $format_currency($frohub_booking_fee),
             'deposit'            => $format_currency($deposit),
