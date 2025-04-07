@@ -107,37 +107,17 @@ class SubmitComment {
         }
     
         // 🔹 Send 2nd payload to partner webhook
-        $service_name = '';
-        $partner_name = '';
-        $partner_email = '';
-        foreach (get_field('linked_orders', $post_id) ?? [] as $order_id) {
-            $order = wc_get_order($order_id);
-            if (!$order) continue;
-    
-            $client_first_name = $order->get_billing_first_name();
-    
-            foreach ($order->get_items() as $item) {
-                if ($item->get_product_id() == 28990) continue;
-    
-                $raw_service_name = $item->get_name();
-                $service_name_parts = explode(' - ', $raw_service_name);
-                $service_name = trim($service_name_parts[0]);
-    
-                $partner_post = get_field('partner_name', $item->get_product_id());
-                if ($partner_post && is_object($partner_post)) {
-                    $partner_name = get_the_title($partner_post->ID);
-                    $partner_email = get_field('partner_email', $partner_post->ID);
-                }
-    
-                break 2; // Once we get what we need from first item
-            }
-        }
-    
-        // Fallbacks
-        $client_first_name = $client_first_name ?? $displayName;
-        $partner_name = $partner_name ?: 'Error: Partner not found';
-        $partner_email = $partner_email ?: 'Error: Partner email not found';
-    
+
+        // Get partner email and name from post meta
+        $partner_id = get_field('partner', $post_id)->ID;
+        $partner_email = get_field('partner_email', $partner_id);
+        $partner_name = get_the_title($partner_id); // Fixed: get_the_title instead of post_title()
+
+        // Get client first name from user field on current post
+        $user = get_field('user', $post_id); // This returns a WP_User object
+        $client_first_name = $user ? get_field('client_first_name', "user_{$user->ID}") : '';
+
+
         $payload_partner = json_encode([
             'partner_email' => $partner_email,
             'client_first_name' => $client_first_name,
@@ -146,7 +126,7 @@ class SubmitComment {
     
         //$partner_webhook = 'https://flow.zoho.eu/20103370577/flow/webhook/incoming?zapikey=1001.e83523e791d77d7d52578d8a6bf2d8fe.2bd19f022b6f6c88bbf0fa6d7da05c4d&isdebug=false';
         $partner_webhook = 'https://webhook.site/9bcb9f9b-596e-4efb-9b99-daa3b26f9bca';
-        
+
         wp_remote_post($partner_webhook, [
             'method'  => 'POST',
             'headers' => ['Content-Type' => 'application/json'],
