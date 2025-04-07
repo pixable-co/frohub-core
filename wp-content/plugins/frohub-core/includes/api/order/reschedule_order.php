@@ -167,8 +167,9 @@ class RescheduleOrder {
         ]);
 
         // Send to webhook.site
-        $webhook_url = 'https://flow.zoho.eu/20103370577/flow/webhook/incoming?zapikey=1001.07b3be77c8b130450468de3b1b224675.0a399daca8ab79871ee2a7d5fc7e08f3&isdebug=false';
-
+        //$webhook_url = 'https://flow.zoho.eu/20103370577/flow/webhook/incoming?zapikey=1001.07b3be77c8b130450468de3b1b224675.0a399daca8ab79871ee2a7d5fc7e08f3&isdebug=false';
+        $webhook_url = 'https://webhook.site/9bcb9f9b-596e-4efb-9b99-daa3b26f9bca';
+        
         wp_remote_post($webhook_url, [
             'method'    => 'POST',
             'headers'   => [
