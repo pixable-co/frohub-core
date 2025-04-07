@@ -25,6 +25,7 @@ class GetUpcomingBookings {
         );
 
         $orders = wc_get_orders($args);
+        $mobile_cards = ''; // Holds mobile view HTML
 
         ob_start();
 
@@ -33,6 +34,7 @@ class GetUpcomingBookings {
         if (empty($orders)) {
             echo '<p>You don’t have any upcoming bookings</p>';
         } else {
+            echo '<div class="frohub_table_wrapper">';
             echo '<table class="frohub_table">
                 <tr>
                     <th>Ref</th>
@@ -105,18 +107,10 @@ class GetUpcomingBookings {
 
                     $status_label = '';
                     switch ($order_status) {
-                        case 'on-hold':
-                            $status_label = 'Pending';
-                            break;
-                        case 'processing':
-                            $status_label = 'Confirmed';
-                            break;
-                        case 'rescheduling':
-                            $status_label = 'Reschedule proposed';
-                            break;
-                        default:
-                            $status_label = ucfirst($order_status);
-                            break;
+                        case 'on-hold': $status_label = 'Pending'; break;
+                        case 'processing': $status_label = 'Confirmed'; break;
+                        case 'rescheduling': $status_label = 'Reschedule proposed'; break;
+                        default: $status_label = ucfirst($order_status); break;
                     }
 
                     echo '<td><span class="status_text">' . esc_html($status_label) . '</span></td>';
@@ -132,12 +126,32 @@ class GetUpcomingBookings {
                         echo '<a href="' . home_url('/my-account/view-order/' . $order_id) . '" class="w-btn us-btn-style_7 view-button">View</a>';
                     }
                     echo '</td>';
-
                     echo '</tr>';
+
+                    // MOBILE CARD version
+                    $mobile_cards .= '<div class="frohub_card">';
+                    $mobile_cards .= '<p><strong>' . esc_html($appointment) . '</strong></p>';
+                    $mobile_cards .= '<p>' . esc_html($clean_service_name) . '</p>';
+                    $mobile_cards .= '<p>' . esc_html($partner_title) . '</p>';
+                    $mobile_cards .= '<p>Deposit: £' . number_format($deposit, 2) . '</p>';
+                    $mobile_cards .= '<p><input disabled type="text" value="Due on the day: ' . esc_attr($total_due) . '" /></p>';
+                    $mobile_cards .= '<div class="actions">';
+
+                    if ($order_status === 'on-hold') {
+                        $mobile_cards .= '<a href="#" class="w-btn us-btn-style_7 accept-button" data-order-id="' . esc_attr($order_id) . '">Accept</a>';
+                        $mobile_cards .= '<a href="#" class="w-btn us-btn-style_7 decline-button" data-order-id="' . esc_attr($order_id) . '">Decline</a>';
+                    } else {
+                        $mobile_cards .= '<a href="' . home_url('/my-account/view-order/' . $order_id) . '" class="w-btn us-btn-style_7 view-button">View</a>';
+                    }
+
+                    $mobile_cards .= '</div>';
+                    $mobile_cards .= '</div>';
                 }
             }
 
             echo '</table>';
+            echo $mobile_cards;
+            echo '</div>'; // .frohub_table_wrapper
             echo do_shortcode('[us_separator size="large"]');
         }
 
@@ -164,6 +178,34 @@ class GetUpcomingBookings {
             display: flex;
             align-items: center;
             gap: 5px;
+        }
+
+        /* Responsive Layout */
+        @media only screen and (max-width: 768px) {
+            .frohub_table { display: none; }
+            .frohub_card {
+                display: block;
+                padding: 1rem;
+                border: 1px solid #ccc;
+                border-radius: 8px;
+                background: #fff;
+                margin-bottom: 1rem;
+            }
+            .frohub_card p {
+                margin: 0.25rem 0;
+                font-size: 0.9rem;
+            }
+            .frohub_card .actions {
+                margin-top: 0.75rem;
+                display: flex;
+                gap: 10px;
+                flex-wrap: wrap;
+                justify-content: flex-start;
+            }
+        }
+
+        @media only screen and (min-width: 769px) {
+            .frohub_card { display: none; }
         }
         </style>
         <?php
