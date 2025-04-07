@@ -114,7 +114,7 @@ class SubmitComment {
         $partner_name = get_the_title($partner_id); // Fixed: get_the_title instead of post_title()
 
         // Get client first name from user field on current post
-        $user = get_field('user', $post_id); // This returns a WP_User object
+        $user = get_field('customer', $post_id); // This returns a WP_User object
         $client_first_name = $user ? get_field('client_first_name', "user_{$user->ID}") : '';
 
 
