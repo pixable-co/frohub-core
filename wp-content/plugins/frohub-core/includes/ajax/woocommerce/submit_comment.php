@@ -73,8 +73,8 @@ class SubmitComment {
             'comment_post_ID'      => $post_id,
             'comment_content'      => $comment_text,
             'user_id'              => $user_id,
-            'comment_author'       => $displayName,
-            'comment_author_email' => $email,
+            //'comment_author'       => $displayName,
+            //'comment_author_email' => $email,
         );
     
         $comment_id = wp_insert_comment($comment_data);
