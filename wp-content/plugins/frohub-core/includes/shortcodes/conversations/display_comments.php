@@ -16,7 +16,6 @@ class DisplayComments {
         ob_start();
 
         $postId = get_the_ID(); // Get the current post ID
-        echo
         $comments = get_comments(array(
             'post_id' => $postId,
         ));

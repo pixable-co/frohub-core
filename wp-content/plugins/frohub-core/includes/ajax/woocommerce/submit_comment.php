@@ -72,7 +72,7 @@ class SubmitComment {
         $comment_data = array(
             'comment_post_ID'      => $post_id,
             'comment_content'      => $comment_text,
-            //'user_id'              => $user_id,
+            'user_id'              => $user_id,
             'comment_author'       => $displayName,
             'comment_author_email' => $email,
         );
