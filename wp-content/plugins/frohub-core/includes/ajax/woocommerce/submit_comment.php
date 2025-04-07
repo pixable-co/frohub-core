@@ -133,7 +133,8 @@ class SubmitComment {
     
         // Fallbacks
         $client_first_name = $client_first_name ?? $displayName;
-        $partner_name = $partner_name ?: 'Pixable Stylist';
+        $partner_name = $partner_name ?: 'Error: Partner not found';
+        $partner_email = $partner_email ?: 'Error: Partner email not found';
     
         $payload_partner = json_encode([
             'partner_email' => $partner_email,
@@ -141,7 +142,7 @@ class SubmitComment {
             'partner_name' => $partner_name,
         ]);
     
-        $partner_webhook = 'https://webhook.site/9bcb9f9b-596e-4efb-9b99-daa3b26f9bca';
+        $partner_webhook = 'https://flow.zoho.eu/20103370577/flow/webhook/incoming?zapikey=1001.e83523e791d77d7d52578d8a6bf2d8fe.2bd19f022b6f6c88bbf0fa6d7da05c4d&isdebug=false';
     
         wp_remote_post($partner_webhook, [
             'method'  => 'POST',
