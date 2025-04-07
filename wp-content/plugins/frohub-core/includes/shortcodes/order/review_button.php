@@ -96,7 +96,7 @@ class ReviewButton {
                             <p><i class="fas fa-calendar-alt"></i> <span id="selectedDate"></span></p>
                             <p><i class="fas fa-map-marker-alt"></i> <span id="partnerAddress"></span></p>
                             <div>
-                                <?php echo do_shortcode('[gravityform id="5" title="false" description="false" ajax="true"]'); ?>
+                                <?php echo do_shortcode('[gravityform id="7" title="false" description="false" ajax="true"]'); ?>
                             </div>
                         </div>
                     </div>

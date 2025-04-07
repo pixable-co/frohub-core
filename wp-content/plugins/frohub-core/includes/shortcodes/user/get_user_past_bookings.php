@@ -168,7 +168,7 @@ class GetUserPastBookings {
             <div class="frohub-modal-body">
                 <h3>Leave a Review</h3>
                 <div class="review-data"></div>
-                <?php echo do_shortcode('[gravityform id="5" title="true" ajax="true"]'); ?>
+                <?php echo do_shortcode('[gravityform id="7" title="true" ajax="true"]'); ?>
             </div>
           </div>
         </div>
