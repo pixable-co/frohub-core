@@ -155,61 +155,6 @@ class GetUpcomingBookings {
             echo do_shortcode('[us_separator size="large"]');
         }
 
-        ?>
-        <style>
-        .price-block {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .price-block input {
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            background: #f5f5f5;
-            color: #555;
-            padding: 4px 8px;
-            font-size: 0.9em;
-            width: auto;
-            max-width: 200px;
-        }
-
-        .table-action-buttons {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        /* Responsive Layout */
-        @media only screen and (max-width: 768px) {
-            .frohub_table { display: none; }
-            .frohub_card {
-                display: block;
-                padding: 1rem;
-                border: 1px solid #ccc;
-                border-radius: 8px;
-                background: #fff;
-                margin-bottom: 1rem;
-            }
-            .frohub_card p {
-                margin: 0.25rem 0;
-                font-size: 0.9rem;
-            }
-            .frohub_card .actions {
-                margin-top: 0.75rem;
-                display: flex;
-                gap: 10px;
-                flex-wrap: wrap;
-                justify-content: flex-start;
-            }
-        }
-
-        @media only screen and (min-width: 769px) {
-            .frohub_card { display: none; }
-        }
-        </style>
-        <?php
-
         return ob_get_clean();
     }
 }
