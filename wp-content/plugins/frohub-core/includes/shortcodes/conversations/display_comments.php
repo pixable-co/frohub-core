@@ -16,7 +16,9 @@ class DisplayComments {
         ob_start();
 
         $postId = get_the_ID(); // Get the current post ID
-        $comments = get_comments(array($postId)); // Get comments for the current post
+        $comments = get_comments(array(
+            'post_id' => $postid,
+        ));
         $currentUserId = get_current_user_id();
         $allComments = array();
 
