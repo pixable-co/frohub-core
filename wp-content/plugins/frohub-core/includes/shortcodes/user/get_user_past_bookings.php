@@ -24,6 +24,7 @@ class GetUserPastBookings {
 
         $orders = wc_get_orders($args);
         $found_past_booking = false;
+        $mobile_cards = ''; // Collect mobile card markup separately
 
         ob_start();
 
@@ -47,8 +48,7 @@ class GetUserPastBookings {
             $order_status = $order->get_status();
             $review = get_field('review', $order_id);
 
-            $display_order = in_array($order_status, ['completed', 'cancelled']);
-            if (!$display_order) continue;
+            if (!in_array($order_status, ['completed', 'cancelled'])) continue;
 
             $appointment = $service_name = $service_type = "";
             $partner_title = $partner_link = $partner_address = "";
@@ -61,8 +61,7 @@ class GetUserPastBookings {
                     $product_id = $item->get_product_id();
                     $deposit += (float)$item->get_total();
 
-                    $item_meta_data = $item->get_meta_data();
-                    foreach ($item_meta_data as $meta) {
+                    foreach ($item->get_meta_data() as $meta) {
                         switch ($meta->key) {
                             case 'Start Date Time':
                                 $appointment = esc_html($meta->value);
@@ -71,8 +70,8 @@ class GetUserPastBookings {
                                 $service_type = esc_html(ucwords(str_replace('-', ' ', $meta->value)));
                                 break;
                             case 'Total Due on the Day':
-                                $cleaned_value = str_replace(['£', ','], '', $meta->value);
-                                $total_due = (float)$cleaned_value;
+                                $cleaned = str_replace(['£', ','], '', $meta->value);
+                                $total_due = (float)$cleaned;
                                 break;
                         }
                     }
@@ -90,39 +89,27 @@ class GetUserPastBookings {
 
             $service_name_parts = explode(' - ', $service_name);
             $clean_service_name = esc_html($service_name_parts[0]);
+            $total_price = $deposit + $total_due;
 
-            // Desktop Table Row
+            // Table Row
             echo '<tr>';
             echo '<td><a href="' . home_url('/my-account/view-order/' . $order_id . '/?_wca_initiator=action') . '" class="order_id">#' . esc_html($order_id) . '</a></td>';
             echo '<td>' . esc_html($appointment) . '</td>';
             echo '<td>' . esc_html($clean_service_name) . '</td>';
             echo '<td><a href="' . esc_url($partner_link) . '">' . esc_html($partner_title) . '</a></td>';
-            echo '<td>£' . number_format($deposit + $total_due, 2) . '</td>';
+            echo '<td>£' . number_format($total_price, 2) . '</td>';
 
-            // Status
-            $status_label = 'Unknown';
-            if ($order_status === 'completed') {
-                $status_label = 'Completed';
-            } elseif ($order_status === 'cancelled') {
-                $cancellation_status = get_field('cancellation_status', $order_id);
-                $map = [
-                    'Early Cancellation' => 'Cancelled by client (early)',
-                    'Late Cancellation' => 'Cancelled by client (late)',
-                    'Declined by Client' => 'Declined by Client',
-                    'Declined by Stylist' => 'Declined by Stylist',
-                    'Cancelled by Stylist' => 'Cancelled by Stylist',
-                ];
-                $status_label = $map[$cancellation_status] ?? 'Cancelled';
-            }
+            $status_label = match ($order_status) {
+                'completed' => 'Completed',
+                'cancelled' => $this->get_cancellation_label(get_field('cancellation_status', $order_id)),
+                default => ucfirst($order_status),
+            };
 
             echo '<td><span class="status_text">' . esc_html($status_label) . '</span></td>';
 
-            // Review button
             echo '<td>';
-            $can_review = false;
-            if ($order_status === 'completed' || in_array(get_field('cancellation_status', $order_id), ['Cancelled by Stylist', 'Declined by Stylist'])) {
-                $can_review = true;
-            }
+            $can_review = ($order_status === 'completed') ||
+                          in_array(get_field('cancellation_status', $order_id), ['Cancelled by Stylist', 'Declined by Stylist']);
 
             $data = json_encode([
                 'productImgURL' => get_the_post_thumbnail_url($product_id, 'thumbnail'),
@@ -148,23 +135,25 @@ class GetUserPastBookings {
             echo '<td><a href="' . esc_url(get_permalink($product_id)) . '" class="w-btn us-btn-style_7">Book again</a></td>';
             echo '</tr>';
 
-            // Mobile Card
-            echo '<div class="frohub_card">';
-            echo '<p><strong>' . esc_html($appointment) . '</strong></p>';
-            echo '<p>' . esc_html($clean_service_name) . '</p>';
-            echo '<p>' . esc_html($partner_title) . '</p>';
-            echo '<p>Deposit: £' . number_format($deposit, 2) . '</p>';
-            echo '<p><input disabled type="text" value="Due on the day: £' . number_format($total_due, 2) . '" /></p>';
-            echo '<div class="actions">';
-            echo '<button class="w-btn us-btn-style_3">Reschedule requested</button>';
-            echo '<a href="#">Accept/Decline</a>'; // Adjust actions as needed
-            echo '</div>';
-            echo '</div>';
+            // Mobile Card HTML (outside table, but saved for later)
+            $mobile_cards .= '<div class="frohub_card">';
+            $mobile_cards .= '<p><strong>' . esc_html($appointment) . '</strong></p>';
+            $mobile_cards .= '<p>' . esc_html($clean_service_name) . '</p>';
+            $mobile_cards .= '<p>' . esc_html($partner_title) . '</p>';
+            $mobile_cards .= '<p>Deposit: £' . number_format($deposit, 2) . '</p>';
+            $mobile_cards .= '<p><input disabled type="text" value="Due on the day: £' . number_format($total_due, 2) . '" /></p>';
+            $mobile_cards .= '<div class="actions">';
+            $mobile_cards .= '<button class="w-btn us-btn-style_3">Reschedule requested</button>';
+            $mobile_cards .= '<a href="#">Accept/Decline</a>';
+            $mobile_cards .= '</div>';
+            $mobile_cards .= '</div>';
 
             $found_past_booking = true;
         }
 
-        echo '</table></div>'; // close table wrapper
+        echo '</table>';
+        echo $mobile_cards;
+        echo '</div>'; // frohub_table_wrapper
 
         if ($found_past_booking) {
             echo '<h5>Past Bookings</h5>';
@@ -252,5 +241,16 @@ class GetUserPastBookings {
         <?php
 
         return ob_get_clean();
+    }
+
+    private function get_cancellation_label($status) {
+        return match ($status) {
+            'Early Cancellation'   => 'Cancelled by client (early)',
+            'Late Cancellation'    => 'Cancelled by client (late)',
+            'Declined by Client'   => 'Declined by Client',
+            'Declined by Stylist'  => 'Declined by Stylist',
+            'Cancelled by Stylist' => 'Cancelled by Stylist',
+            default                => 'Cancelled',
+        };
     }
 }
