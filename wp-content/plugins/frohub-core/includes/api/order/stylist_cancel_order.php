@@ -192,7 +192,7 @@ class StylistCancelOrder {
             'success'             => true,
             'message'             => "Order #$order_id has been successfully declined and cancelled.",
             'order_id'            => $order_id,
-            'cancellation_status' => 'Declined by Stylist',
+            'cancellation_status' => 'Cancelled by Stylist',
         ], 200);
     }
 }
