@@ -19,6 +19,9 @@ class FrohubGetPartnerLocation {
             return '';
         }
 
+        // If Home based or salong based exists 
+        // Then show postcode
+
         // Get individual address fields
         $street     = get_field('street_address', $partner_id);
         $town       = get_field('town', $partner_id);
@@ -33,5 +36,6 @@ class FrohubGetPartnerLocation {
         }
 
         return '<span class="frohub-partner-location"><i class="fas fa-map-marker-alt"></i> ' . esc_html($full_address) . '</span>';
+
     }
 }
