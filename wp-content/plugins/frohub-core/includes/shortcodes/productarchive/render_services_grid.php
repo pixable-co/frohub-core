@@ -42,11 +42,13 @@ class RenderServicesGrid {
         // Base product query
         $product_query_args = array(
             'post_type'      => 'product',
+            'post_status'    => 'publish',  // ✅ Ensures only visible products are fetched
             'posts_per_page' => -1,
             'fields'         => 'ids',
             'tax_query'      => array(),
             'meta_query'     => array(),
         );
+        
 
         // Filter by category
         if (!empty($category)) {
