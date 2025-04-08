@@ -15,136 +15,129 @@ class RenderServicesGrid {
     public function render_services_grid_shortcode() {
         ob_start();
 
- // Fetch URL parameters and sanitize them
-$dropdown = isset($_GET['dropdown']) ? strtolower(sanitize_text_field($_GET['dropdown'])) : ''; // Service Type
-$category = isset($_GET['category']) ? sanitize_text_field($_GET['category']) : '';
-$start_date = isset($_GET['start_date']) ? sanitize_text_field($_GET['start_date']) : '';
-$end_date = isset($_GET['end_date']) ? sanitize_text_field($_GET['end_date']) : '';
-$radius = isset($_GET['radius']) ? intval($_GET['radius']) : '';
-$lat = isset($_GET['lat']) ? floatval($_GET['lat']) : '';
-$lng = isset($_GET['lng']) ? floatval($_GET['lng']) : '';
+        // Fetch URL parameters and sanitize them
+        $dropdown   = isset($_GET['dropdown']) ? strtolower(sanitize_text_field($_GET['dropdown'])) : '';
+        $category   = isset($_GET['category']) ? sanitize_text_field($_GET['category']) : '';
+        $start_date = isset($_GET['start_date']) ? sanitize_text_field($_GET['start_date']) : '';
+        $end_date   = isset($_GET['end_date']) ? sanitize_text_field($_GET['end_date']) : '';
+        $radius     = isset($_GET['radius']) ? intval($_GET['radius']) : '';
+        $lat        = isset($_GET['lat']) ? floatval($_GET['lat']) : '';
+        $lng        = isset($_GET['lng']) ? floatval($_GET['lng']) : '';
 
-// Convert start_date & end_date to PHP DateTime objects
-$start_date_obj = !empty($start_date) ? new \DateTime($start_date) : null;
-$end_date_obj = !empty($end_date) ? new \DateTime($end_date) : null;
+        // Convert start_date & end_date to PHP DateTime objects
+        $start_date_obj = !empty($start_date) ? new \DateTime($start_date) : null;
+        $end_date_obj   = !empty($end_date) ? new \DateTime($end_date) : null;
 
-// Generate all weekdays between the selected date range
-$selected_days = [];
-if ($start_date_obj && $end_date_obj) {
-    $interval = new \DateInterval('P1D');
-    $date_range = new \DatePeriod($start_date_obj, $interval, $end_date_obj->modify('+1 day'));
+        // Generate all weekdays between the selected date range
+        $selected_days = [];
+        if ($start_date_obj && $end_date_obj) {
+            $interval    = new \DateInterval('P1D');
+            $date_range  = new \DatePeriod($start_date_obj, $interval, $end_date_obj->modify('+1 day'));
 
-    foreach ($date_range as $date) {
-        $selected_days[] = $date->format('l');
-    }
-}
+            foreach ($date_range as $date) {
+                $selected_days[] = $date->format('l');
+            }
+        }
 
-// Define base query parameters
-$product_query_args = array(
-    'post_type'      => 'product',
-    'posts_per_page' => -1,
-    'fields'         => 'ids',
-    'tax_query'      => array(),
-    'meta_query'     => array(),
-);
+        // Define base query parameters
+        $product_query_args = array(
+            'post_type'      => 'product',
+            'posts_per_page' => -1,
+            'fields'         => 'ids',
+            'tax_query'      => array(),
+            'meta_query'     => array(),
+        );
 
-// Apply category filter
-if (!empty($category)) {
-    $product_query_args['tax_query'][] = array(
-        'taxonomy' => 'product_cat',
-        'field'    => 'name',
-        'terms'    => $category,
-    );
-}
+        // Apply category filter
+        if (!empty($category)) {
+            $product_query_args['tax_query'][] = array(
+                'taxonomy' => 'product_cat',
+                'field'    => 'name',
+                'terms'    => $category,
+            );
+        }
 
-// Fetch products (excluding service_types filter for now)
-$product_query = new \WP_Query($product_query_args);
-$product_ids = $product_query->posts;
+        // Fetch base products
+        $product_query = new \WP_Query($product_query_args);
+        $product_ids   = $product_query->posts;
 
-$paged = max(1, get_query_var('paged') ? get_query_var('paged') : get_query_var('page'));
-$per_page = 16;
-$offset = ($paged - 1) * $per_page;
+        // Check for variations with the selected service type
+        if (!empty($dropdown)) {
+            $filtered_products = [];
 
-$total_products = count($product_ids);
-$paged_ids = array_slice($product_ids, $offset, $per_page);
+            foreach ($product_ids as $product_id) {
+                $product = wc_get_product($product_id);
 
+                if ($product && $product->is_type('variable')) {
+                    foreach ($product->get_children() as $variation_id) {
+                        $variation  = wc_get_product($variation_id);
+                        $attributes = $variation->get_attributes();
 
-// Check for variations with the selected service type
-if (!empty($dropdown)) {
-    $filtered_products = [];
-
-    foreach ($product_ids as $product_id) {
-        $product = wc_get_product($product_id);
-
-        if ($product && $product->is_type('variable')) {
-            $variation_ids = $product->get_children(); // Get all variation IDs
-
-            foreach ($variation_ids as $variation_id) {
-                $variation = wc_get_product($variation_id);
-                $attributes = $variation->get_attributes(); // Get variation attributes
-
-                // Check if the attribute exists and matches the dropdown value
-                if (isset($attributes['pa_service-type']) && strtolower($attributes['pa_service-type']) === $dropdown) {
-                    if ($variation->is_purchasable()) {
-                        $filtered_products[] = $product_id; // Add parent product ID
-                        break; // Stop checking once a valid variation is found
+                        if (isset($attributes['pa_service-type']) && strtolower($attributes['pa_service-type']) === $dropdown) {
+                            if ($variation->is_purchasable()) {
+                                $filtered_products[] = $product_id;
+                                break;
+                            }
+                        }
                     }
                 }
             }
+
+            $product_ids = $filtered_products;
         }
-    }
 
-    // Replace product IDs with filtered list
-    $product_ids = $filtered_products;
-}
+        // Filter by availability days
+        if (!empty($selected_days)) {
+            $filtered_ids = [];
 
-// Filter by availability days
-if (!empty($selected_days)) {
-    $filtered_ids = [];
+            foreach ($product_ids as $product_id) {
+                $availability = get_field('availability', $product_id);
 
-    foreach ($product_ids as $product_id) {
-        $availability = get_field('availability', $product_id);
-
-        if (!empty($availability) && is_array($availability)) {
-            foreach ($availability as $entry) {
-                if (in_array($entry['day'] ?? '', $selected_days)) {
-                    $filtered_ids[] = $product_id;
-                    break;
+                if (!empty($availability) && is_array($availability)) {
+                    foreach ($availability as $entry) {
+                        if (in_array($entry['day'] ?? '', $selected_days)) {
+                            $filtered_ids[] = $product_id;
+                            break;
+                        }
+                    }
                 }
             }
+
+            $product_ids = $filtered_ids;
         }
-    }
 
-    $product_ids = $filtered_ids;
-}
+        // Filter by radius and location
+        if (!empty($radius) && !empty($lat) && !empty($lng) && in_array($dropdown, ['home-based', 'salon-based'])) {
+            $product_ids = $this->filterByRadius($product_ids, $lat, $lng, $radius);
+        }
 
-// Filtering based on radius and location
-if (!empty($radius) && !empty($lat) && !empty($lng) && in_array($dropdown, ["home-based", "salon-based"])) {
-    $product_ids = $this->filterByRadius($product_ids, $lat, $lng, $radius);
-}
+        // Filter for mobile services
+        if (!empty($lat) && !empty($lng) && $dropdown === 'mobile') {
+            $product_ids = $this->filterByPartnerRadius($product_ids, $lat, $lng);
+        }
 
-// Mobile service filtering
-if (!empty($lat) && !empty($lng) && $dropdown === "mobile") {
-    $product_ids = $this->filterByPartnerRadius($product_ids, $lat, $lng);
-}
+        // Now paginate the filtered product list
+        $paged         = max(1, get_query_var('paged') ?: get_query_var('page'));
+        $per_page      = 16;
+        $offset        = ($paged - 1) * $per_page;
+        $total_products = count($product_ids);
+        $paged_ids     = array_slice($product_ids, $offset, $per_page);
 
-// Convert product IDs into a usable format
-$idList = implode(",", $paged_ids);
+        // Convert to comma-separated list
+        $idList = implode(",", $paged_ids);
 
-// Define grid shortcode
-$grid_shortcode = '[us_grid post_type="ids" ids="' . esc_attr($idList) . '" items_layout="28802"  columns="4"]';
+        // Output the grid
+        $grid_shortcode = '[us_grid post_type="ids" ids="' . esc_attr($idList) . '" items_layout="28802" columns="4"]';
+        echo do_shortcode($grid_shortcode);
 
-// Output filtered parameters and grid
-echo do_shortcode($grid_shortcode);
-$total_pages = ceil($total_products / $per_page);
-echo paginate_links(array(
-    'total' => $total_pages,
-    'current' => $paged,
-    'base' => get_pagenum_link(1) . '%_%',
-    'format' => 'page/%#%/',
-));
-
-
+        // Add pagination links
+        $total_pages = ceil($total_products / $per_page);
+        echo paginate_links(array(
+            'total'   => $total_pages,
+            'current' => $paged,
+            'base'    => trailingslashit(get_pagenum_link(1)) . 'page/%#%/',
+            'format'  => '',
+        ));
 
         return ob_get_clean();
     }
@@ -179,11 +172,11 @@ echo paginate_links(array(
 
             $partner_lat = floatval(get_field('latitude', $partner_id));
             $partner_lng = floatval(get_field('longitude', $partner_id));
-            $max_partner_radius = $this->get_max_partner_radius($partner_id);
+            $max_radius  = $this->get_max_partner_radius($partner_id);
 
             if ($partner_lat && $partner_lng) {
                 $distance = $this->haversine_distance($lat, $lng, $partner_lat, $partner_lng);
-                if ($distance <= $max_partner_radius) {
+                if ($distance <= $max_radius) {
                     $filtered_ids[] = $product_id;
                 }
             }
@@ -193,7 +186,7 @@ echo paginate_links(array(
     }
 
     private function get_max_partner_radius($partner_id) {
-        $max_radius = 0;
+        $max_radius   = 0;
         $radius_fees = get_field('radius_fees', $partner_id);
 
         if ($radius_fees && is_array($radius_fees)) {
@@ -210,13 +203,13 @@ echo paginate_links(array(
 
     private function haversine_distance($lat1, $lon1, $lat2, $lon2) {
         $earth_radius = 6371;
-        $lat_delta = deg2rad($lat2 - $lat1);
-        $lon_delta = deg2rad($lon2 - $lon1);
+        $lat_delta    = deg2rad($lat2 - $lat1);
+        $lon_delta    = deg2rad($lon2 - $lon1);
 
         $a = sin($lat_delta / 2) * sin($lat_delta / 2) +
              cos(deg2rad($lat1)) * cos(deg2rad($lat2)) *
              sin($lon_delta / 2) * sin($lon_delta / 2);
 
-        return (2 * atan2(sqrt($a), sqrt(1 - $a))) * $earth_radius * 0.621371;
+        return (2 * atan2(sqrt($a), sqrt(1 - $a))) * $earth_radius * 0.621371; // miles
     }
 }
