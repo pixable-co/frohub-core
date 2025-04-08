@@ -124,7 +124,7 @@ if (!empty($lat) && !empty($lng) && $dropdown === "mobile") {
 $idList = implode(",", $product_ids);
 
 // Define grid shortcode
-$grid_shortcode = '[us_grid post_type="ids" ids="' . esc_attr($idList) . '" items_quantity="16" items_layout="28802" pagination="regular" columns="4"]';
+$grid_shortcode = '[us_grid post_type="ids" ids="' . esc_attr($idList) . '" items_quantity="16" items_layout="28802" pagination="ajax" columns="4"]';
 
 // Output filtered parameters and grid
 echo do_shortcode($grid_shortcode);
