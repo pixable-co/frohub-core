@@ -89,7 +89,6 @@ class CancelOrder {
 
         // Send webhook to both endpoints
         $endpoints = [
-            'https://webhook.site/beaf0763-82db-4041-9189-77f408d823f2',
             'https://webhook.site/beaf0763-82db-4041-9189-77f408d823f2'
         ];
 
