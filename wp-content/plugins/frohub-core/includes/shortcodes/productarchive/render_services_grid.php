@@ -42,7 +42,7 @@ if ($start_date_obj && $end_date_obj) {
 // Define base query parameters
 $product_query_args = array(
     'post_type'      => 'product',
-    'posts_per_page' => 16,
+    'posts_per_page' => -1,
     'fields'         => 'ids',
     'tax_query'      => array(),
     'meta_query'     => array(),
