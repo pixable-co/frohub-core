@@ -135,8 +135,8 @@ class RenderServicesGrid {
         echo paginate_links(array(
             'total'   => $total_pages,
             'current' => $paged,
-            'base'    => trailingslashit(get_pagenum_link(1)) . 'page/%#%/',
-            'format'  => '',
+            'base' => add_query_arg('paged', '%#%'),
+            'format' => '',
         ));
 
         return ob_get_clean();
