@@ -8,6 +8,12 @@ const iconMap = {
     "mobile": <i className="fas fa-car-side text-[32px]"></i>,
 };
 
+const descriptionMap = {
+    "home-based": "You travel to your stylists’ home",
+    "salon-based": "You travel to your stylists’ salon",
+    "mobile": "Your stylist travels to your home",
+};
+
 
 const FhServiceButton = ({service, selectedService, handleSelectService, loading }) => {
     if (loading) {
@@ -49,7 +55,7 @@ const FhServiceButton = ({service, selectedService, handleSelectService, loading
                 {iconMap[lowerCaseService] || <i className="fas fa-home text-[32px]"></i>}
                 <div className="flex flex-col">
                     <span className="font-semibold text-lg mt-2">{service}</span>
-                    <span className="text-sm text-gray-600">Select {service} service</span>
+                    <span className="text-sm text-gray-600">{descriptionMap[lowerCaseService]}</span>
                 </div>
             </label>
         </div>
