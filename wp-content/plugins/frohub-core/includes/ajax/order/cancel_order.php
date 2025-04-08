@@ -17,7 +17,7 @@ class CancelOrder {
     }
 
     /**
-     * Handles AJAX cancellation of an order (simple cancel with meta cleanup).
+     * Handles AJAX cancellation of an order and sends two different webhook payloads.
      */
     public function cancel_order() {
         check_ajax_referer('ajax_nonce', 'security');
@@ -34,9 +34,11 @@ class CancelOrder {
             wp_send_json_error(['message' => 'Error: Order not found!']);
         }
 
-        // Grab the first relevant item for meta (excluding booking fee products)
+        // Initialize shared variables
         $partner_name = '';
         $partner_email = '';
+        $client_email = $order->get_billing_email();
+        $client_first_name = $order->get_billing_first_name();
         $service_name = '';
         $service_type = 'Mobile';
         $formatted_date_time = '';
@@ -44,6 +46,7 @@ class CancelOrder {
         foreach ($order->get_items() as $item) {
             $product_id = $item->get_product_id();
 
+            // Skip booking fee products
             if ($product_id == 28990) continue;
 
             // Service name
@@ -51,13 +54,13 @@ class CancelOrder {
             $parts = explode(' - ', $raw_service_name);
             $service_name = trim($parts[0]);
 
-            // Start Date Time
+            // Booking date/time
             $start_datetime = $item->get_meta('Start Date Time');
             if ($start_datetime) {
                 $formatted_date_time = date('H:i, d M Y', strtotime($start_datetime));
             }
 
-            // Partner post from product ACF
+            // Partner info
             $partner_post = get_field('partner_name', $product_id);
             if ($partner_post && is_object($partner_post)) {
                 $partner_name = get_the_title($partner_post->ID);
@@ -73,49 +76,68 @@ class CancelOrder {
                 }
             }
 
-            break; // Only one main service item expected
+            break; // Process only first main service item
         }
 
-        // Build payload
-        $payload = [
-            'order_id' => '#' . $order->get_id(),
-            'partner_email' => $partner_email,
-            'client_first_name' => $order->get_billing_first_name(),
+        // ✅ Payload 1: Customer webhook
+        $payload_customer = [
+            'order_id' => '#' . $order_id,
+            'client_email' => $client_email,
+            'client_first_name' => $client_first_name,
             'partner_name' => $partner_name,
             'service_name' => $service_name,
             'service_type' => $service_type,
             'booking_date_time' => $formatted_date_time,
         ];
 
-        // Send webhook to both endpoints
-        $endpoints = [
-            'https://webhook.site/beaf0763-82db-4041-9189-77f408d823f2'
+        // ✅ Payload 2: Partner webhook
+        $payload_partner = [
+            'order_id' => '#' . $order_id,
+            'partner_email' => $partner_email,
+            'client_first_name' => $client_first_name,
+            'partner_name' => $partner_name,
+            'service_name' => $service_name,
+            'service_type' => $service_type,
+            'booking_date_time' => $formatted_date_time,
         ];
 
-        foreach ($endpoints as $url) {
-            $response = wp_remote_post($url, [
-                'headers' => ['Content-Type' => 'application/json'],
-                'body' => wp_json_encode($payload),
-                'timeout' => 20,
-            ]);
+        // 🔗 Webhook endpoints
+        $customer_webhook_url = 'https://flow.zoho.eu/20103370577/flow/webhook/incoming?zapikey=1001.f5f517804c4f3cad824e08e73a3d1de5.1b6c2804310ae465930ef15631808e89&isdebug=false';
+        $partner_webhook_url = 'https://flow.zoho.eu/20103370577/flow/webhook/incoming?zapikey=1001.9dc9d8e2982ee05fb07c6c2558b9811c.42d319bfe73b89e2f314888d692ea277&isdebug=false';
 
-            if (is_wp_error($response)) {
-                error_log("❌ Cancel webhook failed for order #{$order_id} - " . $response->get_error_message());
-            } else {
-                error_log("✅ Cancel webhook sent to $url for order #{$order_id}");
-            }
-        }
+        // 🔁 Send both
+        $this->send_webhook($customer_webhook_url, $payload_customer, 'Customer');
+        $this->send_webhook($partner_webhook_url, $payload_partner, 'Partner');
 
-        // Remove proposed time fields
+        // 🧹 Clean up proposed time meta fields
         foreach ($order->get_items() as $item_id => $item) {
             wc_delete_order_item_meta($item_id, 'Proposed Start Date Time');
             wc_delete_order_item_meta($item_id, 'Proposed End Date Time');
         }
 
-        // Cancel the order
+        // ❌ Cancel the order
         $order->update_status('cancelled', 'Order has been cancelled.');
         $order->save();
 
         wp_send_json_success(['message' => 'Order has been cancelled.']);
+    }
+
+    /**
+     * Helper to send webhook and log result
+     */
+    private function send_webhook($url, $payload, $type = 'Webhook') {
+        $response = wp_remote_post($url, [
+            'headers' => ['Content-Type' => 'application/json'],
+            'body' => wp_json_encode($payload),
+            'timeout' => 20,
+        ]);
+
+        $log_tag = strtoupper($type);
+
+        if (is_wp_error($response)) {
+            error_log("❌ $log_tag webhook failed: " . $response->get_error_message());
+        } else {
+            error_log("✅ $log_tag webhook sent to $url with order " . $payload['order_id']);
+        }
     }
 }
