@@ -123,7 +123,7 @@ class RenderServicesGrid {
 
         // Now paginate the filtered list
         $paged         = max(1, get_query_var('paged') ?: get_query_var('page'));
-        $per_page      = 12; // Number of products per page
+        $per_page      = 16; // Number of products per page
         $offset        = ($paged - 1) * $per_page;
         $total_products = count($product_ids);
         $paged_ids     = array_slice($product_ids, $offset, $per_page);
