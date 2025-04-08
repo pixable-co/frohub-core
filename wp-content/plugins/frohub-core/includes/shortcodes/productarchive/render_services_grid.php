@@ -137,12 +137,18 @@ class RenderServicesGrid {
 
         // Add pagination links
         $total_pages = ceil($total_products / $per_page);
-        echo paginate_links(array(
-            'total'   => $total_pages,
-            'current' => $paged,
-            'base'    => add_query_arg('paged', '%#%'),
-            'format'  => '',
-        ));
+        echo paginate_links([
+            'total'        => $total_pages,
+            'current'      => $paged,
+            'base'         => add_query_arg('paged', '%#%'),
+            'format'       => '',
+            'type'         => 'list',  // <ul><li> structure instead of raw <a> tags
+            'prev_text'    => 'Prev',
+            'next_text'    => 'Next',
+            'before_page_number' => '',
+            'after_page_number'  => '',
+          ]);
+          
 
         return ob_get_clean();
     }
