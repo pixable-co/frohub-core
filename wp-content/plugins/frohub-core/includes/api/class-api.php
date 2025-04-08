@@ -66,7 +66,7 @@ use FECore\ConfirmPartnerPayout;
 use FECore\PayoutPartners;
 use FECore\PartnerAddOns;
 use FECore\PartnerFaqs;
-use FECore\GetPartnerName;
+use FECore\GetPartnerNameTitle;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -128,6 +128,6 @@ class API {
 		DeleteProduct::init();
 		PartnersMyPendingOrdersCount::init();
 		PartnerFaqs::init();
-		GetPartnerName::init();
+		GetPartnerNameTitle::init();
 	}
 }
