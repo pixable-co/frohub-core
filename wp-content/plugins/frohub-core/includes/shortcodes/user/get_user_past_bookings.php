@@ -178,6 +178,7 @@ class GetUserPastBookings {
             .frohub-modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background: rgba(0, 0, 0, 0.5); }
             .frohub-modal-content { background: #fff; margin: 10% auto; padding: 20px; border-radius: 8px; width: 90%; max-width: 500px; position: relative; }
             .frohub-close { position: absolute; top: 10px; right: 15px; font-size: 24px; cursor: pointer; }
+            .gform_title {display: none;}
 
             /* Responsive layout */
             @media only screen and (max-width: 768px) {
@@ -212,28 +213,54 @@ class GetUserPastBookings {
         </style>
 
         <script>
-        jQuery(document).ready(function($) {
-            var modal = $('#frohubReviewModal');
+        jQuery(function($) {
+            let reviewData = null;
+            let modalOpened = false;
 
+            // Handle modal open button
             $('.myBtn').on('click', function() {
-                var data = $(this).data('info');
+                reviewData = $(this).data('info');
+                modalOpened = true;
+
+                // Populate booking summary
                 $('.review-data').html(`
-                    <strong>Service:</strong> ${data.productName}<br>
-                    <strong>Type:</strong> ${data.serviceType}<br>
-                    <strong>Date:</strong> ${data.selectedDate}<br>
-                    <strong>Stylist:</strong> ${data.partnerTitle}<br>
-                    <strong>Address:</strong> ${data.partnerAddress}
+                    <strong>Service:</strong> ${reviewData.productName}<br>
+                    <strong>Type:</strong> ${reviewData.serviceType}<br>
+                    <strong>Date:</strong> ${reviewData.selectedDate}<br>
+                    <strong>Stylist:</strong> ${reviewData.partnerTitle}<br>
+                    <strong>Address:</strong> ${reviewData.partnerAddress}<br><br>
                 `);
-                modal.fadeIn();
+
+                // Show modal
+                $('#frohubReviewModal').fadeIn();
             });
 
+            // Gravity Form post-render hook
+            $(document).on('gform_post_render', function(event, formId) {
+                if (formId === 7 && modalOpened && reviewData !== null) {
+                    const $orderField = $('#input_7_18');
+                    const $productField = $('#input_7_19');
+
+                    if ($orderField.length) {
+                        $orderField.val(reviewData.orderId).attr('readonly', true);
+                    }
+
+                    if ($productField.length) {
+                        $productField.val(reviewData.productId).attr('readonly', true);
+                    }
+                }
+            });
+
+            // Close modal logic
             $('.frohub-close').on('click', function() {
-                modal.fadeOut();
+                $('#frohubReviewModal').fadeOut();
+                modalOpened = false;
             });
 
             $(window).on('click', function(e) {
-                if ($(e.target).is(modal)) {
-                    modal.fadeOut();
+                if ($(e.target).is('#frohubReviewModal')) {
+                    $('#frohubReviewModal').fadeOut();
+                    modalOpened = false;
                 }
             });
         });
