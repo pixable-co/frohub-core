@@ -19,7 +19,7 @@ class DisplayPartnerName {
         $partner_id = get_field('partner_id', $post_id);
 
         if ($partner_id) {
-              echo '<span><a href="' . esc_url(get_permalink($partner_id)) . '">' . esc_html(get_the_title($partner_id)) . '</a> <i class="fas fa-shield-alt"></i></span>';
+              echo '<span><a href="' . esc_url(get_permalink($partner_id)) . '">' . esc_html(get_the_title($partner_id)) . '</a></span>';
         }
 
         return ob_get_clean();
