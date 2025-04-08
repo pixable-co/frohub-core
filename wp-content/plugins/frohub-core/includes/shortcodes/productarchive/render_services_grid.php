@@ -42,7 +42,7 @@ if ($start_date_obj && $end_date_obj) {
 // Define base query parameters
 $product_query_args = array(
     'post_type'      => 'product',
-    'posts_per_page' => -1,
+    'posts_per_page' => 16,
     'fields'         => 'ids',
     'tax_query'      => array(),
     'meta_query'     => array(),
@@ -60,6 +60,14 @@ if (!empty($category)) {
 // Fetch products (excluding service_types filter for now)
 $product_query = new \WP_Query($product_query_args);
 $product_ids = $product_query->posts;
+
+$paged = max(1, get_query_var('paged') ? get_query_var('paged') : get_query_var('page'));
+$per_page = 16;
+$offset = ($paged - 1) * $per_page;
+
+$total_products = count($product_ids);
+$paged_ids = array_slice($product_ids, $offset, $per_page);
+
 
 // Check for variations with the selected service type
 if (!empty($dropdown)) {
@@ -121,13 +129,21 @@ if (!empty($lat) && !empty($lng) && $dropdown === "mobile") {
 }
 
 // Convert product IDs into a usable format
-$idList = implode(",", $product_ids);
+$idList = implode(",", $paged_ids);
 
 // Define grid shortcode
-$grid_shortcode = '[us_grid post_type="ids" ids="' . esc_attr($idList) . '" items_quantity="16" items_layout="28802" pagination="regular" columns="4"]';
+$grid_shortcode = '[us_grid post_type="ids" ids="' . esc_attr($idList) . '" items_layout="28802"  columns="4"]';
 
 // Output filtered parameters and grid
 echo do_shortcode($grid_shortcode);
+$total_pages = ceil($total_products / $per_page);
+echo paginate_links(array(
+    'total' => $total_pages,
+    'current' => $paged,
+    'base' => get_pagenum_link(1) . '%_%',
+    'format' => 'page/%#%/',
+));
+
 
 
         return ob_get_clean();
