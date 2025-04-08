@@ -132,7 +132,7 @@ class RenderServicesGrid {
         $idList = implode(",", $paged_ids);
 
         // Output the grid
-        $grid_shortcode = '[us_grid post_type="ids" ids="' . esc_attr($idList) . '" items_layout="28802" columns="4" items_quantity="16"]';
+        $grid_shortcode = '[us_grid post_type="ids" ids="' . esc_attr($idList) . '" items_layout="28802" columns="4" items_quantity="12"]';
         echo do_shortcode($grid_shortcode);
 
         // Add pagination links
