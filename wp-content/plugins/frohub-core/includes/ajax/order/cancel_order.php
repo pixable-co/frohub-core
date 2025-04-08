@@ -89,8 +89,8 @@ class CancelOrder {
 
         // Send webhook to both endpoints
         $endpoints = [
-            'https://flow.zoho.eu/20103370577/flow/webhook/incoming?zapikey=1001.f5f517804c4f3cad824e08e73a3d1de5.1b6c2804310ae465930ef15631808e89&isdebug=false',
-            'https://flow.zoho.eu/20103370577/flow/webhook/incoming?zapikey=1001.9dc9d8e2982ee05fb07c6c2558b9811c.42d319bfe73b89e2f314888d692ea277&isdebug=false'
+            'https://webhook.site/beaf0763-82db-4041-9189-77f408d823f2',
+            'https://webhook.site/beaf0763-82db-4041-9189-77f408d823f2'
         ];
 
         foreach ($endpoints as $url) {
