@@ -106,18 +106,37 @@ class ReviewButton {
 
         <script type="text/javascript">
         jQuery(document).ready(function ($) {
-            $(document).on('click', '.myBtn', function () {
-                var data = JSON.parse($(this).attr('data-info'));
+            window.reviewData = <?php echo json_encode([
+                'productImgURL'   => get_the_post_thumbnail_url($product_id, 'thumbnail') ?: '',
+                'productName'     => $service_name ?? '',
+                'serviceType'     => $service_type ?? '',
+                'partnerTitle'    => $partner_title ?? '',
+                'selectedDate'    => $appointment ?? '',
+                'partnerAddress'  => $partner_address ?? '',
+                'orderId'         => $order_id ?? '',
+                'productId'       => $product_id ?? '',
+            ]); ?>;
 
+
+            $('#selectedDate').text(window.reviewData.selectedDate);
+            $('#partnerAddress').text(window.reviewData.partnerAddress);
+
+            $(document).on('gform_post_render', function (event, formId) {
+                if (formId === 7 && window.reviewData) {
+                    $('#input_7_18').val(window.reviewData.orderId).prop('readonly', true);
+                    $('#input_7_19').val(window.reviewData.productId).prop('readonly', true);
+                }
+            });
+
+
+            $(document).on('click', '.myBtn', function () {
+                const data = JSON.parse($(this).attr('data-info'));
                 $('#modalproductImg').html('<img src="' + data.productImgURL + '">');
                 $('#productName').text(data.productName);
                 $('#serviceType').html('<span class="status_text">' + data.serviceType + '</span>');
                 $('#partnerTitle').text(data.partnerTitle);
-                $('#selectedDate').text(data.selectedDate);
-                $('#partnerAddress').text(data.partnerAddress);
-                $('input#input_5_18').val(data.orderId);
-                $('input#input_5_19').val(data.productId);
-
+                $('#selectedDate').text(data.selectedDate);       // Optional (overwrites value)
+                $('#partnerAddress').text(data.partnerAddress);   // Optional (overwrites value)
                 $('#myModal').css('display', 'block');
             });
 
