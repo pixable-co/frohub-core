@@ -34,7 +34,80 @@ class CancelOrder {
             wp_send_json_error(['message' => 'Error: Order not found!']);
         }
 
-        // Remove the proposed time meta fields
+        // Grab the first relevant item for meta (excluding booking fee products)
+        $partner_name = '';
+        $partner_email = '';
+        $service_name = '';
+        $service_type = 'Mobile';
+        $formatted_date_time = '';
+
+        foreach ($order->get_items() as $item) {
+            $product_id = $item->get_product_id();
+
+            if ($product_id == 28990) continue;
+
+            // Service name
+            $raw_service_name = $item->get_name();
+            $parts = explode(' - ', $raw_service_name);
+            $service_name = trim($parts[0]);
+
+            // Start Date Time
+            $start_datetime = $item->get_meta('Start Date Time');
+            if ($start_datetime) {
+                $formatted_date_time = date('H:i, d M Y', strtotime($start_datetime));
+            }
+
+            // Partner post from product ACF
+            $partner_post = get_field('partner_name', $product_id);
+            if ($partner_post && is_object($partner_post)) {
+                $partner_name = get_the_title($partner_post->ID);
+                $partner_email = get_field('partner_email', $partner_post->ID);
+            }
+
+            // Service type from variation
+            $product = $item->get_product();
+            if ($product && $product->is_type('variation')) {
+                $attrs = $product->get_attributes();
+                if (!empty($attrs['pa_service-type'])) {
+                    $service_type = ucfirst($attrs['pa_service-type']);
+                }
+            }
+
+            break; // Only one main service item expected
+        }
+
+        // Build payload
+        $payload = [
+            'order_id' => '#' . $order->get_id(),
+            'partner_email' => $partner_email,
+            'client_first_name' => $order->get_billing_first_name(),
+            'partner_name' => $partner_name,
+            'service_name' => $service_name,
+            'service_type' => $service_type,
+            'booking_date_time' => $formatted_date_time,
+        ];
+
+        // Send webhook to both endpoints
+        $endpoints = [
+            'https://flow.zoho.eu/20103370577/flow/webhook/incoming?zapikey=1001.f5f517804c4f3cad824e08e73a3d1de5.1b6c2804310ae465930ef15631808e89&isdebug=false',
+            'https://flow.zoho.eu/20103370577/flow/webhook/incoming?zapikey=1001.9dc9d8e2982ee05fb07c6c2558b9811c.42d319bfe73b89e2f314888d692ea277&isdebug=false'
+        ];
+
+        foreach ($endpoints as $url) {
+            $response = wp_remote_post($url, [
+                'headers' => ['Content-Type' => 'application/json'],
+                'body' => wp_json_encode($payload),
+                'timeout' => 20,
+            ]);
+
+            if (is_wp_error($response)) {
+                error_log("❌ Cancel webhook failed for order #{$order_id} - " . $response->get_error_message());
+            } else {
+                error_log("✅ Cancel webhook sent to $url for order #{$order_id}");
+            }
+        }
+
+        // Remove proposed time fields
         foreach ($order->get_items() as $item_id => $item) {
             wc_delete_order_item_meta($item_id, 'Proposed Start Date Time');
             wc_delete_order_item_meta($item_id, 'Proposed End Date Time');
