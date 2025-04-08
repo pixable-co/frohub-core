@@ -17,7 +17,7 @@ class RenderServicesGrid {
 
         // Fetch URL parameters and sanitize them
         $dropdown   = isset($_GET['dropdown']) ? strtolower(sanitize_text_field($_GET['dropdown'])) : '';
-        $category   = isset($_GET['category']) ? sanitize_text_field($_GET['category']) : '';
+        $category   = isset($_GET['_categories']) ? sanitize_text_field($_GET['_categories']) : '';
         $start_date = isset($_GET['start_date']) ? sanitize_text_field($_GET['start_date']) : '';
         $end_date   = isset($_GET['end_date']) ? sanitize_text_field($_GET['end_date']) : '';
         $radius     = isset($_GET['radius']) ? intval($_GET['radius']) : '';
