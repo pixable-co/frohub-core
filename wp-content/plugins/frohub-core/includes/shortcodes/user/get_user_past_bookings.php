@@ -217,7 +217,6 @@ class GetUserPastBookings {
 
             $('.myBtn').on('click', function() {
                 reviewData = $(this).data('info');
-        		console.log(reviewData);
 
                 // Update booking summary
                 $('.review-data').html(`
