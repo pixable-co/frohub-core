@@ -5,7 +5,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-class GetPartnerName {
+class GetPartnerNameTitle {
 
     public static function init() {
         $self = new self();
