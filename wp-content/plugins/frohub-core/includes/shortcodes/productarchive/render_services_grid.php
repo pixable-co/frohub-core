@@ -123,7 +123,7 @@ class RenderServicesGrid {
 
         // Now paginate the filtered list
         $paged         = max(1, get_query_var('paged') ?: get_query_var('page'));
-        $per_page      = 20;
+        $per_page      = 16;
         $offset        = ($paged - 1) * $per_page;
         $total_products = count($product_ids);
         $paged_ids     = array_slice($product_ids, $offset, $per_page);
@@ -132,7 +132,7 @@ class RenderServicesGrid {
         $idList = implode(",", $paged_ids);
 
         // Output the grid
-        $grid_shortcode = '[us_grid post_type="ids" ids="' . esc_attr($idList) . '" items_layout="28802" columns="4" items_quantity="20"]';
+        $grid_shortcode = '[us_grid post_type="ids" ids="' . esc_attr($idList) . '" items_layout="28802" columns="4" items_quantity="12"]';
         echo do_shortcode($grid_shortcode);
 
         // Add pagination links
