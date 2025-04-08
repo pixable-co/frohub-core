@@ -143,6 +143,15 @@ class GetUserPastBookings {
             $mobile_cards .= '<p>Deposit: £' . number_format($deposit, 2) . '</p>';
             $mobile_cards .= '<p><input disabled type="text" value="Due on the day: £' . number_format($total_due, 2) . '" /></p>';
             $mobile_cards .= '<div class="actions">';
+
+            if ($can_review) {
+            	if ($review && is_object($review)) {
+            			$rating = (int)get_field('overall_rating', $review->ID);
+            			$mobile_cards .= '<div class="review-stars">' . ($rating > 0 ? str_repeat('<i class="fas fa-star" style="color: black;"></i>', $rating) : 'Thank you') . '</div>';
+            	} else {
+                    $mobile_cards .= '<button class="myBtn w-btn us-btn-style_3" data-info=\'' . esc_attr($data) . '\'>Leave Review</button>';
+                }
+             }
             $mobile_cards .= '<button class="w-btn us-btn-style_3">Reschedule requested</button>';
             $mobile_cards .= '<a href="#">Accept/Decline</a>';
             $mobile_cards .= '</div>';
