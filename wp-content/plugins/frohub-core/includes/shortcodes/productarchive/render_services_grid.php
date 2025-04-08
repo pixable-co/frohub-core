@@ -39,7 +39,7 @@ class RenderServicesGrid {
             }
         }
 
-        // Define base query parameters
+        // Base product query
         $product_query_args = array(
             'post_type'      => 'product',
             'posts_per_page' => -1,
@@ -48,7 +48,7 @@ class RenderServicesGrid {
             'meta_query'     => array(),
         );
 
-        // Apply category filter
+        // Filter by category
         if (!empty($category)) {
             $product_query_args['tax_query'][] = array(
                 'taxonomy' => 'product_cat',
@@ -61,7 +61,7 @@ class RenderServicesGrid {
         $product_query = new \WP_Query($product_query_args);
         $product_ids   = $product_query->posts;
 
-        // Check for variations with the selected service type
+        // Filter by service-type via variation attributes
         if (!empty($dropdown)) {
             $filtered_products = [];
 
@@ -106,24 +106,29 @@ class RenderServicesGrid {
             $product_ids = $filtered_ids;
         }
 
-        // Filter by radius and location
+        // Filter by location radius
         if (!empty($radius) && !empty($lat) && !empty($lng) && in_array($dropdown, ['home-based', 'salon-based'])) {
             $product_ids = $this->filterByRadius($product_ids, $lat, $lng, $radius);
         }
 
-        // Filter for mobile services
+        // Filter for mobile services (partner-defined radius)
         if (!empty($lat) && !empty($lng) && $dropdown === 'mobile') {
             $product_ids = $this->filterByPartnerRadius($product_ids, $lat, $lng);
         }
 
-        // Now paginate the filtered product list
+        // Remove invalid or missing products
+        $product_ids = array_filter($product_ids, function($id) {
+            return wc_get_product($id) !== false;
+        });
+
+        // Now paginate the filtered list
         $paged         = max(1, get_query_var('paged') ?: get_query_var('page'));
         $per_page      = 16;
         $offset        = ($paged - 1) * $per_page;
         $total_products = count($product_ids);
         $paged_ids     = array_slice($product_ids, $offset, $per_page);
 
-        // Convert to comma-separated list
+        // Convert to comma-separated list for us_grid
         $idList = implode(",", $paged_ids);
 
         // Output the grid
@@ -135,8 +140,8 @@ class RenderServicesGrid {
         echo paginate_links(array(
             'total'   => $total_pages,
             'current' => $paged,
-            'base' => add_query_arg('paged', '%#%'),
-            'format' => '',
+            'base'    => add_query_arg('paged', '%#%'),
+            'format'  => '',
         ));
 
         return ob_get_clean();
