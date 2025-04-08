@@ -23,7 +23,7 @@ class FrohubGetPartnerName {
             $partner_title = get_the_title($partner_id);
 
             // Display the Partner title
-            return '<span>' . esc_html($partner_title) . ' <i class="fas fa-shield-alt"></i></span>';
+            return '<span>' . esc_html($partner_title) . '</span>';
         } else {
             return '';
         }
