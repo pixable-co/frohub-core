@@ -9,86 +9,61 @@ class DisplayComments {
 
     public static function init() {
         $self = new self();
-        add_shortcode('display_partner_comments', array($self, 'display_partner_comments_shortcode'));
+        add_shortcode('display_comments', array($self, 'display_comments_shortcode'));
     }
 
-    public function display_partner_comments_shortcode() {
+    public function display_comments_shortcode() {
         ob_start();
 
-        $postId = get_the_ID(); // Current client post
-        $ecommConversationPostId = get_field('ecommerce_conversation_post_id', $postId);
-        $basicAuth = get_field('frohub_ecommerce_basic_authentication', 'option');
+        $postId = get_the_ID(); // Get the current post ID
+        $comments = get_comments(array(
+            'post_id' => $postId,
+        ));
+        $currentUserId = get_current_user_id();
+        $allComments = array();
 
-        $response = wp_remote_post('https://frohubecomm.mystagingwebsite.com/wp-json/frohub/v1/get-conversation-comments', [
-            'body' => json_encode(['conversation_post_id' => $ecommConversationPostId]),
-            'headers' => [
-                'Content-Type'  => 'application/json',
-                'Authorization' => $basicAuth,
-            ],
-        ]);
+        foreach ($comments as $comment) {
+        $commentId = $comment->comment_ID; // Store comment ID in a variable
+        $comment_meta = get_comment_meta($commentId);
 
-        $allComments = [];
+        //Mark conversation as read by customer
+        update_field('read_by_customer',1,$postId);
 
-        if (!is_wp_error($response) && wp_remote_retrieve_response_code($response) === 200) {
-            $comments = json_decode(wp_remote_retrieve_body($response), true);
-
-            if (is_array($comments)) {
-                $allComments = array_map(function ($comment) {
-                    return [
-                        'comment_id' => $comment['comment_id'],
-                        'author'     => $comment['author'],
-                        'content'    => $comment['content'],
-                        'date'       => $comment['date'],
-                        'meta_data'  => $comment['meta_data'] ?? [],
-                        'partner_id' => $comment['meta_data']['partner'][0] ?? null,
-                    ];
-                }, $comments);
-            }
+        $allComments[] = array(
+        'comment_id' => $commentId,
+        'user_id' => $comment->user_id,
+        'author' => $comment->comment_author,
+        'content' => $comment->comment_content,
+        'date' => $comment->comment_date_gmt,
+        );
         }
 
-        // Sort by date
+        // Sort by comment date (oldest to newest)
         usort($allComments, function ($a, $b) {
-            return strtotime($a['date']) - strtotime($b['date']);
+        return strtotime($a['date']) - strtotime($b['date']);
         });
-
-        $currentUserId = get_current_user_id();
-        $userPartnerPostId = get_field('partner_post_id', 'user_' . $currentUserId);
-
-        // Allowed tags for content rendering
-        $allowed_tags = [
-            'p' => [], 'br' => [], 'strong' => [], 'em' => [],
-            'ul' => [], 'ol' => [], 'li' => [],
-            'a' => ['href' => [], 'title' => []],
-            'img' => ['src' => [], 'alt' => [], 'width' => [], 'height' => []],
-            'h1' => [], 'h2' => [], 'h3' => [], 'h4' => [], 'h5' => [], 'h6' => [],
-            'blockquote' => [], 'code' => [], 'pre' => [],
-        ];
         ?>
 
         <div class="chat-container" id="chat-container" style="overflow-y: auto; max-height: 800px; height: 800px;">
-            <div class="messages">
-                <?php foreach ($allComments as $comment): ?>
-                    <?php 
-                        $isPartnerMessage = ($comment['partner_id'] == $userPartnerPostId);
-                    ?>
-                    <div class="message <?php echo $isPartnerMessage ? 'user' : 'partner'; ?>">
-                        <div class="bubble <?php echo $isPartnerMessage ? 'user' : 'partner'; ?>">
-                            <strong><?php echo $isPartnerMessage ? 'You' : esc_html($comment['author']); ?>:</strong>
-                            <?php echo wp_kses($comment['content'], $allowed_tags); ?>
-                            <div class="timestamp"><?php echo esc_html($comment['date']); ?></div>
-                        </div>
-                    </div>
-                <?php endforeach; ?>
-            </div>
+        <div class="messages">
+        <?php foreach ($allComments as $comment): ?>
+        <div class="message <?php echo ($comment['user_id'] == $currentUserId) ? 'user' : 'partner'; ?>">
+        <div class="bubble <?php echo ($comment['user_id'] == $currentUserId) ? 'user' : 'partner'; ?>">
+        <strong><?php echo ($comment['user_id'] == $currentUserId) ? 'You' : esc_html($comment['author']); ?>:</strong> 
+        <?php echo wp_kses_post($comment['content']); ?>
+        <div class="timestamp"><?php echo esc_html($comment['date']); ?></div>
         </div>
+        </div>
+        <?php endforeach; ?>
+            </div>
+            </div>
 
-        <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            var chatContainer = document.getElementById('chat-container');
-            chatContainer.scrollTop = chatContainer.scrollHeight;
-        });
+            <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                var chatContainer = document.getElementById('chat-container');
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            });
         </script>
-
         <?php
         return ob_get_clean();
     }
