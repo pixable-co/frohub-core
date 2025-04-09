@@ -1,72 +1,79 @@
 <?php
-namespace FECore;
+public function display_existing_conversations_shortcode() {
+    ob_start();
 
-if ( ! defined( 'ABSPATH' ) ) {
-    exit;
-}
+    if (is_user_logged_in()) {
+        $current_user_id = get_current_user_id();
+        $current_post_id = get_queried_object_id();
 
-class DisplayExistingConversations {
-
-    public static function init() {
-        $self = new self();
-        add_shortcode('display_existing_conversations', array($self, 'display_existing_conversations_shortcode'));
-    }
-
-    public function display_existing_conversations_shortcode() {
-        ob_start();
-
-        if (is_user_logged_in()) {
-            $current_user_id = get_current_user_id();
-            $current_post_id = get_queried_object_id(); // Get the current viewed post ID
-
-            $args = array(
-                'post_type'      => 'conversation',
-                'posts_per_page' => -1, // Get all conversations
-                'meta_query'     => array(
-                    array(
-                        'key'     => 'customer', // ACF field storing user ID
-                        'value'   => $current_user_id,
-                        'compare' => '='
-                    )
+        $args = array(
+            'post_type'      => 'conversation',
+            'posts_per_page' => -1,
+            'meta_query'     => array(
+                array(
+                    'key'     => 'customer', // ACF field storing user ID
+                    'value'   => $current_user_id,
+                    'compare' => '='
                 )
-            );
+            )
+        );
 
-            $query = new \WP_Query($args);
+        $query = new \WP_Query($args);
 
-            if ($query->have_posts()) {
-                echo '<div class="ongoing-conversations-list">';
-                
-                while ($query->have_posts()) {
-                    $query->the_post();
-                    $conversation_id = get_the_ID();
-                    $read_by_customer = get_field('read_by_customer', $conversation_id);
+        echo '<div class="chat-container">';
+        echo '<div class="ongoing-conversations-list">';
 
-                    // Highlight class if it's the current post
-                    $highlight_class = ($conversation_id == $current_post_id) ? 'highlight' : '';
+        if ($query->have_posts()) {
+            while ($query->have_posts()) {
+                $query->the_post();
+                $conversation_id = get_the_ID();
+                $read_by_customer = get_field('read_by_customer', $conversation_id);
+                $highlight_class = ($conversation_id == $current_post_id) ? 'highlight' : '';
 
-                    echo '<a href="' . get_permalink() . '" class="ongoing-conversation ' . $highlight_class . '">';
-                    echo '<div class="conversation-content">';
-                    echo '<h5 class="conversation-title">' . get_the_title();
+                echo '<a href="' . get_permalink() . '" class="ongoing-conversation ' . $highlight_class . '">';
+                echo '<div class="conversation-content">';
+                echo '<h5 class="conversation-title">' . get_the_title();
 
-                    // Add red dot if "read_by_customer" is false
-                    if (!$read_by_customer) {
-                        echo ' <span class="red-dot"></span>';
-                    }
-
-                    echo '</h5>';
-                    echo '</div>';
-                    echo '</a>';
+                if (!$read_by_customer) {
+                    echo ' <span class="red-dot"></span>';
                 }
 
+                echo '</h5>';
                 echo '</div>';
-                wp_reset_postdata();
-            } else {
-                echo '<p>No conversations found.</p>';
+                echo '</a>';
             }
+            wp_reset_postdata();
         } else {
-            echo '<p>You must be logged in to view your conversations.</p>';
+            echo '<p>No conversations found.</p>';
         }
 
-        return ob_get_clean();
+        echo '</div>'; // Close .ongoing-conversations-list
+
+        if (is_singular('conversation')) {
+            echo '<div class="chat-window">';
+            echo '<div class="messages-container">';
+            echo do_shortcode('[wbcr_php_snippet id="595" post_id="' . $current_post_id . '"]'); // Message display
+            echo '<div class="chat-input-wrapper">';
+            echo do_shortcode('[wbcr_php_snippet id="607" post_id="' . $current_post_id . '"]'); // Chat input
+            echo '</div>'; // Close .chat-input-wrapper
+            echo '</div>'; // Close .messages-container
+            echo '</div>'; // Close .chat-window
+        } else {
+            echo '<div class="chat-window-placeholder">
+                <p class="no-chat-selected">
+                    <img class="frohub-logo" src="https://frohubpartners.mystagingwebsite.com/wp-content/uploads/2025/03/Asset-10.svg" alt="Frohub Logo">
+                    <strong>Welcome to your inbox!</strong>
+                    Select a conversation from the left to start chatting.
+                    If you don\'t see any conversations, it means you haven\'t connected with any clients yet.
+                </p>
+            </div>';
+        }
+
+        echo '</div>'; // Close .chat-container
+
+    } else {
+        echo '<p>You must be logged in to view your conversations.</p>';
     }
+
+    return ob_get_clean();
 }
