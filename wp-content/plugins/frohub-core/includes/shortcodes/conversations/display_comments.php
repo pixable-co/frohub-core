@@ -5,7 +5,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-class DisplayCommentsPartner {
+class DisplayComments {
 
     public static function init() {
         $self = new self();
