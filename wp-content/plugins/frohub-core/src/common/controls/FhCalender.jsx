@@ -6,13 +6,21 @@ import { Skeleton } from "antd";
 import frohubStore from "../../frohubStore.js";
 import './style.css';
 
-const FhCalender = ({ onDateChange, bookingNotice, initialServiceDuration, maxDate, unavailableDates, unavailableTimes }) => {
+const FhCalender = ({ onDateChange, bookingNotice, initialServiceDuration, maxDate, unavailableDates, unavailableTimes,nextAvailableDate }) => {
     const { availabilityData, loading } = frohubStore();
-    const [selectedDate, setSelectedDate] = useState(dayjs());
+    // const [selectedDate, setSelectedDate] = useState(dayjs());
+    const [selectedDate, setSelectedDate] = useState(() => (dayjs(nextAvailableDate)));
     const [selectedTime, setSelectedTime] = useState(null);
     const [selectedPrice, setSelectedPrice] = useState(0);
     const [selectedDuration, setSelectedDuration] = useState(0);
     const [currentMonth, setCurrentMonth] = useState(dayjs());
+
+    useEffect(() => {
+        if (nextAvailableDate) {
+            setSelectedDate(dayjs(nextAvailableDate));
+        }
+    }, [nextAvailableDate]);
+
 
     useEffect(() => {
         const duration = parseInt(initialServiceDuration, 10) || 0;

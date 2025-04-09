@@ -15,6 +15,7 @@ const FrohubCalender = () => {
     const [maxDate, setMaxDate] = useState(null);
     const [unavailableDates, setUnavailableDates] = useState([]);
     const [unavailableTimes, setUnavailableTimes] = useState([]);
+    const [nextAvailableDate, setNextAvailableDate] = useState(null);
     const selectedAddonsRef = useRef([]);
 
     const {
@@ -75,6 +76,7 @@ const FrohubCalender = () => {
             "frohub/get_availibility",
             (response) => {
                 if (response.success) {
+                    setNextAvailableDate(response.data.next_available_date);
                     setAvailabilityData(response.data.availability);
                     setBookingNotice(response.data.booking_notice);
                     setMaxDate(response.data.max_date);
@@ -190,6 +192,7 @@ const FrohubCalender = () => {
                 maxDate={maxDate}
                 unavailableDates={unavailableDates}
                 unavailableTimes={unavailableTimes}
+                nextAvailableDate={nextAvailableDate}
             />
         </div>
     );

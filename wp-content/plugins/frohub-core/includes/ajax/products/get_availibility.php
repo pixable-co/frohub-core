@@ -150,9 +150,21 @@ class GetAvailibility {
         });
 
         sort($available_dates);
-        $next_available_date = count($available_dates) > 0 ? $available_dates[0] : null;
         $booking_notice = get_field('booking_notice', $product_id);
         $booking_notice_days = is_numeric($booking_notice) ? intval($booking_notice) : 0;
+//         $next_available_date = count($available_dates) > 0 ? $available_dates[0] : null;
+
+        $today = new \DateTime();
+        $notice_cutoff_date = $today->modify("+{$booking_notice_days} days")->format('Y-m-d');
+
+        // Filter out dates that fall within the notice period
+        $next_available_date = null;
+        foreach ($available_dates as $date) {
+            if ($date > $notice_cutoff_date) {
+                $next_available_date = $date;
+                break;
+            }
+        }
 
         // Fetch unavailable dates from ACF repeater field
         $unavailable_dates = get_field('unavailable_dates', $partner_id);
