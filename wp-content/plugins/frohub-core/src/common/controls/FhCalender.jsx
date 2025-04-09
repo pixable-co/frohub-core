@@ -214,7 +214,10 @@ const FhCalender = ({ onDateChange, bookingNotice, initialServiceDuration, maxDa
             </div>
 
             <div className="timeslots-section">
-                <h3 className="selected-date">{selectedDate.format("ddd, MMM D YYYY")}</h3>
+                {/*<h3 className="selected-date">{selectedDate.format("ddd, MMM D YYYY")}</h3>*/}
+                <h3 className="selected-date">
+                    {dayjs(selectedDate).isValid() ? selectedDate.format("ddd, MMM D YYYY") : "Getting Available Date..."}
+                </h3>
 
                 {loading ? (
                     <div className="timeslots-grid">
