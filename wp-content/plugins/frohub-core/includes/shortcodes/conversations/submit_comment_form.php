@@ -26,7 +26,7 @@ class SubmitCommentForm {
             <input type="text" id="message" placeholder="Type a message..." />
     
             <!-- Send Button -->
-            <button id="send-button" class="w-btn us-btn-style_1" data-post-id="<?php echo esc_attr(get_field('ecommerce_conversation_post_id', $post_id)); ?>">
+            <button id="send-button" class="w-btn us-btn-style_1" data-post-id="<?php echo  $post_id; ?>">
                 Send
             </button>
         </div>
