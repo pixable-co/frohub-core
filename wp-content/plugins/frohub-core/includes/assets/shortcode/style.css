@@ -81,3 +81,10 @@
 @media only screen and (min-width: 769px) {
     .frohub_card { display: none; }
 }
+
+/*Product Price CSS*/
+
+.fh_service_price {
+    font-size: 24px;
+    font-weight: 400;
+}

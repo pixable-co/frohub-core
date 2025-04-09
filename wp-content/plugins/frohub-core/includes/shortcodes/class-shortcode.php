@@ -1,6 +1,8 @@
 <?php
 namespace FECore;
 
+use FECore\FhServicePrice;
+
 use FECore\DisplayPartnerName;
 
 use FECore\ShowComments;
@@ -163,5 +165,6 @@ class Shortcodes {
 		GetUserAvatar::init();
 		ShowComments::init();
 		DisplayPartnerName::init();
+		FhServicePrice::init();
 	}
 }
