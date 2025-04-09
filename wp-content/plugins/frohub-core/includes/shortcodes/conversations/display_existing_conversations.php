@@ -65,9 +65,9 @@ class DisplayExistingConversations {
             if (is_singular('conversation')) {
                 echo '<div class="chat-window">';
                 echo '<div class="messages-container">';
-                echo do_shortcode('[wbcr_php_snippet id="595" post_id="' . $current_post_id . '"]'); // Message display
+                echo do_shortcode('[display_comments]]'); // Message display
                 echo '<div class="chat-input-wrapper">';
-                echo do_shortcode('[wbcr_php_snippet id="607" post_id="' . $current_post_id . '"]'); // Chat input
+                echo do_shortcode('[submit_comment]]'); // Chat input
                 echo '</div>'; // Close .chat-input-wrapper
                 echo '</div>'; // Close .messages-container
                 echo '</div>'; // Close .chat-window
