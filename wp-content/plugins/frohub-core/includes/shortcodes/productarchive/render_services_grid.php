@@ -18,11 +18,15 @@ class RenderServicesGrid {
         // Fetch URL parameters and sanitize them
         $dropdown   = isset($_GET['dropdown']) ? strtolower(sanitize_text_field($_GET['dropdown'])) : '';
         $category   = isset($_GET['_categories']) ? sanitize_text_field($_GET['_categories']) : '';
+        $tags       = isset($_GET['_tags']) ? sanitize_text_field($_GET['_tags']) : '';
+        $min_price  = isset($_GET['_price_min']) ? floatval($_GET['_price_min']) : '';
+        $max_price  = isset($_GET['_price_max']) ? floatval($_GET['_price_max']) : '';
         $start_date = isset($_GET['start_date']) ? sanitize_text_field($_GET['start_date']) : '';
         $end_date   = isset($_GET['end_date']) ? sanitize_text_field($_GET['end_date']) : '';
         $radius     = isset($_GET['radius']) ? intval($_GET['radius']) : '';
         $lat        = isset($_GET['lat']) ? floatval($_GET['lat']) : '';
         $lng        = isset($_GET['lng']) ? floatval($_GET['lng']) : '';
+
 
         // Convert start_date & end_date to PHP DateTime objects
         $start_date_obj = !empty($start_date) ? new \DateTime($start_date) : null;
