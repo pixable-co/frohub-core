@@ -13,58 +13,79 @@ class SubmitCommentForm {
     }
 
     public function submit_comment_shortcode() {
-        $unique_key = 'submit_comment' . uniqid();
-
+        $post_id = get_the_ID(); // Needed to retrieve the ecommerce conversation post ID
         ob_start();
         ?>
+    
         <!-- Message Input and File Upload -->
-        <div class="submit_comment" data-key="<?php echo esc_attr($unique_key); ?>">
-            <div class="chat-input">
-                <input type="text" id="message" placeholder="Type a message..." />
-                <input type="file" id="comment-image" accept="image/*" />
-                <button id="send-button" data-post-id="<?php echo get_the_ID(); ?>">Send</button>
-            </div>
+        <div class="chat-input">
+            <!-- File input (Visible, restricted to images) -->
+            <input type="file" id="image-upload" accept="image/png, image/jpeg, image/jpg, image/gif, image/webp">
+    
+            <!-- Message input field -->
+            <input type="text" id="message" placeholder="Type a message..." />
+    
+            <!-- Send Button -->
+            <button id="send-button" class="w-btn us-btn-style_1" data-post-id="<?php echo esc_attr(get_field('ecommerce_conversation_post_id', $post_id)); ?>">
+                Send
+            </button>
         </div>
-
+    
         <script>
         jQuery(document).ready(function ($) {
             const sendButton = $('#send-button');
             const messageInput = $('#message');
-            const imageInput = $('#comment-image');
-
+            const imageInput = $('#image-upload');
+    
             sendButton.on('click', function () {
                 const message = messageInput.val().trim();
+                const file = imageInput[0].files[0];
                 const postId = sendButton.data('post-id');
-                const file = imageInput[0].files[0]; 
-
-                if (!message) {
-                    alert("Please enter a message");
+    
+                if (!message && !file) {
+                    alert("Please enter a message or select an image to upload.");
                     return;
                 }
-
-                // Prepare FormData
+    
+                // Validate file (if exists)
+                if (file) {
+                    const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'image/webp'];
+                    const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+    
+                    if (!allowedTypes.includes(file.type)) {
+                        alert("Invalid file type. Please select a JPG, PNG, GIF, or WebP image.");
+                        return;
+                    }
+    
+                    if (file.size > maxSize) {
+                        alert("File size exceeds 5MB. Please select a smaller image.");
+                        return;
+                    }
+                }
+    
+                // Prepare form data
                 const formData = new FormData();
                 formData.append('action', 'submit_comment');
                 formData.append('post_id', postId);
                 formData.append('comment', message);
-                
+    
                 if (file) {
-                    formData.append('comment_image', file);
+                    formData.append('image', file);
                 }
-
-                // AJAX Request
+    
+                // Call the AJAX handler
                 $.ajax({
                     url: '/wp-admin/admin-ajax.php',
                     type: 'POST',
                     data: formData,
                     processData: false,
                     contentType: false,
-                    success: function (response) {
-                        if (response.success) {
+                    success: function (data) {
+                        if (data.success) {
                             alert('Comment submitted successfully!');
-                            location.reload();  // Reload the page
+                            location.reload(); // Reload the page
                         } else {
-                            alert("Error: " + response.data);
+                            alert("Error: " + data.data);
                         }
                     },
                     error: function (jqXHR, textStatus, errorThrown) {
@@ -75,9 +96,10 @@ class SubmitCommentForm {
             });
         });
         </script>
+    
         <?php
-
         return ob_get_clean();
     }
+    
 }
 
