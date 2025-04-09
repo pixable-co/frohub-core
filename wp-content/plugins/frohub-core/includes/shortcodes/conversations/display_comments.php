@@ -44,7 +44,7 @@ class DisplayComments {
         });
         ?>
 
-        <div class="chat-container" id="chat-container" style="overflow-y: auto; max-height: 800px; height: 800px;">
+        <div class="chat-container" id="chat-container" >
         <div class="messages">
         <?php foreach ($allComments as $comment): ?>
         <div class="message <?php echo ($comment['user_id'] == $currentUserId) ? 'user' : 'partner'; ?>">
