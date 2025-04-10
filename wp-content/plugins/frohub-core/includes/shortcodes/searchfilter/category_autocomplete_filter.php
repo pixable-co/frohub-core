@@ -67,3 +67,21 @@ class CategoryAutocompleteFilter {
         return ob_get_clean();
         }
 }
+
+add_action('wp_ajax_get_category_terms', function () {
+    $term = isset($_POST['term']) ? sanitize_text_field($_POST['term']) : '';
+    $categories = get_terms([
+        'taxonomy' => 'category',
+        'name__like' => $term,
+        'hide_empty' => false,
+    ]);
+
+    $results = [];
+    foreach ($categories as $category) {
+        $results[] = ['label' => $category->name, 'value' => $category->term_id];
+    }
+
+    wp_send_json($results);
+});
+
+add_action('wp_ajax_nopriv_get_category_terms', 'wp_ajax_get_category_terms');

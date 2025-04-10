@@ -80,31 +80,36 @@ class RenderSearchFilters {
     }
 
     // Search Button Click Event
-    document.getElementById("search_button").addEventListener("click", function () {
-        let baseUrl = "/book-black-afro-hair-stylist-beauty-appointments";
-        let params = new URLSearchParams();
+    document.getElementById("search_button").addEventListener("click", function (e) {
+        e.preventDefault(); // Prevent default form submission
 
-        if (simpleText && simpleText.value.trim()) params.append("text", simpleText.value.trim());
-        if (dropdown && dropdown.value) params.append("dropdown", dropdown.value);
-        if (category && category.value) params.append("_categories", category.value);
-        if (startDate && startDate.value) params.append("start_date", startDate.value);
-        if (endDate && endDate.value) params.append("end_date", endDate.value);
-        if (radius && radius.value) params.append("radius", radius.value);
+        let params = {
+            action: "filter_search_results",
+            text: simpleText ? simpleText.value.trim() : "",
+            dropdown: dropdown ? dropdown.value : "",
+            category: category ? category.value : "",
+            start_date: startDate ? startDate.value : "",
+            end_date: endDate ? endDate.value : "",
+            radius: radius ? radius.value : "",
+            location_name: locationInput ? locationInput.value.trim() : "",
+            lat: locationInput ? locationInput.getAttribute("data-lat") : "",
+            lng: locationInput ? locationInput.getAttribute("data-lng") : ""
+        };
 
-        if (locationInput) {
-            let locationName = locationInput.value.trim();
-            let lat = locationInput.getAttribute("data-lat");
-            let lng = locationInput.getAttribute("data-lng");
+        console.log("Sending AJAX request with params:", params);
 
-            if (locationName) params.append("location_name", locationName);
-            if (lat) params.append("lat", lat);
-            if (lng) params.append("lng", lng);
-        }
-
-        console.log("Final Redirect URL:", baseUrl + "?" + params.toString());
-
-        // Redirect to search results page with parameters
-        window.location.href = baseUrl + "?" + params.toString();
+        // Send AJAX request
+        fetch("<?php echo admin_url('admin-ajax.php'); ?>", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: new URLSearchParams(params)
+        })
+        .then(response => response.text())
+        .then(data => {
+            console.log("AJAX response:", data);
+            document.querySelector(".results-grid").innerHTML = data; // Update grid content
+        })
+        .catch(error => console.error("AJAX error:", error));
     });
 });
 </script>
