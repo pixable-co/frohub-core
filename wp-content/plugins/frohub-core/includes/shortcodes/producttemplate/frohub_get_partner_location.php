@@ -13,29 +13,47 @@ class FrohubGetPartnerLocation {
     }
 
     public function frohub_get_partner_location_shortcode() {
-        $partner_id = get_field('partner_id');
-
-        if (!$partner_id) {
+        global $post;
+    
+        if ( ! $post instanceof \WP_Post ) {
             return '';
         }
-
-        // If Home based or salong based exists 
-        // Then show postcode
-
-        // Get individual address fields
-        $street     = get_field('street_address', $partner_id);
-        $town       = get_field('town', $partner_id);
-        $county     = get_field('county_district', $partner_id);
-
-        // Build address string (skip empty parts gracefully)
-        $address_parts = array_filter([$street, $town, $county]);
-        $full_address = implode(', ', $address_parts);
-
-        if (!$full_address) {
+    
+        // Check if this is a variation
+        $product = wc_get_product( $post->ID );
+    
+        if ( ! $product || ! $product->is_type('variation') || $product->get_status() !== 'publish' ) {
             return '';
         }
-
-        return '<span class="frohub-partner-location"><i class="fas fa-map-marker-alt"></i> ' . esc_html($full_address) . '</span>';
-
+    
+        // Get the pa_service-type attribute
+        $service_type = $product->get_attribute('pa_service-type');
+    
+        // Check if it's home-based or salon-based (case insensitive)
+        if ( ! in_array( strtolower($service_type), ['home-based', 'salon-based'] ) ) {
+            return '';
+        }
+    
+        // Get partner ID from variation or parent product
+        $partner_id = get_field('partner_id', $product->get_id()); // Try variation-level first
+    
+        if ( ! $partner_id ) {
+            $parent_id = $product->get_parent_id();
+            $partner_id = get_field('partner_id', $parent_id); // Fallback to parent product
+        }
+    
+        if ( ! $partner_id ) {
+            return '';
+        }
+    
+        // Get and return postcode
+        $postcode = get_field('postcode', $partner_id);
+    
+        if ( ! $postcode ) {
+            return '';
+        }
+    
+        return '<span class="frohub-partner-location"><i class="fas fa-map-marker-alt"></i> ' . esc_html($postcode) . '</span>';
     }
+    
 }
