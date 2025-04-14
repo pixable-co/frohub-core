@@ -9,7 +9,7 @@ class CreateReviewPost {
 
     public static function init() {
         $self = new self();
-        add_action('gform_after_submission_5', array($self, 'create_review_post'), 10, 2);
+        add_action('gform_after_submission_7', array($self, 'create_review_post'), 10, 2);
     }
 
     public function create_review_post($entry, $form) {
