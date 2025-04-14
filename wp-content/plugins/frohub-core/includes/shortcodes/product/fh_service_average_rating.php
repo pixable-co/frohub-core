@@ -12,12 +12,8 @@ class FhServiceAverageRating {
         add_shortcode( 'fh_service_average_rating', array($self, 'fh_service_average_rating_shortcode') );
     }
 
-    public function fh_service_average_rating_shortcode($atts = []) {
-        $atts = shortcode_atts([
-            'product_id' => get_the_ID(),
-        ], $atts);
-    
-        $product_id = intval($atts['product_id']);
+    public function fh_service_average_rating_shortcode() {
+        $product_id = get_the_ID();
     
         if (!$product_id) {
             return '';
@@ -46,9 +42,12 @@ class FhServiceAverageRating {
             }
         }
     
-        $average_rating = ($count > 0) ? number_format($total_rating / $count, 1) : '0.0';
+        if ($count === 0) {
+            return '';
+        }
     
-        // Output with icon
+        $average_rating = number_format($total_rating / $count, 1);
+    
         return '<div class="fh_service_average_rating"><i class="fas fa-star"></i> ' . esc_html($average_rating) . '</div>';
     }
     
