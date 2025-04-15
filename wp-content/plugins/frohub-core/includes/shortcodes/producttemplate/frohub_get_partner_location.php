@@ -48,11 +48,15 @@ class FrohubGetPartnerLocation {
         }
 
         $postcode = get_field('postcode', $partner_id);
+        $city = get_field('city', $partner_id);
 
-        if (!$postcode) {
+        if (!$postcode && !$city) {
             return '';
         }
 
-        return '<span class="frohub-partner-location"><i class="fas fa-map-marker-alt"></i> ' . esc_html($postcode) . '</span>';
+        $location_parts = array_filter([$city, $postcode]); // Ensures no extra comma if one is missing
+        $location_string = implode(', ', $location_parts);
+
+        return '<span class="frohub-partner-location"><i class="fas fa-map-marker-alt"></i> ' . esc_html($location_string) . '</span>';
     }
 }
