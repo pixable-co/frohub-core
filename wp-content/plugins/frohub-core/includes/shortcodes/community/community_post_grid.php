@@ -14,7 +14,7 @@ class CommunityPostGrid {
 
     public function community_post_grid_shortcode() {
         $args = array(
-            'post_type'   => array('tutorial', 'post', 'q-a'),
+            'post_type'   => array('post'),
             'numberposts' => 9,
             'orderby'     => 'date',
             'order'       => 'ASC',
