@@ -214,20 +214,23 @@ const FhCalender = ({ onDateChange, bookingNotice, initialServiceDuration, maxDa
             </div>
 
             <div className="timeslots-section">
-                {/*<h3 className="selected-date">{selectedDate.format("ddd, MMM D YYYY")}</h3>*/}
-                <h3 className="selected-date">
-                    {dayjs(selectedDate).isValid() ? selectedDate.format("ddd, MMM D YYYY") : "Getting Available Date..."}
-                </h3>
 
                 {loading ? (
-                    <div className="timeslots-grid">
-                        {[...Array(4)].map((_, index) => (
-                            <Skeleton.Button key={index} active size="large" block />
-                        ))}
-                    </div>
+                    <>
+                        <h3 className="selected-date">
+                            {dayjs(selectedDate).isValid() ? selectedDate.format("ddd, MMM D YYYY") : "Getting Available Date..."}
+                        </h3>
+                        <div className="timeslots-grid">
+                            {[...Array(4)].map((_, index) => (
+                                <Skeleton.Button key={index} active size="large" block />
+                            ))}
+                        </div>
+                    </>
                 ) : availableTimeSlots.length === 0 ? (
-                    <p className="no-slots-message">No available time slots for this day.</p>
+                    <h3 className="selected-date">Sorry, no available time for this service</h3>
                 ) : (
+                    <>
+                    <h3 className="selected-date">{selectedDate.format("ddd, MMM D YYYY")}</h3>
                     <div className="timeslots-grid scrollable-timeslots">
                         {availableTimeSlots.map((slot, index) => (
                             <button
@@ -240,6 +243,7 @@ const FhCalender = ({ onDateChange, bookingNotice, initialServiceDuration, maxDa
                             </button>
                         ))}
                     </div>
+                    </>
                 )}
                 <p className="timezone-info">All times are in London (GMT +01:00)</p>
             </div>
