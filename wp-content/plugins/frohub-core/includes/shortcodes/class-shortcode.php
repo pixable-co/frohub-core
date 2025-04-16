@@ -91,16 +91,7 @@ use FECore\DisplayComments;
 use FECore\DisplayExistingConversations;
 use FECore\SubmitCommentForm;
 
-// Header shortcodes
-use FECore\RenderSearchFilters;
-use FECore\CategoryAutocompleteFilter;
-use FECore\ServicetypeFilter;
-use FECore\DaterangeFilter;
-use FECore\RadiusFilter;
-use FECore\LocationFilter;
 
-// Product Archive Page
-use FECore\RenderServicesGrid;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -126,13 +117,6 @@ class Shortcodes {
 		DisplayExistingConversations::init();
 		RenderHeaderFilters::init();
 		SubmitCommentForm::init();
-		RenderServicesGrid::init();
-		RenderSearchFilters::init();
-		ServicetypeFilter::init();
-		CategoryAutocompleteFilter::init();
-		DaterangeFilter::init();
-		RadiusFilter::init();
-		LocationFilter::init();
 		RequestBookButton::init();
 		FhServiceAverageRating::init();
 		ReviewAuthor::init();
