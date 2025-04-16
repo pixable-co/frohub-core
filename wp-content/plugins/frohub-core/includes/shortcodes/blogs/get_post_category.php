@@ -23,7 +23,7 @@ class GetPostCategory {
 
         if ($categories) {
             foreach ($categories as $category) {
-                return '<a href="'.$homepage_url.'/black-hair-beauty-blogs/?filter_category='. $category->slug .'" style="color:var(--color-content-text)">' . $category->name . '</span>';
+                return '<a href="'.$homepage_url.'/black-hair-beauty-blogs/?filter_category='. $category->slug .'" style="color:var(--color-content-text)">' . $category->name . '</span> </a>';
             }
         } else {
             return '';
