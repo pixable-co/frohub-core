@@ -158,7 +158,7 @@ class FrohubReviewSummary
 
                 .frohub-review-summary .meta-label i.fas.fa-star {
                     margin-left: 0.25rem;
-                    color: #f5a623;
+                    color: #333333;
                     /* gold star */
                 }
             </style>
