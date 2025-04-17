@@ -64,13 +64,14 @@ class FrohubReviewSummary
                 </div>
                 <div class="stars">
                     <?php
+                    // show one <i> per whole star only
                     $full = floor($avg_overall);
-                    $half = ($avg_overall - $full) >= .5 ? 1 : 0;
-                    for ($i = 0; $i < $full; $i++)   echo '★';
-                    if ($half)                       echo '★';
-                    for ($i = $full + $half; $i < 5; $i++) echo '☆';
+                    for ($i = 0; $i < $full; $i++) {
+                        echo '<i class="fas fa-star"></i>';
+                    }
                     ?>
                 </div>
+
                 <div class="count"><?php echo esc_html($count); ?> reviews</div>
             </div>
 
