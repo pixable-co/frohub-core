@@ -117,7 +117,7 @@ class FrohubReviewSummary
 
                 .frohub-review-summary .overall .stars {
                     font-size: 1.25rem;
-                    color: #f5a623;
+                    color: #333333;
                     line-height: 1;
                     margin-bottom: .25rem;
                 }
