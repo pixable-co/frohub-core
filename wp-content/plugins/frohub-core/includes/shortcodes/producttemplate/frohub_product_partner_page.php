@@ -31,11 +31,12 @@ class FrohubProductPartnerPage
 
         <div id="frohub-product-results">
             <?php echo $this->render_products(); ?>
+            <div id="frohub-loading-spinner">
+                <div class="spinner"></div>
+                <div class="spinner-text">Loading…</div>
+            </div>
         </div>
-        <div id="frohub-loading-spinner">
-            <div class="spinner"></div>
-            <div class="spinner-text">Loading…</div>
-        </div>
+
 
         <script>
             document.addEventListener('DOMContentLoaded', function() {
