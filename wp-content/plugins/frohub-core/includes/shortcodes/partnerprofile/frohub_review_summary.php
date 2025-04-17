@@ -79,24 +79,25 @@ class FrohubReviewSummary
 
             <div class="metrics">
                 <div class="metric">
-                    <div class="circle"></div>
+                    <i class="fas fa-shield-alt fa-2x metric-icon"></i>
                     <div class="meta-label">
                         Reliability <i class="fas fa-star"></i> <?php echo esc_html($avg_reliability); ?>
                     </div>
                 </div>
                 <div class="metric">
-                    <div class="circle"></div>
+                    <i class="fas fa-tools fa-2x metric-icon"></i>
                     <div class="meta-label">
                         Skill <i class="fas fa-star"></i> <?php echo esc_html($avg_skill); ?>
                     </div>
                 </div>
                 <div class="metric">
-                    <div class="circle"></div>
+                    <i class="fas fa-user-tie fa-2x metric-icon"></i>
                     <div class="meta-label">
                         Professionalism <i class="fas fa-star"></i> <?php echo esc_html($avg_professionalism); ?>
                     </div>
                 </div>
             </div>
+
 
 
             <style>
@@ -132,30 +133,33 @@ class FrohubReviewSummary
                     /* keep circles & text top‑aligned */
                 }
 
+                .frohub-review-summary .metrics {
+                    display: flex;
+                    gap: 2rem;
+                    align-items: center;
+                    /* icons and labels align nicely */
+                }
+
                 .frohub-review-summary .metric {
                     display: flex;
                     align-items: center;
-                    /* circle + label on baseline */
                     gap: 0.5rem;
                 }
 
-                .frohub-review-summary .metric .circle {
-                    flex-shrink: 0;
-                    width: 40px;
-                    height: 40px;
-                    background: #ddd;
-                    border-radius: 50%;
+                .frohub-review-summary .metric-icon {
+                    color: #0057e7;
+                    /* dark blue, adjust as needed */
                 }
 
-                .frohub-review-summary .metric .meta-label {
-                    font-size: .95rem;
+                .frohub-review-summary .meta-label {
+                    font-size: 0.95rem;
                     color: #333;
                 }
 
-                .frohub-review-summary .metric .meta-label i.fas.fa-star {
-                    margin-left: .25rem;
+                .frohub-review-summary .meta-label i.fas.fa-star {
+                    margin-left: 0.25rem;
                     color: #f5a623;
-                    /* gold star color */
+                    /* gold star */
                 }
             </style>
     <?php
