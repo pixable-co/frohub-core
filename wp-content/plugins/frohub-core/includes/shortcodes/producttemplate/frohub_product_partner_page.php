@@ -74,7 +74,7 @@ class FrohubProductPartnerPage
                             spinner.style.display = 'none';
 
                             // bind pagination clicks
-                            resultsWrap.querySelectorAll('.frohub-page-number').forEach(el => {
+                            resultsWrap.querySelectorAll('.frohub-page-number:not(.current), .frohub-page-prev:not(.disabled), .frohub-page-next:not(.disabled)').forEach(el => {
                                 el.addEventListener('click', () => {
                                     const p = parseInt(el.dataset.page, 10);
                                     if (p && p !== currentPage) {
@@ -83,6 +83,7 @@ class FrohubProductPartnerPage
                                     }
                                 });
                             });
+
                         });
                 }
 
