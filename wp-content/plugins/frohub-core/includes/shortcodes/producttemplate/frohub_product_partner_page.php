@@ -11,8 +11,8 @@ class FrohubProductPartnerPage {
         $self = new self();
 
         // Shortcode & AJAX hooks
-        add_shortcode( 'frohub_product_partner_page',       [ $self, 'frohub_product_partner_page_shortcode' ] );
-        add_action(   'wp_ajax_frohub_filter_products',     [ $self, 'ajax_filter_products' ] );
+        add_shortcode( 'frohub_product_partner_page',         [ $self, 'frohub_product_partner_page_shortcode' ] );
+        add_action(   'wp_ajax_frohub_filter_products',       [ $self, 'ajax_filter_products' ] );
         add_action(   'wp_ajax_nopriv_frohub_filter_products', [ $self, 'ajax_filter_products' ] );
         add_action(   'wp_ajax_frohub_get_subcategories',       [ $self, 'ajax_get_subcategories' ] );
         add_action(   'wp_ajax_nopriv_frohub_get_subcategories', [ $self, 'ajax_get_subcategories' ] );
@@ -49,13 +49,12 @@ class FrohubProductPartnerPage {
           const spinner       = document.getElementById('frohub-loading-spinner');
           const initialHTML   = <?php echo wp_json_encode( $this->render_products() ); ?>;
 
-          // track exactly one parent + one sub
           let parentSlug = null, childSlug = null;
 
-          // if markup pre‑selected a parent, pick it up:
-          const preSelParent = parentList.querySelector('.frohub-category-item.selected[data-type="parent"]');
-          if (preSelParent) {
-            parentSlug = preSelParent.dataset.slug;
+          // If someone pre‑marked a parent with `.selected`, pick it up:
+          const pre = parentList.querySelector('.frohub-category-item.selected[data-type="parent"]');
+          if (pre) {
+            parentSlug = pre.dataset.slug;
           }
 
           function renderActiveFilters() {
@@ -73,28 +72,26 @@ class FrohubProductPartnerPage {
             html += '<button id="frohub-clear-filters">Clear</button>';
             activeFilters.innerHTML = html;
 
-            // remove individual
             activeFilters.querySelectorAll('.filter-pill').forEach(p => {
               p.addEventListener('click', () => {
                 const slug = p.dataset.slug;
                 if (slug === childSlug) {
                   childSlug = null;
-                  childList.querySelectorAll('.selected').forEach(i => i.classList.remove('selected'));
+                  childList.querySelectorAll('.selected').forEach(i=>i.classList.remove('selected'));
                 } else if (slug === parentSlug) {
                   parentSlug = null;
-                  parentList.querySelectorAll('.selected').forEach(i => i.classList.remove('selected'));
+                  parentList.querySelectorAll('.selected').forEach(i=>i.classList.remove('selected'));
                   childList.innerHTML = '';
                 }
                 filterProducts();
               });
             });
 
-            // clear all
             document.getElementById('frohub-clear-filters')
               .addEventListener('click', () => {
                 parentSlug = null;
                 childSlug  = null;
-                parentList.querySelectorAll('.selected').forEach(i => i.classList.remove('selected'));
+                parentList.querySelectorAll('.selected').forEach(i=>i.classList.remove('selected'));
                 childList.innerHTML = '';
                 filterProducts();
               });
@@ -102,13 +99,10 @@ class FrohubProductPartnerPage {
 
           function filterProducts() {
             renderActiveFilters();
-
-            // no parent → unfiltered
             if (!parentSlug) {
               results.innerHTML = initialHTML;
               return;
             }
-
             spinner.style.display = 'block';
             results.style.opacity = 0.5;
 
@@ -128,51 +122,50 @@ class FrohubProductPartnerPage {
           }
 
           function loadSubcategoriesFor(el) {
-            const subData = new URLSearchParams({
-              action:    'frohub_get_subcategories',
-              parent_id: el.dataset.termId,
-              partner_id
-            });
-            fetch(adminAjax, { method:'POST', body:subData })
-              .then(r => r.text())
-              .then(html => {
-                childList.innerHTML = html;
-                // attach single‑select behavior
-                childList.querySelectorAll('.frohub-category-item').forEach(sub => {
-                  sub.addEventListener('click', () => {
-                    const s = sub.dataset.slug;
-                    if (childSlug === s) {
-                      childSlug = null;
-                      sub.classList.remove('selected');
-                    } else {
-                      childList.querySelectorAll('.selected').forEach(i => i.classList.remove('selected'));
-                      sub.classList.add('selected');
-                      childSlug = s;
-                    }
-                    filterProducts();
-                  });
+            fetch(adminAjax, {
+              method:'POST',
+              body:new URLSearchParams({
+                action:    'frohub_get_subcategories',
+                parent_id: el.dataset.termId,
+                partner_id
+              })
+            })
+            .then(r => r.text())
+            .then(html => {
+              childList.innerHTML = html;
+              childList.querySelectorAll('.frohub-category-item').forEach(sub => {
+                sub.addEventListener('click', () => {
+                  const s = sub.dataset.slug;
+                  if (childSlug === s) {
+                    childSlug = null;
+                    sub.classList.remove('selected');
+                  } else {
+                    childList.querySelectorAll('.selected')
+                             .forEach(i=>i.classList.remove('selected'));
+                    sub.classList.add('selected');
+                    childSlug = s;
+                  }
+                  filterProducts();
                 });
               });
+            });
           }
 
-          // parent clicks
-          parentList.addEventListener('click', e => {
+          parentList.addEventListener('click', function(e) {
             const el = e.target.closest('.frohub-category-item[data-type="parent"]');
             if (!el) return;
-
             const slug = el.dataset.slug;
+
             if (parentSlug === slug) {
-              // deselect
               parentSlug = null;
               childSlug  = null;
-              parentList.querySelectorAll('.selected').forEach(i => i.classList.remove('selected'));
+              parentList.querySelectorAll('.selected').forEach(i=>i.classList.remove('selected'));
               childList.innerHTML = '';
               filterProducts();
               return;
             }
 
-            // select new parent
-            parentList.querySelectorAll('.selected').forEach(i => i.classList.remove('selected'));
+            parentList.querySelectorAll('.selected').forEach(i=>i.classList.remove('selected'));
             el.classList.add('selected');
             parentSlug = slug;
             childSlug  = null;
@@ -180,39 +173,42 @@ class FrohubProductPartnerPage {
             loadSubcategoriesFor(el);
           });
 
-          // initial
+          // initial load
           filterProducts();
-          if (preSelParent) {
-            loadSubcategoriesFor(preSelParent);
-          }
+          if (pre) loadSubcategoriesFor(pre);
         });
         </script>
 
         <style>
-        .frohub-category-list { display: flex; gap: .5rem; padding: 0; margin: 0; flex-wrap: wrap; }
+        .frohub-category-list {
+          display: flex; gap: .5rem; padding: 0; margin: 0; flex-wrap: wrap;
+        }
         .frohub-category-item {
           padding: .4em .8em; border-radius: 20px; border: 1px solid #ccc;
           cursor: pointer; transition: background-color .2s, border-color .2s;
         }
-        .frohub-category-item:hover { background-color: #f5f5f5; }
+        .frohub-category-item:hover {
+          background-color: #f5f5f5;
+        }
         .frohub-category-item.selected {
           background-color: #0057e7; border-color: #0057e7; color: #fff;
         }
-        #frohub-loading-spinner { display: none; position: relative; height: 50px; margin-top: 1rem; }
+        #frohub-loading-spinner {
+          display: none; position: relative; height: 50px; margin-top: 1rem;
+        }
         #frohub-loading-spinner .spinner {
-          box-sizing: border-box; position: absolute; top:50%; left:50%;
-          width:30px; height:30px; margin:-15px 0 0 -15px;
-          border:4px solid #f3f3f3; border-top:4px solid #0057e7; border-radius:50%;
-          animation:spin 1s linear infinite;
+          position: absolute; top:50%; left:50%; width:30px; height:30px;
+          margin:-15px 0 0 -15px; border:4px solid #f3f3f3;
+          border-top:4px solid #0057e7; border-radius:50%; animation:spin 1s linear infinite;
         }
         @keyframes spin { to { transform:rotate(360deg); } }
         .filter-pill {
-          display:inline-block; background:#eee; border-radius:12px; padding:2px 8px;
-          margin-right:4px; cursor:pointer;
+          display:inline-block; background:#eee; padding:2px 8px; margin-right:4px;
+          border-radius:12px; cursor:pointer;
         }
         #frohub-clear-filters {
-          background:none; border:none; color:#0057e7; cursor:pointer;
-          text-decoration:underline; margin-left:.5rem;
+          background:none; border:none; color:#0057e7; text-decoration:underline;
+          cursor:pointer; margin-left:.5rem;
         }
         </style>
         <?php
@@ -243,7 +239,7 @@ class FrohubProductPartnerPage {
             'hide_empty' => false,
             'parent'     => 0,
         ]);
-        if ( ! $terms || is_wp_error( $terms ) ) {
+        if ( empty( $terms ) || is_wp_error( $terms ) ) {
             return '';
         }
         $out = '';
@@ -252,16 +248,25 @@ class FrohubProductPartnerPage {
                 'post_type'      => 'product',
                 'fields'         => 'ids',
                 'posts_per_page' => 1,
-                'meta_query'     => [[ 'key'=>'partner_id','value'=>$partner_id,'compare'=>'=' ]],
-                'tax_query'      => [[ 'taxonomy'=>'product_cat','field'=>'term_id','terms'=>$term->term_id,'include_children'=>true ]],
+                'meta_query'     => [[
+                    'key'     => 'partner_id',
+                    'value'   => $partner_id,
+                    'compare' => '=',
+                ]],
+                'tax_query'      => [[
+                    'taxonomy'         => 'product_cat',
+                    'field'            => 'term_id',
+                    'terms'            => $term->term_id,
+                    'include_children' => true,
+                ]],
             ]) )->have_posts();
+
             if ( $has ) {
                 $out .= sprintf(
-                    '<li class="frohub-category-item%s" data-type="parent" data-term-id="%d" data-slug="%s">%s</li>',
-                    ($term->term_id===<?php echo get_the_ID();?>? ' selected':''), // pre‑select if desired
-                    esc_attr($term->term_id),
-                    esc_attr($term->slug),
-                    esc_html($term->name)
+                    '<li class="frohub-category-item" data-type="parent" data-term-id="%d" data-slug="%s">%s</li>',
+                    esc_attr( $term->term_id ),
+                    esc_attr( $term->slug ),
+                    esc_html( $term->name )
                 );
             }
         }
@@ -277,7 +282,7 @@ class FrohubProductPartnerPage {
             'hide_empty' => false,
             'parent'     => $parent_id,
         ]);
-        if ( ! $terms || is_wp_error( $terms ) ) {
+        if ( empty( $terms ) || is_wp_error( $terms ) ) {
             return '';
         }
         $out = '';
@@ -286,9 +291,19 @@ class FrohubProductPartnerPage {
                 'post_type'      => 'product',
                 'fields'         => 'ids',
                 'posts_per_page' => 1,
-                'meta_query'     => [[ 'key'=>'partner_id','value'=>$partner_id,'compare'=>'=' ]],
-                'tax_query'      => [[ 'taxonomy'=>'product_cat','field'=>'term_id','terms'=>$term->term_id,'include_children'=>false ]],
+                'meta_query'     => [[
+                    'key'     => 'partner_id',
+                    'value'   => $partner_id,
+                    'compare' => '=',
+                ]],
+                'tax_query'      => [[
+                    'taxonomy'         => 'product_cat',
+                    'field'            => 'term_id',
+                    'terms'            => $term->term_id,
+                    'include_children' => false,
+                ]],
             ]) )->have_posts();
+
             if ( $has ) {
                 $out .= sprintf(
                     '<li class="frohub-category-item" data-type="subcat" data-slug="%s">%s</li>',
@@ -323,7 +338,11 @@ class FrohubProductPartnerPage {
         $args = [
             'post_type'  => 'product',
             'fields'     => 'ids',
-            'meta_query' => [[ 'key'=>'partner_id','value'=>$partner_id,'compare'=>'=' ]],
+            'meta_query' => [[
+                'key'     => 'partner_id',
+                'value'   => $partner_id,
+                'compare' => '=',
+            ]],
         ];
         if ( ! empty( $tax_query ) ) {
             $args['tax_query'] = $tax_query;
