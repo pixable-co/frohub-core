@@ -125,67 +125,8 @@ class FrohubProductPartnerPage {
         </script>
 
         <style>
-        /* PRODUCTS GRID CONTAINER AS POSITIONING CONTEXT */
-        #frohub-product-results {
-          position: relative;
-        }
 
-        /* OVERLAY SPINNER */
-        #frohub-loading-spinner {
-          display: none;               /* toggled in JS */
-          position: absolute;
-          top: 0; left: 0; 
-          width: 100%; height: 100%;
-          background: rgba(255,255,255,0.7);
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          z-index: 10;
-        }
-        #frohub-loading-spinner .spinner {
-          box-sizing: border-box;
-          width: 36px; height: 36px;
-          border: 4px solid #f3f3f3;
-          border-top: 4px solid #0057e7;
-          border-radius: 50%;
-          animation: spin 1s linear infinite;
-        }
-        #frohub-loading-spinner .spinner-text {
-          margin-top: 0.5em;
-          font-size: 1rem;
-          color: #001F54;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
-
-        /* CATEGORY STYLES (unchanged) */
-        .frohub-category-list {
-          display: flex;
-          gap: 1rem;
-          list-style: none;
-          padding: 0;
-          margin: 0 0 1rem;
-          flex-wrap: wrap;
-        }
-        .frohub-category-item {
-          cursor: pointer;
-          padding: .25rem 0;
-          font-weight: 500;
-          color: #001F54;
-          position: relative;
-        }
-        .frohub-category-item.selected::after {
-          content: "";
-          position: absolute;
-          bottom: -2px;
-          left: 0;
-          width: 100%;
-          height: 2px;
-          background-color: #001F54;
-        }
-        .frohub-category-item:hover:not(.selected) {
-          text-decoration: underline;
-        }
+    
         </style>
         <?php
         return ob_get_clean();
