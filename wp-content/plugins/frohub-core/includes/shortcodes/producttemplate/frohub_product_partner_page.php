@@ -183,18 +183,46 @@ class FrohubProductPartnerPage {
 
     // ------------------------------------------------------
     // Render only the “parent” categories (parent = 1)
-    private function render_parent_categories() {
-        $terms = get_terms([
-            'taxonomy'   => 'product_cat',
-            'hide_empty' => false,
-            'parent'     => 0,
-        ]);
-        if ( empty( $terms ) || is_wp_error( $terms ) ) {
-            return '';
-        }
+// In class FrohubProductPartnerPage…
 
-        $output = '<ul class="frohub-category-list">';
-        foreach ( $terms as $term ) {
+/**
+ * Render only “true” top‐level categories that actually have products
+ * for this partner (in them or any of their descendants).
+ */
+private function render_parent_categories() {
+    $partner_id = get_the_ID();
+
+    // get all top‑level categories
+    $parents = get_terms([
+        'taxonomy'   => 'product_cat',
+        'hide_empty' => false,
+        'parent'     => 0,
+    ]);
+    if ( empty( $parents ) || is_wp_error( $parents ) ) {
+        return '';
+    }
+
+    $output = '<ul class="frohub-category-list">';
+    foreach ( $parents as $term ) {
+        // check for products in this term or any child term
+        $has_products = ( new \WP_Query([
+            'post_type'      => 'product',
+            'fields'         => 'ids',
+            'posts_per_page' => 1,
+            'meta_query'     => [[
+                'key'     => 'partner_id',
+                'value'   => $partner_id,
+                'compare' => '=',
+            ]],
+            'tax_query'      => [[
+                'taxonomy'         => 'product_cat',
+                'field'            => 'term_id',
+                'terms'            => $term->term_id,
+                'include_children' => true,   // count descendants
+            ]],
+        ]) )->have_posts();
+
+        if ( $has_products ) {
             $output .= sprintf(
                 '<li class="frohub-category-item" data-type="parent" data-term-id="%d" data-slug="%s">%s</li>',
                 esc_attr( $term->term_id ),
@@ -202,33 +230,63 @@ class FrohubProductPartnerPage {
                 esc_html( $term->name )
             );
         }
-        $output .= '</ul>';
-        return $output;
+    }
+    $output .= '</ul>';
+    return $output;
+}
+
+/**
+ * Render only those sub‑categories (direct children of $parent_id)
+ * that actually have products for this partner.
+ */
+private function render_subcategories( $parent_id ) {
+    $partner_id = get_the_ID();
+
+    // get immediate child terms
+    $children = get_terms([
+        'taxonomy'   => 'product_cat',
+        'hide_empty' => false,
+        'parent'     => $parent_id,
+    ]);
+    if ( empty( $children ) || is_wp_error( $children ) ) {
+        return '';
     }
 
-    // Render its immediate children (sub‑categories) plus a Back button
-    private function render_subcategories( $parent_id ) {
-        $terms = get_terms([
-            'taxonomy'   => 'product_cat',
-            'hide_empty' => false,
-            'parent'     => $parent_id,
-        ]);
-        if ( empty( $terms ) || is_wp_error( $terms ) ) {
-            return '';
-        }
+    $output  = '<ul class="frohub-category-list">';
+    $output .= '<li class="frohub-category-item back" data-type="back">Back</li>';
 
-        $output  = '<ul class="frohub-category-list">';
-        $output .= '<li class="frohub-category-item back" data-type="back">Back</li>';
-        foreach ( $terms as $term ) {
+    foreach ( $children as $term ) {
+        // check only this term (no grandchildren)
+        $has_products = ( new \WP_Query([
+            'post_type'      => 'product',
+            'fields'         => 'ids',
+            'posts_per_page' => 1,
+            'meta_query'     => [[
+                'key'     => 'partner_id',
+                'value'   => $partner_id,
+                'compare' => '=',
+            ]],
+            'tax_query'      => [[
+                'taxonomy'         => 'product_cat',
+                'field'            => 'term_id',
+                'terms'            => $term->term_id,
+                'include_children' => false,
+            ]],
+        ]) )->have_posts();
+
+        if ( $has_products ) {
             $output .= sprintf(
                 '<li class="frohub-category-item" data-type="subcat" data-slug="%s">%s</li>',
                 esc_attr( $term->slug ),
                 esc_html( $term->name )
             );
         }
-        $output .= '</ul>';
-        return $output;
     }
+
+    $output .= '</ul>';
+    return $output;
+}
+
 
     // Product‐grid rendering (unchanged)
     private function render_products( $partner_id = null, $filter_cat = '' ) {
