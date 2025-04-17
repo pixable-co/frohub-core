@@ -300,7 +300,7 @@ class FrohubProductPartnerPage {
         $q           = new \WP_Query( $args );
         $ids         = implode( ',', $q->posts );
         $grid        = do_shortcode( sprintf(
-            '[us_grid post_type="ids" ids="%s" columns="4" el_class="partner_profile_product_grid"]',
+            '[us_grid post_type="ids" ids="%s" items_layout="28802" columns="4" el_class="partner_profile_product_grid"]',
             esc_attr( $ids )
         ));
         $total_pages = $q->max_num_pages;
