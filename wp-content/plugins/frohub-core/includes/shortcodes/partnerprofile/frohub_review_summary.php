@@ -85,7 +85,7 @@ class FrohubReviewSummary
                     </div>
                 </div>
                 <div class="metric">
-                    <i class="fas fa-tools fa-2x metric-icon"></i>
+                    <i class="fas fa-cut fa-2x metric-icon"></i>
                     <div class="meta-label">
                         Skill <i class="fas fa-star"></i> <?php echo esc_html($avg_skill); ?>
                     </div>
@@ -142,13 +142,13 @@ class FrohubReviewSummary
 
                 .frohub-review-summary .metric {
                     display: flex;
-                    align-items: center;
+                    align-items: flex-start;
                     gap: 0.5rem;
+                    flex-direction: column;
                 }
 
                 .frohub-review-summary .metric-icon {
-                    color: #0057e7;
-                    /* dark blue, adjust as needed */
+                    color: var(--color-alt-content-primary);
                 }
 
                 .frohub-review-summary .meta-label {
