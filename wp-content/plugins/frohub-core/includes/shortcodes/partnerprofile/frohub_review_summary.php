@@ -51,26 +51,23 @@ class FrohubReviewSummary
             $sum_professionalism += floatval(get_field('professionalism',    $rid) ?: 0);
         }
 
-        // Compute one‑decimal averages
-        $avg_overall        = round($sum_overall        / $count, 1);
-        $avg_reliability    = round($sum_reliability    / $count, 1);
-        $avg_skill          = round($sum_skill          / $count, 1);
+        $avg_overall         = round($sum_overall         / $count, 1);
+        $avg_reliability     = round($sum_reliability     / $count, 1);
+        $avg_skill           = round($sum_skill           / $count, 1);
         $avg_professionalism = round($sum_professionalism / $count, 1);
 
-        // Build output
         ob_start(); ?>
         <div class="frohub-review-summary">
             <div class="overall">
                 <div class="label">
-                    <strong>Overall Rating</strong> (<?php echo esc_html($avg_overall); ?>)
+                    <strong>Overall Rating</strong> (<?php echo esc_html(number_format($avg_overall, 1)); ?>)
                 </div>
                 <div class="stars">
                     <?php
-                    // render 5 stars with partial logic
                     $full = floor($avg_overall);
                     $half = ($avg_overall - $full) >= .5 ? 1 : 0;
-                    for ($i = 0; $i < $full; $i++) echo '★';
-                    if ($half) echo '★';
+                    for ($i = 0; $i < $full; $i++)   echo '★';
+                    if ($half)                       echo '★';
                     for ($i = $full + $half; $i < 5; $i++) echo '☆';
                     ?>
                 </div>
@@ -81,19 +78,22 @@ class FrohubReviewSummary
                 <div class="metric">
                     <i class="fas fa-shield-alt fa-2x metric-icon"></i>
                     <div class="meta-label">
-                        Reliability <i class="fas fa-star"></i> <?php echo esc_html($avg_reliability); ?>
+                        Reliability <i class="fas fa-star"></i>
+                        <?php echo esc_html(number_format($avg_reliability, 1)); ?>
                     </div>
                 </div>
                 <div class="metric">
                     <i class="fas fa-cut fa-2x metric-icon"></i>
                     <div class="meta-label">
-                        Skill <i class="fas fa-star"></i> <?php echo esc_html($avg_skill); ?>
+                        Skill <i class="fas fa-star"></i>
+                        <?php echo esc_html(number_format($avg_skill, 1)); ?>
                     </div>
                 </div>
                 <div class="metric">
                     <i class="fas fa-user-tie fa-2x metric-icon"></i>
                     <div class="meta-label">
-                        Professionalism <i class="fas fa-star"></i> <?php echo esc_html($avg_professionalism); ?>
+                        Professionalism <i class="fas fa-star"></i>
+                        <?php echo esc_html(number_format($avg_professionalism, 1)); ?>
                     </div>
                 </div>
             </div>
