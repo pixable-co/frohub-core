@@ -71,7 +71,7 @@ class FrohubRenderReviews
       /* container for spinner */
       #frohub-review-results {
         position: relative;
-        padding: 5rem 0 !important;
+        padding: 2rem 0 !important;
       }
 
       #frohub-review-spinner {
