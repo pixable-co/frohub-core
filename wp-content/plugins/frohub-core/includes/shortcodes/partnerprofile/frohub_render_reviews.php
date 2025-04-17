@@ -144,7 +144,7 @@ class FrohubRenderReviews {
         // Render grid
         $ids  = implode( ',', $q->posts );
         $grid = do_shortcode( sprintf(
-            '[us_grid post_type="ids" ids="%s" columns="4" items_layout="28803" el_class="partner_review_grid"]',
+            '[us_grid post_type="ids" ids="%s" columns="2" items_layout="28803" el_class="partner_review_grid"]',
             esc_attr($ids)
         ));
 
