@@ -33,8 +33,8 @@ class FrohubProductPartnerPage
             <?php echo $this->render_products(); ?>
         </div>
         <div id="frohub-loading-spinner">
-            <span> Loading...</span>
             <div class="spinner"></div>
+            <div class="spinner-text">Loading…</div>
         </div>
 
         <script>
