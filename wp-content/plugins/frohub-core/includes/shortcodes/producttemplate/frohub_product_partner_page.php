@@ -187,7 +187,7 @@ class FrohubProductPartnerPage {
         $terms = get_terms([
             'taxonomy'   => 'product_cat',
             'hide_empty' => false,
-            'parent'     => 1,
+            'parent'     => 0,
         ]);
         if ( empty( $terms ) || is_wp_error( $terms ) ) {
             return '';
