@@ -81,6 +81,7 @@ use FECore\FrohubGetPartnerServiceTypes;
 use FECore\FrohubGetFaqs;
 use FECore\FrohubRenderReviews;
 use FECore\FrohubGetPolicies;
+use FECore\FrohubReviewSummary;
 
 // Tutorials Shortcodes
 use FECore\GetTutorialsCategory;
@@ -153,5 +154,6 @@ class Shortcodes {
 		FhServicePrice::init();
 		FrohubRenderReviews::init();
 		FrohubGetPolicies::init();
+		FrohubReviewSummary::init();
 	}
 }
