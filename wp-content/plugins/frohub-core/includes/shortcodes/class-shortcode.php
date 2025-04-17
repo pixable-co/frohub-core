@@ -79,6 +79,7 @@ use FECore\FrohubGetProductServiceTypes;
 use FECore\FrohubGetPartnerName;
 use FECore\FrohubGetPartnerServiceTypes;
 use FECore\FrohubGetFaqs;
+use FECore\FrohubRenderReviews;
 
 // Tutorials Shortcodes
 use FECore\GetTutorialsCategory;
@@ -90,8 +91,6 @@ use FECore\GetPostCategory;
 use FECore\DisplayComments;
 use FECore\DisplayExistingConversations;
 use FECore\SubmitCommentForm;
-
-
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -150,5 +149,6 @@ class Shortcodes {
 		ShowComments::init();
 		DisplayPartnerName::init();
 		FhServicePrice::init();
+		FrohubRenderReviews::init();
 	}
 }
