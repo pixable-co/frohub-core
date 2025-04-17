@@ -85,39 +85,7 @@ class FrohubRenderReviews {
         }
         @keyframes spin { to { transform:rotate(360deg); } }
 
-        /* pagination styling */
-        .frohub-pagination {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 1rem;
-          margin: 1.5rem 0;
-          user-select: none;
-          font-size: 1rem;
-        }
-        .frohub-page-prev,
-        .frohub-page-next,
-        .frohub-page-number {
-          cursor: pointer;
-          color: #0057e7;
-          padding: 0.25rem 0.5rem;
-          transition: color 0.2s;
-        }
-        .frohub-page-prev.disabled,
-        .frohub-page-next.disabled {
-          cursor: default;
-          color: #aaa;
-        }
-        .frohub-page-number.current {
-          font-weight: bold;
-          text-decoration: underline;
-          cursor: default;
-        }
-        .frohub-page-ellipsis {
-          padding: 0.25rem 0.5rem;
-          color: #333;
-          cursor: default;
-        }
+ 
         </style>
         <?php
         return ob_get_clean();
