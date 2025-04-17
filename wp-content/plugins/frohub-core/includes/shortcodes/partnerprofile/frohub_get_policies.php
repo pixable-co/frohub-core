@@ -13,67 +13,50 @@ class FrohubGetPolicies {
     }
 
     public function frohub_get_policies_shortcode() {
-        // We'll always have the hard‑coded Refund Policy
+        // 1) Build an array of sections
         $sections = [];
 
-        // 1) Refund Policy (hard‑coded)
+        // always include the hard‑coded Refund Policy
         $sections[] = [
             'title'   => 'Refund Policy',
-            'content' => '<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus. Suspendisse lectus tortor, dignissim sit amet, adipiscing nec, ultricies sed, dolor.</p>'
+            'content' => '<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus. Suspendisse lectus tortor, dignissim sit amet, adipiscing nec, ultricies sed, dolor.</p>',
         ];
 
-        // 2) Terms and Conditions (ACF field)
-        $terms = get_field( 'terms_and_conditions' );
-        if ( $terms ) {
-            $sections[] = [
-                'title'   => 'Terms and Conditions',
-                'content' => apply_filters( 'the_content', $terms )
-            ];
+        // then pull in each ACF field if it exists
+        $fields = [
+            'terms_and_conditions' => 'Terms and Conditions',
+            'late_fees'            => 'Late Fees',
+            'payments'             => 'Payments',
+        ];
+
+        foreach ( $fields as $field_name => $heading ) {
+            $html = get_field( $field_name );
+            if ( $html ) {
+                $sections[] = [
+                    'title'   => $heading,
+                    'content' => apply_filters( 'the_content', $html )
+                ];
+            }
         }
 
-        // 3) Late Fees (ACF field)
-        $late = get_field( 'late_fees' );
-        if ( $late ) {
-            $sections[] = [
-                'title'   => 'Late Fees',
-                'content' => apply_filters( 'the_content', $late )
-            ];
-        }
-
-        // 4) Payments (ACF field)
-        $payments = get_field( 'payments' );
-        if ( $payments ) {
-            $sections[] = [
-                'title'   => 'Payments',
-                'content' => apply_filters( 'the_content', $payments )
-            ];
-        }
-
-        // If for some reason we have no sections (shouldn't happen), bail.
+        // if somehow we have nothing, bail
         if ( empty( $sections ) ) {
             return '';
         }
 
-        // Build the accordion shortcode
+        // 2) Build the VC accordion shortcode
         $accordion = '[vc_tta_accordion c_icon="plus"]';
         foreach ( $sections as $sec ) {
-            $slug = sanitize_title( $sec['title'] );
             $accordion .= sprintf(
-                '[vc_tta_section title="%s" tab_link="%%%7B%%22url%%22%%3A%%22#%s%%22%%7D"]',
-                esc_attr( $sec['title'] ),
-                esc_attr( $slug )
+                '[vc_tta_section title="%s"]',
+                esc_attr( $sec['title'] )
             );
             $accordion .= '[vc_column_text]' . $sec['content'] . '[/vc_column_text]';
             $accordion .= '[/vc_tta_section]';
         }
         $accordion .= '[/vc_tta_accordion]';
 
-        // Optionally wrap in a heading
-        $output  = '<h3>Policies</h3>';
-        $output .= do_shortcode( $accordion );
-
-        return $output;
+        // 3) Wrap it in an <h3> and return
+        return '<h3>Policies</h3>' . do_shortcode( $accordion );
     }
 }
-
-
