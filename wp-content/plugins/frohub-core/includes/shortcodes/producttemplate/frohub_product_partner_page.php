@@ -33,6 +33,7 @@ class FrohubProductPartnerPage
             <?php echo $this->render_products(); ?>
         </div>
         <div id="frohub-loading-spinner">
+            <span> Loading...</span>
             <div class="spinner"></div>
         </div>
 
@@ -124,59 +125,6 @@ class FrohubProductPartnerPage
             });
         </script>
 
-        <style>
-            .frohub-category-list {
-                display: flex;
-                gap: .5rem;
-                padding: 0;
-                margin: 0;
-                flex-wrap: wrap;
-            }
-
-            .frohub-category-item {
-                padding: .4em .8em;
-                border: 1px solid #ccc;
-                border-radius: 20px;
-                cursor: pointer;
-                transition: .2s;
-            }
-
-            .frohub-category-item:hover {
-                background: #f5f5f5;
-            }
-
-            .frohub-category-item.selected {
-                background: #0057e7;
-                color: #fff;
-                border-color: #0057e7;
-            }
-
-            #frohub-loading-spinner {
-                display: none;
-                position: relative;
-                height: 50px;
-                margin-top: 1rem;
-            }
-
-            #frohub-loading-spinner .spinner {
-                position: absolute;
-                top: 50%;
-                left: 50%;
-                width: 30px;
-                height: 30px;
-                margin: -15px 0 0 -15px;
-                border: 4px solid #f3f3f3;
-                border-top: 4px solid #0057e7;
-                border-radius: 50%;
-                animation: spin 1s linear infinite;
-            }
-
-            @keyframes spin {
-                to {
-                    transform: rotate(360deg);
-                }
-            }
-        </style>
 <?php
         return ob_get_clean();
     }
