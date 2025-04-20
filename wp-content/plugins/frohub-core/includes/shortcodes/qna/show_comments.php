@@ -124,19 +124,26 @@ class ShowComments {
     }
 
     public function output_scripts() {
+        $is_user_logged_in = is_user_logged_in() ? 'true' : 'false';
         ?>
         <script>
         jQuery(document).ready(function ($) {
+            const isUserLoggedIn = <?php echo $is_user_logged_in; ?>;
+    
             $(document).on('click', '.toggle-reply-form', function () {
+                if (!isUserLoggedIn) {
+                    alert('You must be logged in to reply to a comment.');
+                    return;
+                }
                 var commentId = $(this).data('comment-id');
                 $('#respond-' + commentId).toggle();
             });
-
+    
             $(document).on('click', '.like-button', function () {
                 var button = $(this);
                 var commentId = button.data('comment-id');
                 var totalLikes = parseInt(button.data('likes')) || 0;
-
+    
                 $.post('/wp-admin/admin-ajax.php', {
                     action: 'submit_like',
                     commentID: commentId,
@@ -152,12 +159,12 @@ class ShowComments {
                     }
                 });
             });
-
+    
             $(document).on('click', '.dislike-button', function () {
                 var button = $(this);
                 var commentId = button.data('comment-id');
                 var totalLikes = parseInt(button.data('likes')) || 0;
-
+    
                 $.post('/wp-admin/admin-ajax.php', {
                     action: 'submit_dislike',
                     commentID: commentId,
