@@ -28,10 +28,11 @@ class FrohubGetFaqs {
             $content  = apply_filters( 'the_content', get_post_field( 'post_content', $faq_id ) );
 
             $accordion .= sprintf(
-                '[vc_tta_section title="%s" tab_link="%%%7B%%22url%%22%%3A%%22#%s%%22%%7D"]',
+                '[vc_tta_section title="%s" tab_link="%%7B%%22url%%22%%3A%%22#%s%%22%%7D"]',
                 esc_attr( $title ),
                 esc_attr( sanitize_title( $title ) )
             );
+            
 
             $accordion .= '[vc_column_text]' . $content . '[/vc_column_text]';
             $accordion .= '[/vc_tta_section]';
