@@ -131,12 +131,15 @@ class ShowComments {
             const isUserLoggedIn = <?php echo $is_user_logged_in; ?>;
     
             $(document).on('click', '.toggle-reply-form', function () {
+                var commentId = $(this).data('comment-id');
+                var $respondBox = $('#respond-' + commentId);
+    
                 if (!isUserLoggedIn) {
-                    alert('You must be logged in to reply to a comment.');
+                    $respondBox.html('<span class="reply-login-message">You must be logged in to reply to a comment.</span>').show();
                     return;
                 }
-                var commentId = $(this).data('comment-id');
-                $('#respond-' + commentId).toggle();
+    
+                $respondBox.toggle();
             });
     
             $(document).on('click', '.like-button', function () {
