@@ -133,8 +133,8 @@ class ShowComments {
             $(document).on('click', '.toggle-reply-form', function () {
                 var commentId = $(this).data('comment-id');
                 var $respondBox = $('#respond-' + commentId);
-    
                 if (!isUserLoggedIn) {
+                    $respondBox.addClass('reply-login-message');
                     $respondBox.html('<span class="reply-login-message">You must be logged in to reply to a comment.</span>').show();
                     return;
                 }
