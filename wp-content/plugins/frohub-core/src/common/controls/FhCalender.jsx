@@ -6,7 +6,7 @@ import { Skeleton } from "antd";
 import frohubStore from "../../frohubStore.js";
 import './style.css';
 
-const FhCalender = ({ onDateChange, bookingNotice, initialServiceDuration, maxDate, unavailableDates, unavailableTimes,nextAvailableDate }) => {
+const FhCalender = ({ onDateChange, bookingNotice, initialServiceDuration, maxDate, unavailableDates, unavailableTimes, nextAvailableDate }) => {
     const { availabilityData, loading } = frohubStore();
     // const [selectedDate, setSelectedDate] = useState(dayjs());
     const [selectedDate, setSelectedDate] = useState(() => (dayjs(nextAvailableDate)));
@@ -136,7 +136,10 @@ const FhCalender = ({ onDateChange, bookingNotice, initialServiceDuration, maxDa
 
                 // ✅ Ensure filtering for selected day
                 const isCorrectDay = entry.day === selectedDate.format("dddd");
-                if (!isCorrectDay) return false;
+                if (!isCorrectDay) {
+                    console.log(`❌ Slot filtered out: Not the correct day (${entry.day} !== ${selectedDate.format("dddd")})`);
+                    return false;
+                }
 
                 // ✅ Check if this specific time slot falls in **any** unavailable range
                 const isTimeBlocked = unavailableTimes.some(({ start, end }) => {
@@ -153,7 +156,9 @@ const FhCalender = ({ onDateChange, bookingNotice, initialServiceDuration, maxDa
                     );
                 });
 
-                if (!isTimeBlocked) {
+                if (isTimeBlocked) {
+                    console.log(`❌ Slot filtered out: Blocked time (${entry.from} - ${entry.to})`);
+                } else {
                     console.log(`🟢 Slot Allowed: ${entry.from} - ${entry.to}`);
                 }
 
@@ -165,6 +170,8 @@ const FhCalender = ({ onDateChange, bookingNotice, initialServiceDuration, maxDa
                 duration: entry.total_duration_minutes || 0,
             }))
         : [];
+
+    console.log("Available Time Slots:", availableTimeSlots);
 
 
     const isToday = (date) => dayjs().format("YYYY-MM-DD") === date.format("YYYY-MM-DD");
@@ -230,19 +237,19 @@ const FhCalender = ({ onDateChange, bookingNotice, initialServiceDuration, maxDa
                     <h3 className="selected-date">Sorry, no available time for this service</h3>
                 ) : (
                     <>
-                    <h3 className="selected-date">{selectedDate.format("ddd, MMM D YYYY")}</h3>
-                    <div className="timeslots-grid scrollable-timeslots">
-                        {availableTimeSlots.map((slot, index) => (
-                            <button
-                                key={index}
-                                className={`timeslot-button ${selectedTime === slot.time ? "selected" : ""}`}
-                                onClick={() => handleTimeSelect(slot.time, slot.price, slot.duration)}
-                            >
-                                <span>{slot.time}</span>
-                                {slot.price > 0 && <span className="extra-charge">+£{slot.price.toFixed(2)}</span>}
-                            </button>
-                        ))}
-                    </div>
+                        <h3 className="selected-date">{selectedDate.format("ddd, MMM D YYYY")}</h3>
+                        <div className="timeslots-grid scrollable-timeslots">
+                            {availableTimeSlots.map((slot, index) => (
+                                <button
+                                    key={index}
+                                    className={`timeslot-button ${selectedTime === slot.time ? "selected" : ""}`}
+                                    onClick={() => handleTimeSelect(slot.time, slot.price, slot.duration)}
+                                >
+                                    <span>{slot.time}</span>
+                                    {slot.price > 0 && <span className="extra-charge">+£{slot.price.toFixed(2)}</span>}
+                                </button>
+                            ))}
+                        </div>
                     </>
                 )}
                 <p className="timezone-info">All times are in London (GMT +01:00)</p>
