@@ -61,7 +61,7 @@ class DisplayExistingConversations
                     $latest_comment_time = '';
                     if (!empty($latest_comment)) {
                         $comment_date_str = $latest_comment[0]->comment_date; // e.g., '2025-04-22 12:41:50'
-                        $datetime = new DateTime($comment_date_str);
+                        $datetime = new \DateTime($comment_date_str);
                         $latest_comment_time = $datetime->format('d M Y, H:i'); // e.g., '22 Apr 2025, 12:41'
                     }
 
