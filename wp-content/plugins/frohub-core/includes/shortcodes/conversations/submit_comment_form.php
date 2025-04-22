@@ -35,7 +35,7 @@ class SubmitCommentForm
                     Send Message
                 </button>
             </div>
-            <p>Please be respectful: Keep your messages kind and considerate. Treat others as you would like to be treated. Report any abusive messages here.</p>
+            <p class="chat-respectful-message">Please be respectful: Keep your messages kind and considerate. Treat others as you would like to be treated. Report any abusive messages here.</p>
         </div>
 
 
