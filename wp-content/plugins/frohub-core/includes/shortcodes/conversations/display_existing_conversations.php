@@ -52,13 +52,11 @@ class DisplayExistingConversations
                     echo '<a href="https://frohubecomm.mystagingwebsite.com/my-account/messages/?c_id=' . $conversation_id . '" class="ongoing-conversation ' . $highlight_class . '">';
                     echo '<div class="conversation-content">';
                     echo '<img class="partner-img" src="' . esc_url(get_the_post_thumbnail_url($partner->ID)) . '" alt="' . esc_attr(get_the_title($partner)) . '">';
-                    echo '<h5 class="conversation-title">' . get_the_title($partner);
-
+                    echo '<p class="conversation-title">' . get_the_title($partner);
+                    echo '</p>';
                     if (!$read_by_customer) {
                         echo ' <span class="red-dot"></span>';
                     }
-
-                    echo '</h5>';
                     echo '</div>';
                     echo '</a>';
                 }
