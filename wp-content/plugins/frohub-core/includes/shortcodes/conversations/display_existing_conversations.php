@@ -60,9 +60,7 @@ class DisplayExistingConversations
                     
                     $latest_comment_time = '';
                     if (!empty($latest_comment)) {
-                        $date = get_comment_date('d M Y', $latest_comment[0]);      // e.g., 19 Jul 2024
-                        $time = get_comment_time('H:i', $latest_comment[0]);        // e.g., 16:49 (24-hour format)
-                        $latest_comment_time = $date . ', ' . $time;
+                        $latest_comment_time = $latest_comment->comment_date_gmt
                     }
 
                     echo '<a href="https://frohubecomm.mystagingwebsite.com/my-account/messages/?c_id=' . $conversation_id . '" class="ongoing-conversation ' . $highlight_class . '">';
