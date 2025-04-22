@@ -60,8 +60,8 @@ class DisplayComments {
 
             <script>
             document.addEventListener('DOMContentLoaded', function() {
-                var chatContainer = document.getElementById('chat-container');
-                chatContainer.scrollTop = chatContainer.scrollHeight;
+                var messages = document.querySelector('.messages');
+                messages.scrollTop = messages.scrollHeight;
             });
         </script>
         <?php
