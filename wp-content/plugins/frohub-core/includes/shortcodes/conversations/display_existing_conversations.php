@@ -38,7 +38,7 @@ class DisplayExistingConversations
 
             $query = new \WP_Query($args);
 
-            echo '<div class="chat-container">';
+            echo '<div class="messages-container">';
             echo '<div class="ongoing-conversations-list">';
 
             if ($query->have_posts()) {
@@ -70,7 +70,6 @@ class DisplayExistingConversations
                     if ($latest_comment_time) {
                         echo '<p class="latest-comment-time">' . esc_html($latest_comment_time) . '</p>';
                     }
-
                     echo '<img class="partner-img" src="' . esc_url(get_the_post_thumbnail_url($partner->ID)) . '" alt="' . esc_attr(get_the_title($partner)) . '">';
                     echo '<p class="conversation-title">' . get_the_title($partner);
                     echo '</p>';
