@@ -22,19 +22,22 @@ class SubmitCommentForm
 ?>
 
         <!-- Message Input and File Upload -->
-        <div class="chat-input-wrapper-custom">
-            <div class="chat-input-box">
-                <label for="image-upload" class="camera-icon">
-                    <i class="fas fa-camera"></i>
-                </label>
-                <input type="file" id="image-upload" accept="image/png, image/jpeg, image/jpg, image/gif, image/webp" style="display: none;" />
-                <input type="text" id="message" placeholder="Type a message..." />
+        <div class="submit-comment-form">
+            <div class="chat-input-wrapper-custom">
+                <div class="chat-input-box">
+                    <label for="image-upload" class="camera-icon">
+                        <i class="fas fa-camera"></i>
+                    </label>
+                    <input type="file" id="image-upload" accept="image/png, image/jpeg, image/jpg, image/gif, image/webp" style="display: none;" />
+                    <input type="text" id="message" placeholder="Type a message..." />
+                </div>
+                <button id="send-button" class="w-btn us-btn-style_1" data-post-id="<?php echo $post_id; ?>">
+                    Send Message
+                </button>
             </div>
-            <button id="send-button" class="w-btn us-btn-style_1" data-post-id="<?php echo $post_id; ?>">
-                Send Message
-            </button>
+            <p>Please be respectful: Keep your messages kind and considerate. Treat others as you would like to be treated. Report any abusive messages here.</p>
         </div>
-        <p>Please be respectful: Keep your messages kind and considerate. Treat others as you would like to be treated. Report any abusive messages here.</p>
+
 
 
         <script>
