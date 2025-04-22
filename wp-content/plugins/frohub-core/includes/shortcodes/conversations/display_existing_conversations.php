@@ -49,8 +49,27 @@ class DisplayExistingConversations
                     $partner = get_field('partner', $conversation_id); // This is a post object
                     $highlight_class = ($conversation_id == $current_post_id) ? 'highlight' : '';
 
+                    // Fetch latest comment for this conversation post
+                    $latest_comment = get_comments(array(
+                        'post_id' => $conversation_id,
+                        'number'  => 1,
+                        'orderby' => 'comment_date',
+                        'order'   => 'DESC',
+                        'status'  => 'approve',
+                    ));
+                    
+                    $latest_comment_time = '';
+                    if (!empty($latest_comment)) {
+                        $date = get_comment_date('d M Y', $latest_comment[0]);      // e.g., 19 Jul 2024
+                        $time = get_comment_time('H:i', $latest_comment[0]);        // e.g., 16:49 (24-hour format)
+                        $latest_comment_time = $date . ', ' . $time;
+                    }
+
                     echo '<a href="https://frohubecomm.mystagingwebsite.com/my-account/messages/?c_id=' . $conversation_id . '" class="ongoing-conversation ' . $highlight_class . '">';
                     echo '<div class="conversation-content">';
+                    if ($latest_comment_time) {
+                        echo '<p class="latest-comment-time">' . esc_html($latest_comment_time) . '</p>';
+                    }                    
                     echo '<img class="partner-img" src="' . esc_url(get_the_post_thumbnail_url($partner->ID)) . '" alt="' . esc_attr(get_the_title($partner)) . '">';
                     echo '<p class="conversation-title">' . get_the_title($partner);
                     echo '</p>';
