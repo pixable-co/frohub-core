@@ -38,8 +38,7 @@ export default function RequestBookButton() {
     const handleProceedToPayment = async () => {
         const selectedDate = document.querySelector('input[name="selectedDate"]')?.value || "";
         const selectedTime = document.querySelector('input[name="selectedTime"]')?.value || "";
-
-        console.log('Selected Date:', selectedDate);
+        const extraCharge = document.querySelector('input[name="selectedPrice"]')?.value || "";
 
         try {
             const response = await createData('frohub_add_to_cart', {
@@ -49,6 +48,7 @@ export default function RequestBookButton() {
                 selectedServiceType,
                 selectedDate,
                 selectedTime,
+                extraCharge
             });
 
             console.log('AJAX call successful:', response.data.message);

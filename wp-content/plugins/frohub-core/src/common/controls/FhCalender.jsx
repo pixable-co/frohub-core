@@ -258,7 +258,7 @@ const FhCalender = ({ onDateChange, bookingNotice, initialServiceDuration, maxDa
             <div id="extra-charge-container" data-extra-charge="0" style={{ display: "none" }}></div>
             <input type="hidden" value={selectedDate.format("YYYY-MM-DD")} name="selectedDate" />
             <input type="hidden" value={selectedTime || ""} name="selectedTime" />
-            <input type="hidden" value={selectedPrice} name="selectedPrice" />
+            <input type="hidden" name="selectedPrice" value={selectedPrice} />
             <input type="hidden" value={selectedDuration} name="total_duration_time" />
         </div>
     );

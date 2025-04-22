@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { CheckCircle, XCircle, RefreshCw } from "lucide-react";
 import { Skeleton } from "antd";
 import frohubStore from "../frohubStore.js";
@@ -332,10 +332,13 @@ export default function MobileService({ partnerId }) {
 
             {/* Travel Fee Display - Same for both static and dynamic location */}
             {isValid && travelFee !== null && (
-                <p className="!mt-4 text-lg font-semibold">
-                    Mobile Travel Fee: <span className="text-gray-900">+£{travelFee.toFixed(2)}</span>
-                </p>
-            )}
+                <>
+                    <p className="!mt-4 text-lg font-semibold">
+                        Mobile Travel Fee: <span className="text-gray-900">+£{travelFee.toFixed(2)}</span>
+                    </p>
+                    <input type="hidden" name="travelFee" value={travelFee.toFixed(2)} />
+                </>
+    )}
             {/* Reset Button to clear location cookie */}
             {staticLocation && (
                 <button
