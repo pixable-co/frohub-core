@@ -30,7 +30,7 @@ class SubmitCommentForm
                 <input type="file" id="image-upload" accept="image/png, image/jpeg, image/jpg, image/gif, image/webp" style="display: none;" />
                 <input type="text" id="message" placeholder="Type a message..." />
             </div>
-            <button id="send-button" class="send-message-button" data-post-id="<?php echo $post_id; ?>">
+            <button id="send-button" class="w-btn us-btn-style_1" data-post-id="<?php echo $post_id; ?>">
                 Send Message
             </button>
         </div>
