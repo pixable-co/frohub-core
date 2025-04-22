@@ -69,7 +69,7 @@ class DisplayExistingConversations
 
             $is_valid_cid = $requested_cid && get_post_type($requested_cid) === 'conversation' && get_post_status($requested_cid) === 'publish' && get_field('customer', $requested_cid) == $current_user_id;
 
-            if (is_singular('conversation') || $is_valid_cid) {
+            if ($requested_cid) {
                 echo '<div class="chat-window">';
                 echo '<div class="messages-container">';
                 echo do_shortcode('[display_comments]'); // Message display
