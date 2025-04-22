@@ -46,11 +46,12 @@ class DisplayExistingConversations
                     $query->the_post();
                     $conversation_id = get_the_ID();
                     $read_by_customer = get_field('read_by_customer', $conversation_id);
-                    $highlight_class = ($conversation_id == $current_post_id || $conversation_id == $requested_cid) ? 'highlight' : '';
+                    $partner = get_field('partner', $conversation_id); // This is a post object
+                    $highlight_class = ($conversation_id == $current_post_id) ? 'highlight' : '';
 
                     echo '<a href="https://frohubecomm.mystagingwebsite.com/my-account/messages/?c_id=' . $conversation_id . '" class="ongoing-conversation ' . $highlight_class . '">';
                     echo '<div class="conversation-content">';
-                    echo '<h5 class="conversation-title">' . get_the_title();
+                    echo '<h5 class="conversation-title">' . get_the_title($partner);
 
                     if (!$read_by_customer) {
                         echo ' <span class="red-dot"></span>';
@@ -79,10 +80,9 @@ class DisplayExistingConversations
             } else {
                 echo '<div class="chat-window-placeholder">
                     <p class="no-chat-selected">
-                        <img class="frohub-logo" src="https://frohubpartners.mystagingwebsite.com/wp-content/uploads/2025/03/Asset-10.svg" alt="Frohub Logo">
-                        <strong>Welcome to your inbox!</strong>
-                        Select a conversation from the left to start chatting.
-                        If you don\'t see any conversations, it means you haven\'t connected with any clients yet.
+                        <strong>👋🏾 Welcome to your inbox!</strong>
+                        When you book a service or send an enquiry, you\'ll see your messages here.
+                        Need help? Start a conversation with your stylist.
                     </p>
                 </div>';
             }
