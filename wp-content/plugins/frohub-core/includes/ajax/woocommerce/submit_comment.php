@@ -95,12 +95,21 @@ class SubmitComment
         $auto_message_text = get_field('auto_message_text', $partner_id);
 
         if ($auto_message_enabled && !empty($auto_message_text)) {
+            $datetime = new \DateTime('now', new \DateTimeZone('UTC'));
+            $datetime->modify('+1 minute');
+            $gmt_date = $datetime->format('Y-m-d H:i:s');
+
+            $datetime->setTimezone(wp_timezone()); // Convert to WP local timezone
+            $local_date = $datetime->format('Y-m-d H:i:s');
+
             $auto_comment_data = array(
                 'comment_post_ID'      => $post_id,
                 'comment_content'      => wp_kses_post($auto_message_text),
-                'user_id'              => get_field('wp_user',$partner_id), // anonymous or system
+                'user_id'              => get_field('wp_user', $partner_id),
                 'comment_author'       => get_the_title($partner_id),
                 'comment_author_email' => get_field('partner_email', $partner_id),
+                'comment_date'         => $local_date,
+                'comment_date_gmt'     => $gmt_date,
             );
 
             wp_insert_comment($auto_comment_data);
