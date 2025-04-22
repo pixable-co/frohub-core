@@ -33,8 +33,12 @@ class SubmitCommentForm
                     <input type="text" id="message" placeholder="Type a message..." />
                 </div>
                 <button id="send-button" class="w-btn us-btn-style_1" data-post-id="<?php echo $post_id; ?>">
-                    Send Message
+                    <span class="btn-label">Send Message</span>
+                    <span class="spinner" style="display: none; margin-left: 8px;">
+                        <i class="fas fa-spinner fa-spin"></i>
+                    </span>
                 </button>
+
             </div>
             <p class="chat-respectful-message">Please be respectful: Keep your messages kind and considerate. Treat others as you would like to be treated.</p>
         </div>
@@ -51,16 +55,18 @@ class SubmitCommentForm
                     const message = messageInput.val().trim();
                     const file = imageInput[0].files[0];
                     const postId = sendButton.data('post-id');
+                    const spinner = sendButton.find('.spinner');
+                    const label = sendButton.find('.btn-label');
 
                     if (!message && !file) {
                         alert("Please enter a message or select an image to upload.");
                         return;
                     }
 
-                    // Validate file (if exists)
+                    // Validate file
                     if (file) {
                         const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'image/webp'];
-                        const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+                        const maxSize = 5 * 1024 * 1024;
 
                         if (!allowedTypes.includes(file.type)) {
                             alert("Invalid file type. Please select a JPG, PNG, GIF, or WebP image.");
@@ -73,17 +79,19 @@ class SubmitCommentForm
                         }
                     }
 
-                    // Prepare form data
+                    // Show spinner and disable button
+                    spinner.show();
+                    label.text("Sending...");
+                    sendButton.prop('disabled', true);
+
                     const formData = new FormData();
                     formData.append('action', 'submit_comment');
                     formData.append('post_id', postId);
                     formData.append('comment', message);
-
                     if (file) {
-                        formData.append('image', file);
+                        formData.append('comment_image', file); // 🔧 match PHP: 'comment_image'
                     }
 
-                    // Call the AJAX handler
                     $.ajax({
                         url: '/wp-admin/admin-ajax.php',
                         type: 'POST',
@@ -93,7 +101,7 @@ class SubmitCommentForm
                         success: function(data) {
                             if (data.success) {
                                 alert('Comment submitted successfully!');
-                                location.reload(); // Reload the page
+                                location.reload();
                             } else {
                                 alert("Error: " + data.data);
                             }
@@ -101,6 +109,12 @@ class SubmitCommentForm
                         error: function(jqXHR, textStatus, errorThrown) {
                             console.error('Error:', textStatus, errorThrown);
                             alert("An error occurred. Please try again.");
+                        },
+                        complete: function() {
+                            // Hide spinner and re-enable button
+                            spinner.hide();
+                            label.text("Send Message");
+                            sendButton.prop('disabled', false);
                         }
                     });
                 });
