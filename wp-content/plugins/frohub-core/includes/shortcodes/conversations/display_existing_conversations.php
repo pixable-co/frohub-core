@@ -57,17 +57,20 @@ class DisplayExistingConversations
                         'order'   => 'DESC',
                         'status'  => 'approve',
                     ));
-                    
+
                     $latest_comment_time = '';
                     if (!empty($latest_comment)) {
-                        $latest_comment_time = $latest_comment->comment_date_gmt;
+                        $comment_date_str = $latest_comment[0]->comment_date; // e.g., '2025-04-22 12:41:50'
+                        $datetime = new DateTime($comment_date_str);
+                        $latest_comment_time = $datetime->format('d M Y, H:i'); // e.g., '22 Apr 2025, 12:41'
                     }
 
                     echo '<a href="https://frohubecomm.mystagingwebsite.com/my-account/messages/?c_id=' . $conversation_id . '" class="ongoing-conversation ' . $highlight_class . '">';
                     echo '<div class="conversation-content">';
                     if ($latest_comment_time) {
                         echo '<p class="latest-comment-time">' . esc_html($latest_comment_time) . '</p>';
-                    }                    
+                    }
+
                     echo '<img class="partner-img" src="' . esc_url(get_the_post_thumbnail_url($partner->ID)) . '" alt="' . esc_attr(get_the_title($partner)) . '">';
                     echo '<p class="conversation-title">' . get_the_title($partner);
                     echo '</p>';
