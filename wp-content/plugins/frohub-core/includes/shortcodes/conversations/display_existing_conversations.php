@@ -38,7 +38,7 @@ class DisplayExistingConversations
 
             $query = new \WP_Query($args);
 
-            echo '<div class="messages-container">';
+            echo '<div class="messages-root-container">';
             echo '<div class="ongoing-conversations-list">';
 
             if ($query->have_posts()) {
