@@ -78,6 +78,8 @@ class GetPartnerData {
             'payments'         => get_field('payments', $partner_post_id),
             'reviews'         => $reviews,
             'mobileServiceFee' => get_field('radius_fees', $partner_post_id)
+            'auto_message' => get_field('auto_message', $partner_post_id),
+            'auto_message_text' => get_field('auto_message_text', $partner_post_id),
         ];
 
         return rest_ensure_response($partner_data);
