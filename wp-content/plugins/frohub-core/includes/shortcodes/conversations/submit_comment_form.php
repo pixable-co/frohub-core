@@ -23,6 +23,7 @@ class SubmitCommentForm
 
         <!-- Message Input and File Upload -->
         <div class="submit-comment-form">
+            <p class="deposit-warning"><i class="fas fa-exclamation-triangle"></i> Only deposits paid through FroHub are protected. <a href="/">Learn more</a></p>
             <div class="chat-input-wrapper-custom">
                 <div class="chat-input-box">
                     <label for="image-upload" class="camera-icon">
@@ -35,7 +36,7 @@ class SubmitCommentForm
                     Send Message
                 </button>
             </div>
-            <p class="chat-respectful-message">Please be respectful: Keep your messages kind and considerate. Treat others as you would like to be treated. Report any abusive messages here.</p>
+            <p class="chat-respectful-message">Please be respectful: Keep your messages kind and considerate. Treat others as you would like to be treated.</p>
         </div>
 
 
