@@ -48,7 +48,7 @@ class DisplayExistingConversations
                     $read_by_customer = get_field('read_by_customer', $conversation_id);
                     $highlight_class = ($conversation_id == $current_post_id || $conversation_id == $requested_cid) ? 'highlight' : '';
 
-                    echo '<a href="' . get_permalink() . '" class="ongoing-conversation ' . $highlight_class . '">';
+                    echo '<a href="https://frohubecomm.mystagingwebsite.com/my-account/messages/?c_id=' . $conversation_id . '" class="ongoing-conversation ' . $highlight_class . '">';
                     echo '<div class="conversation-content">';
                     echo '<h5 class="conversation-title">' . get_the_title();
 
@@ -67,10 +67,7 @@ class DisplayExistingConversations
 
             echo '</div>'; // Close .ongoing-conversations-list
 
-            $is_valid_cid = $requested_cid && get_post_type($requested_cid) === 'conversation' && get_post_status($requested_cid) === 'publish' && get_field('customer', $requested_cid) == $current_user_id;
-
             if ($requested_cid) {
-                echo $requested_cid;
                 echo '<div class="chat-window">';
                 echo '<div class="messages-container">';
                 echo do_shortcode('[display_comments]'); // Message display
