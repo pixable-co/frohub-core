@@ -67,6 +67,8 @@ class UpdatePartner {
             'late_fees'            => sanitize_textarea_field($data['lateFees']),
             'payments'             => sanitize_textarea_field($data['payments']),
             'frohub_refund_policy' => sanitize_textarea_field($data['frohubRefundPolicy']),
+            'auto_message'       => intval($data['auto_message']),
+            'auto_message_text' => sanitize_textarea_field($data['auto_message_text']),
         ];
 
         foreach ($acf_fields as $key => $value) {
