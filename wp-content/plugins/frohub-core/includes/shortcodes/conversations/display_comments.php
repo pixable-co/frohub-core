@@ -15,7 +15,7 @@ class DisplayComments {
     public function display_comments_shortcode() {
         ob_start();
 
-        $postId = get_the_ID(); // Get the current post ID
+        $postId = isset($_GET['c_id']) ? absint($_GET['c_id']) : 0;
         $comments = get_comments(array(
             'post_id' => $postId,
         ));

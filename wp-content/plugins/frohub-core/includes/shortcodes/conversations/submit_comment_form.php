@@ -13,7 +13,7 @@ class SubmitCommentForm {
     }
 
     public function submit_comment_shortcode() {
-        $post_id = get_the_ID(); // Needed to retrieve the ecommerce conversation post ID
+        $post_id = isset($_GET['c_id']) ? absint($_GET['c_id']) : 0; // Needed to retrieve the ecommerce conversation post ID
         ob_start();
         ?>
     
