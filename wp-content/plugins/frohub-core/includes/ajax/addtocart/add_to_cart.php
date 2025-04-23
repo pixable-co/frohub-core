@@ -56,6 +56,12 @@ public function add_to_cart() {
     $selected_date = isset($_POST['selectedDate']) ? sanitize_text_field($_POST['selectedDate']) : '';
     $selected_time = isset($_POST['selectedTime']) ? sanitize_text_field($_POST['selectedTime']) : '';
 
+    $extra_charge_raw = isset($_POST['extraCharge']) ? $_POST['extraCharge'] : '';
+    $extra_charge_data = json_decode(stripslashes($extra_charge_raw), true);
+
+    $extra_charge = isset($extra_charge_data['bookingExtra']) ? sanitize_text_field($extra_charge_data['bookingExtra']) : '';
+    $mobile_travel_fee = isset($extra_charge_data['mobileFee']) ? sanitize_text_field($extra_charge_data['mobileFee']) : '';
+
 
     // Fetch the product and find the correct variation
     $product = wc_get_product($product_id);
@@ -92,7 +98,9 @@ public function add_to_cart() {
             'booking_time' => $selected_time,
             'size' => $pa_size,
             'length' => $pa_length,
-            'stylist_name' => $partner_name // Adding Stylist Name to cart
+            'stylist_name' => $partner_name,
+            'extra_charge' => $extra_charge,
+            'mobile_travel_fee' => $mobile_travel_fee,
         );
 
         $cart_item_key = WC()->cart->add_to_cart($product_id, 1, $variation_id, array(), $cart_item_data);
@@ -208,6 +216,14 @@ public function add_to_cart() {
         }
         if (isset($values['stylist_name'])) {
             $cart_item['stylist_name'] = $values['stylist_name'];
+        }
+
+        if (isset($values['extra_charge'])) {
+            $cart_item['extra_charge'] = $values['extra_charge'];
+        }
+
+        if (isset($values['mobile_travel_fee'])) {
+            $cart_item['mobile_travel_fee'] = $values['mobile_travel_fee'];
         }
     
         
@@ -334,6 +350,14 @@ public function add_to_cart() {
             // Convert array to comma-separated string
             $add_ons_string = implode(', ', $add_ons);
             wc_add_order_item_meta($item_id, 'Selected Add-Ons', $add_ons_string);
+        }
+
+        if (!empty($values['extra_charge'])) {
+            wc_add_order_item_meta($item_id, 'Extra Charge', '£' . number_format((float)$values['extra_charge'], 2));
+        }
+
+        if (!empty($values['mobile_travel_fee'])) {
+            wc_add_order_item_meta($item_id, 'Mobile Travel Fee', '£' . number_format((float)$values['mobile_travel_fee'], 2));
         }
     }
     

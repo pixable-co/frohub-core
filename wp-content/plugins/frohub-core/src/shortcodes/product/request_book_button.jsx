@@ -119,6 +119,8 @@ export default function RequestBookButton() {
         const selectedDate = document.querySelector('input[name="selectedDate"]')?.value || "";
         const selectedTime = document.querySelector('input[name="selectedTime"]')?.value || "";
         const selectedTimeButton = document.querySelector(".timeslot-button.selected");
+        const extraCharge = document.querySelector('input[name="selectedPrice"]')?.value || "";
+        const mobileFee = document.querySelector('input[name="travelFee"]')?.value || "";
 
         if (!selectedDate || !selectedTimeButton) {
             toastNotification('error', 'Missing Information', 'Please select a service type and date & time before proceeding.');
@@ -149,6 +151,10 @@ export default function RequestBookButton() {
                 selectedServiceType,
                 selectedDate,
                 selectedTime,
+                extraCharge: JSON.stringify({
+                    bookingExtra: extraCharge,
+                    mobileFee: mobileFee
+                })
             });
 
             // toastNotification('success', `Success`, `The requested service has been added to the cart successfully`);
