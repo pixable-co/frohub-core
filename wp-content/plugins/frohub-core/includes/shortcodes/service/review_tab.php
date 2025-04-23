@@ -75,6 +75,7 @@ class ReviewTab {
         $tabs .= ' [/vc_tta_section]';
 
         $tabs .= '[vc_tta_section title="Reviews for this Stylist" el_class="reviews_of_beautician"] ';
+        $tabs .= do_shortcode('frohub_review_summary');
         $tabs .= do_shortcode('[us_grid post_type="ids" ids="' . esc_attr($imploded_ids_b) . '" columns="2" items_layout="28803" overriding_link="%7B%22url%22%3A%22%22%7D"]');
         $tabs .= '[/vc_tta_section]';
 
