@@ -31,6 +31,7 @@ class CreateReviewPost
         $partner_id = get_field('partner_id', $product_id);
 
         if ($post_id) {
+            update_field('user',get_current_user(), $post_id);
             update_field('overall_rating', rgar($entry, '7'), $post_id);
             update_field('reliability', rgar($entry, '14'), $post_id);
             update_field('skill', rgar($entry, '15'), $post_id);
