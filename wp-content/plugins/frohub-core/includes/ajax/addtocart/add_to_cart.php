@@ -55,8 +55,12 @@ public function add_to_cart() {
     $selected_service_type = isset($_POST['selectedServiceType']) ? sanitize_text_field($_POST['selectedServiceType']) : '';
     $selected_date = isset($_POST['selectedDate']) ? sanitize_text_field($_POST['selectedDate']) : '';
     $selected_time = isset($_POST['selectedTime']) ? sanitize_text_field($_POST['selectedTime']) : '';
-    $extra_charge = isset($_POST['extraCharge']) ? sanitize_text_field($_POST['extraCharge']) : '';
-    $mobile_travel_fee = isset($_POST['mobileTravelFee']) ? sanitize_text_field($_POST['mobileTravelFee']) : '';
+
+    $extra_charge_raw = isset($_POST['extraCharge']) ? $_POST['extraCharge'] : '';
+    $extra_charge_data = json_decode(stripslashes($extra_charge_raw), true);
+
+    $extra_charge = isset($extra_charge_data['bookingExtra']) ? sanitize_text_field($extra_charge_data['bookingExtra']) : '';
+    $mobile_travel_fee = isset($extra_charge_data['mobileFee']) ? sanitize_text_field($extra_charge_data['mobileFee']) : '';
 
 
     // Fetch the product and find the correct variation
