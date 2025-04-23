@@ -86,7 +86,13 @@ class GetUserPastBookings
                     if ($partner_id) {
                         $partner_title = get_the_title($partner_id);
                         $partner_link = get_permalink($partner_id);
-                        $partner_address = get_field('partner_address', $partner_id);
+                        $street = get_field('street_address', $partner_id);
+                        $city = get_field('city', $partner_id);
+                        $county = get_field('county_district', $partner_id);
+                        $postcode = get_field('postcode', $partner_id);
+
+                        $address_parts = array_filter([$street, $city, $county, $postcode]); // Remove empty values
+                        $partner_address = implode(', ', $address_parts);
                     }
                 }
             }
