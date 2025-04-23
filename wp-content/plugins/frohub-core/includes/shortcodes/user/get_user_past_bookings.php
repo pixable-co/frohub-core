@@ -280,12 +280,14 @@ class GetUserPastBookings
 
                     // Update booking summary
                     $('.review-data').html(`
-                    <strong>Service:</strong> ${reviewData.productName}<br>
-                    <strong>Type:</strong> ${reviewData.serviceType}<br>
-                    <strong>Date:</strong> ${reviewData.selectedDate}<br>
-                    <strong>Stylist:</strong> ${reviewData.partnerTitle}<br>
-                    <strong>Address:</strong> ${reviewData.partnerAddress}<br><br>
-                `);
+                        <img src="${reviewData.productImgURL}" alt="${reviewData.productName}" style="max-width: 100px; height: auto; display: block; margin-bottom: 10px;" />
+                        <strong>Service:</strong> ${reviewData.productName}<br>
+                        <strong>Type:</strong> ${reviewData.serviceType}<br>
+                        <strong>Date:</strong> ${reviewData.selectedDate}<br>
+                        <strong>Stylist:</strong> ${reviewData.partnerTitle}<br>
+                        <strong>Address:</strong> ${reviewData.partnerAddress}<br><br>
+                    `);
+
 
                     // Show the modal
                     $('#frohubReviewModal').fadeIn();
