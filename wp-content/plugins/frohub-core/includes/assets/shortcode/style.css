@@ -88,3 +88,129 @@
     font-size: 20px;
     font-weight: 400;
 }
+
+
+/*Review Form Styling*/
+.modal-body {
+    font-family: "Poppins", sans-serif;
+    background: #fff;
+    border-radius: 20px;
+    padding: 30px;
+    max-width: 800px;
+    margin: auto;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+}
+
+.w-hwrapper {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 30px;
+    align-items: start;
+}
+
+#modalproductImg {
+    width: 230px;
+    height: 270px;
+    background-color: #eee;
+    border-radius: 16px;
+    background-size: cover;
+    background-position: center;
+}
+
+modal-body-right {
+    width: 100%;
+}
+
+.w-hwrapper > div > p {
+    margin: 5px 0;
+    font-size: 15px;
+    color: #333;
+}
+
+.w-hwrapper i {
+    margin-right: 6px;
+    color: #444;
+}
+
+.gform_wrapper {
+    margin-top: 20px;
+    background: transparent;
+}
+
+.gfield_label {
+    font-weight: 600;
+    margin-bottom: 6px;
+    display: block;
+}
+
+/* Star Rating */
+.gsurvey-rating label {
+    font-size: 22px;
+    color: #ccc;
+    margin-right: 8px;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.gsurvey-rating input[type="radio"]:checked ~ label {
+    color: #f5a623;
+}
+
+.gsurvey-rating label:hover,
+.gsurvey-rating label:hover ~ label {
+    color: #f5a623;
+}
+
+/* File upload */
+.gform_drop_area {
+    border: 2px dashed #ccc;
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    background: #f9f9f9;
+}
+
+/* Submit button */
+#gform_submit_button_7 {
+    background: #000;
+    color: #fff;
+    border-radius: 24px;
+    padding: 12px 30px;
+    margin-top: 20px;
+    font-weight: 600;
+    font-size: 16px;
+}
+
+.gform_page_footer{
+    justify-content: end !important;
+}
+
+#gform_next_button_7_22 {
+    background-color: #E05747;
+    color: #fff !important;
+    padding: 0.7rem 2.5rem 0.7rem 2.5rem;
+    border-radius: 30px;
+}
+
+#gform_next_button_7_23 {
+    background-color: #E05747;
+    color: #fff !important;
+    padding: 0.7rem 2.5rem 0.7rem 2.5rem;
+    border-radius: 30px;
+}
+
+#gform_previous_button_7_23 {
+    background: #D9D9D9;
+    padding: 0.7rem 2.5rem 0.7rem 2.5rem;
+    border-radius: 30px;
+}
+
+#gform_previous_button_7 {
+    background: #D9D9D9;
+    padding: 0.7rem 2.5rem 0.7rem 2.5rem;
+    border-radius: 30px;
+}
+
+#gf_progressbar_wrapper_7 {
+    display: none;
+}

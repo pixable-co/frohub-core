@@ -89,7 +89,7 @@ class ReviewButton {
                 <div class="modal-body">
                     <div class="w-hwrapper valign_top align_left">
                         <div id="modalproductImg"></div>
-                        <div>
+                        <div class="modal-body-right">
                             <p id="productName"></p>
                             <p id="serviceType"></p>
                             <p id="partnerTitle"></p>
