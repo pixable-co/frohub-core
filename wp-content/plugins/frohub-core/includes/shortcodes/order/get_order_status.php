@@ -67,7 +67,7 @@ class GetOrderStatus
                         </div>
                       </div>';
                 // Modal for cancellation reason
-                echo '<div id="cancelReasonModal_' . $order_id . '" class="status-modal">
+                echo '<div id="cancelReasonModal_' . $order_id . '" class="status-modal cancel-reason-modal">
                         <div class="modal-content">
                             <div class="modal-header">
                             <h5>Help us improve, tell us why you’re cancelling</h5>
@@ -76,7 +76,7 @@ class GetOrderStatus
                             <div class="modal-body">
                             <p>We’d love to know why you decided to cancel. Your feedback helps us improve the booking experience for you and others.</p>
                            
-                            <p id="cancel-reason-error-' . $order_id . '" class="cancel-error-msg" style="display:none; color: #c00; margin-bottom: 10px;"></p>
+                            <p id="cancel-reason-error-' . $order_id . '" class="cancel-error-msg" style=""></p>
 
                             <form id="cancel-reason-form-' . $order_id . '">
                                 <label><input type="radio" name="reason" value="scheduling"> I had a scheduling conflict</label><br>
