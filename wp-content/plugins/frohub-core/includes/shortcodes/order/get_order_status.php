@@ -215,7 +215,7 @@ class GetOrderStatus
 
                     showSpinner(button);
 
-                    $.post(ajaxurl, {
+                    $.post("<?php echo admin_url('admin-ajax.php'); ?>", {
                         action: "cancel_order",
                         security: "<?php echo wp_create_nonce('ajax_nonce'); ?>",
                         order_id: orderId,
