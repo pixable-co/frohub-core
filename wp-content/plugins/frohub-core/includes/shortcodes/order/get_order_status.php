@@ -117,10 +117,11 @@ class GetOrderStatus {
                         </div>
                       </div>';
 
+                // Success modal (shared with dynamic content)
                 echo '<div id="cancelSuccessModal" class="status-modal" style="display:none;">
                         <div class="modal-content">
-                            <div class="modal-header"><h5>Booking Cancelled</h5></div>
-                            <div class="modal-body"><p>Your booking has been successfully cancelled.</p></div>
+                            <div class="modal-header"><h5 id="cancel-success-title">Booking Cancelled</h5></div>
+                            <div class="modal-body"><p id="cancel-success-message">Your booking has been successfully cancelled.</p></div>
                             <div class="modal-footer"><a href="/my-account/bookings/" class="w-btn us-btn-style_6 w-btn-underlined">Back to My Bookings</a></div>
                       </div></div>';
             }
@@ -161,6 +162,16 @@ jQuery(document).ready(function($) {
         }, function(response) {
             hideSpinner(button);
             if (response.success) {
+                let title = "Booking Cancelled";
+                let message = "Your booking has been successfully cancelled.";
+                if (action === "early_cancel_order") {
+                    title = "Booking Cancelled – Deposit Refund on Its Way!";
+                    message = "Your booking has been successfully cancelled. Your deposit refund is being processed and will be returned to your original payment method shortly.";
+                } else if (action === "late_cancel_order") {
+                    message = "Your booking has been successfully cancelled. Please note the deposit and booking fee were non-refundable.";
+                }
+                $("#cancel-success-title").text(title);
+                $("#cancel-success-message").text(message);
                 $(".status-modal").hide();
                 $("#cancelSuccessModal").fadeIn();
             } else {
@@ -189,9 +200,9 @@ jQuery(document).ready(function($) {
         form.find('.other-reason-wrapper').toggle(selected === 'other');
     });
 
-    $(".confirm-normal-cancel-order").click(function () {
+    $(".confirm-cancel-order").click(function () {
         var orderId = $(this).data("order-id");
-        $("#normalCancelModal_" + orderId).hide();
+        $("#cancelModal_" + orderId).hide();
         var modal = $("#cancelReasonModal_" + orderId);
         modal.find(".submit-final-cancel-normal").show();
         modal.find(".submit-final-cancel-early, .submit-final-cancel-late").hide();
