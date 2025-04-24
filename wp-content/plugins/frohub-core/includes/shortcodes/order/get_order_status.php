@@ -75,8 +75,9 @@ class GetOrderStatus
                             </div>
                             <div class="modal-body">
                             <p>We’d love to know why you decided to cancel. Your feedback helps us improve the booking experience for you and others.</p>
-                            <p id="cancel-reason-error-"' . $order_id . '" class="cancel-error-msg" style="display:none; color: #c00; margin-bottom: 10px;"></p>
+                           
                             <form id="cancel-reason-form-' . $order_id . '">
+                             <p id="cancel-reason-error-"' . $order_id . '" class="cancel-error-msg" style="display:none; color: #c00; margin-bottom: 10px;"></p>   
                                 <label><input type="radio" name="reason" value="scheduling"> I had a scheduling conflict</label><br>
                                 <label><input type="radio" name="reason" value="changed-mind"> I changed my mind</label><br>
                                 <label><input type="radio" name="reason" value="no-response"> The stylist didn’t respond in time</label><br>
