@@ -91,6 +91,8 @@
 
 
 /*Review Form Styling*/
+
+/* COMMENTED THIS OUT AS IT WAS CONFLICTING WITH CANCEL AND RESCHEDULE MODAL */
 /* .modal-body {
     font-family: "Poppins", sans-serif;
     background: #fff;
