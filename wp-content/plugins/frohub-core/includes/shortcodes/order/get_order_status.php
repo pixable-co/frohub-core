@@ -65,7 +65,7 @@ class GetOrderStatus
                             </div>
                         </div>
                       </div>';
-                echo '<div id="cancelReasonModal_'.$order_id.'" class="status-modal">
+                echo '<div id="cancelReasonModal_' . $order_id . '" class="status-modal">
                         <div class="modal-content">
                             <div class="modal-header">
                             <h5>Help us improve, tell us why you’re cancelling</h5>
@@ -73,17 +73,21 @@ class GetOrderStatus
                             </div>
                             <div class="modal-body">
                             <p>We’d love to know why you decided to cancel. Your feedback helps us improve the booking experience for you and others.</p>
-                            <form id="cancel-reason-form-'.$order_id.'">
+                            <form id="cancel-reason-form-' . $order_id . '">
                                 <label><input type="radio" name="reason" value="scheduling"> I had a scheduling conflict</label><br>
                                 <label><input type="radio" name="reason" value="changed-mind"> I changed my mind</label><br>
                                 <label><input type="radio" name="reason" value="no-response"> The stylist didn’t respond in time</label><br>
                                 <label><input type="radio" name="reason" value="stylist-cancel"> The stylist asked me to cancel</label><br>
-                                <label><input type="radio" name="reason" value="other"> Other</label>
+                                <label>
+                                <input type="radio" name="reason" value="other"> Other
+                                </label>
+                                <div class="other-reason-wrapper" style="display: none; margin-top: 10px;">
                                 <textarea name="other_reason" placeholder="Enter your reason here..."></textarea>
+                                </div>
                             </form>
                             </div>
                             <div class="modal-footer">
-                            <button class="w-btn us-btn-style_6 w-btn-underlined submit-final-cancel" data-order-id="'.$order_id.'">Cancel Booking</button>
+                            <button class="w-btn us-btn-style_6 w-btn-underlined submit-final-cancel" data-order-id="' . $order_id . '">Cancel Booking</button>
                             </div>
                         </div>
                         </div>';
@@ -181,6 +185,19 @@ class GetOrderStatus
                     $(button).prop("disabled", false);
                     $(button).find(".spinner").addClass("hidden");
                 }
+
+                // Toggle visibility of "Other" textarea
+                $('input[name="reason"]').on('change', function() {
+                    var form = $(this).closest("form");
+                    var selected = form.find('input[name="reason"]:checked').val();
+
+                    if (selected === 'other') {
+                        form.find('.other-reason-wrapper').slideDown();
+                    } else {
+                        form.find('.other-reason-wrapper').slideUp();
+                    }
+                });
+
 
                 $(".confirm-cancel-order").click(function() {
                     // First modal triggers second modal instead of AJAX directly
