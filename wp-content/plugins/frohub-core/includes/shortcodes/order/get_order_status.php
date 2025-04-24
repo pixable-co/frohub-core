@@ -6,14 +6,17 @@ if (! defined('ABSPATH')) {
     exit;
 }
 
-class GetOrderStatus {
+class GetOrderStatus
+{
 
-    public static function init() {
+    public static function init()
+    {
         $self = new self();
         add_shortcode('get_order_status', array($self, 'get_order_status_shortcode'));
     }
 
-    public function get_order_status_shortcode() {
+    public function get_order_status_shortcode()
+    {
         ob_start();
 
         $order_id = $GLOBALS['single_order_id'];
@@ -128,118 +131,121 @@ class GetOrderStatus {
         }
 ?>
 
-<script type="text/javascript">
-jQuery(document).ready(function($) {
-    function showSpinner(button) {
-        $(button).prop("disabled", true).find(".spinner").removeClass("hidden");
-    }
-    function hideSpinner(button) {
-        $(button).prop("disabled", false).find(".spinner").addClass("hidden");
-    }
-    function handleReasonSubmit(button, orderId, action) {
-        var form = $("#cancel-reason-form-" + orderId);
-        var errorBox = $("#cancel-reason-error-" + orderId);
-        var selectedReason = form.find("input[name='reason']:checked").val();
-        var otherText = form.find("textarea[name='other_reason']").val();
-        errorBox.hide().text("");
-
-        if (!selectedReason) {
-            errorBox.text("Please select a reason for cancellation.").show();
-            return;
-        }
-        if (selectedReason === 'other' && !otherText.trim()) {
-            errorBox.text("Please enter a reason in the text box.").show();
-            return;
-        }
-
-        showSpinner(button);
-        $.post("<?php echo admin_url('admin-ajax.php'); ?>", {
-            action: action,
-            security: "<?php echo wp_create_nonce('ajax_nonce'); ?>",
-            order_id: orderId,
-            reason: selectedReason,
-            other_reason: otherText
-        }, function(response) {
-            hideSpinner(button);
-            if (response.success) {
-                let title = "Booking Cancelled";
-                let message = "Your booking has been successfully cancelled.";
-                if (action === "early_cancel_order") {
-                    title = "Booking Cancelled – Deposit Refund on Its Way!";
-                    message = "Your booking has been successfully cancelled. Your deposit refund is being processed and will be returned to your original payment method shortly.";
-                } else if (action === "late_cancel_order") {
-                    message = "Your booking has been successfully cancelled. Please note the deposit and booking fee were non-refundable.";
+        <script type="text/javascript">
+            jQuery(document).ready(function($) {
+                function showSpinner(button) {
+                    $(button).prop("disabled", true).find(".spinner").removeClass("hidden");
                 }
-                $("#cancel-success-title").text(title);
-                $("#cancel-success-message").text(message);
-                $(".status-modal").hide();
-                $("#cancelSuccessModal").fadeIn();
-            } else {
-                errorBox.text(response.data.message).show();
-            }
-        });
-    }
 
-    $(".modal-trigger").click(function() {
-        $("#" + $(this).data("modal")).fadeIn();
-    });
+                function hideSpinner(button) {
+                    $(button).prop("disabled", false).find(".spinner").addClass("hidden");
+                }
 
-    $(".close-modal, .close-modal-text").click(function() {
-        $(".status-modal").fadeOut();
-    });
+                function handleReasonSubmit(button, orderId, action) {
+                    var form = $("#cancel-reason-form-" + orderId);
+                    var errorBox = $("#cancel-reason-error-" + orderId);
+                    var selectedReason = form.find("input[name='reason']:checked").val();
+                    var otherText = form.find("textarea[name='other_reason']").val();
+                    errorBox.hide().text("");
 
-    $(window).click(function(event) {
-        $(".status-modal").each(function() {
-            if (event.target === this) $(this).fadeOut();
-        });
-    });
+                    if (!selectedReason) {
+                        errorBox.text("Please select a reason for cancellation.").show();
+                        return;
+                    }
+                    if (selectedReason === 'other' && !otherText.trim()) {
+                        errorBox.text("Please enter a reason in the text box.").show();
+                        return;
+                    }
 
-    $('input[name="reason"]').on('change', function () {
-        var form = $(this).closest("form");
-        var selected = form.find('input[name="reason"]:checked').val();
-        form.find('.other-reason-wrapper').toggle(selected === 'other');
-    });
+                    showSpinner(button);
+                    $.post("<?php echo admin_url('admin-ajax.php'); ?>", {
+                        action: action,
+                        security: "<?php echo wp_create_nonce('ajax_nonce'); ?>",
+                        order_id: orderId,
+                        reason: selectedReason,
+                        other_reason: otherText
+                    }, function(response) {
+                        hideSpinner(button);
+                        if (response.success) {
+                            let title = "Booking Cancelled";
+                            let message = "Your booking has been successfully cancelled.";
+                            if (action === "early_cancel_order") {
+                                title = "Booking Cancelled – Deposit Refund on Its Way!";
+                                message = "Your booking has been successfully cancelled. Your deposit refund is being processed and will be returned to your original payment method shortly.";
+                            } else if (action === "late_cancel_order") {
+                                message = "Your booking has been successfully cancelled. Please note the deposit and booking fee were non-refundable.";
+                            }
+                            $("#cancel-success-title").text(title);
+                            $("#cancel-success-message").text(message);
+                            $(".status-modal").hide();
+                            $("#cancelSuccessModal").fadeIn();
+                        } else {
+                            errorBox.text(response.data.message).show();
+                        }
+                    });
+                }
 
-    $(".confirm-cancel-order").click(function () {
-        var orderId = $(this).data("order-id");
-        $("#cancelModal_" + orderId).hide();
-        var modal = $("#cancelReasonModal_" + orderId);
-        modal.find(".submit-final-cancel-normal").show();
-        modal.find(".submit-final-cancel-early, .submit-final-cancel-late").hide();
-        modal.show();
-    });
+                $(".modal-trigger").click(function() {
+                    $("#" + $(this).data("modal")).fadeIn();
+                });
 
-    $(".confirm-early-cancel-order").click(function () {
-        var orderId = $(this).data("order-id");
-        $("#earlyCancelModal_" + orderId).hide();
-        var modal = $("#cancelReasonModal_" + orderId);
-        modal.find(".submit-final-cancel-early").show();
-        modal.find(".submit-final-cancel-normal, .submit-final-cancel-late").hide();
-        modal.show();
-    });
+                $(".close-modal, .close-modal-text").click(function() {
+                    $(".status-modal").fadeOut();
+                });
 
-    $(".confirm-late-cancel-order").click(function () {
-        var orderId = $(this).data("order-id");
-        $("#lateCancelModal_" + orderId).hide();
-        var modal = $("#cancelReasonModal_" + orderId);
-        modal.find(".submit-final-cancel-late").show();
-        modal.find(".submit-final-cancel-normal, .submit-final-cancel-early").hide();
-        modal.show();
-    });
+                $(window).click(function(event) {
+                    $(".status-modal").each(function() {
+                        if (event.target === this) $(this).fadeOut();
+                    });
+                });
 
-    $(".submit-final-cancel-normal").click(function () {
-        handleReasonSubmit(this, $(this).data("order-id"), "cancel_order");
-    });
+                $('input[name="reason"]').on('change', function() {
+                    var form = $(this).closest("form");
+                    var selected = form.find('input[name="reason"]:checked').val();
+                    form.find('.other-reason-wrapper').toggle(selected === 'other');
+                });
 
-    $(".submit-final-cancel-early").click(function () {
-        handleReasonSubmit(this, $(this).data("order-id"), "early_cancel_order");
-    });
+                $(".confirm-normal-cancel-order").click(function() {
+                    var orderId = $(this).data("order-id");
+                    $("#normalCancelModal_" + orderId).hide();
+                    var modal = $("#cancelReasonModal_" + orderId);
+                    modal.find(".submit-final-cancel-normal").show();
+                    modal.find(".submit-final-cancel-early, .submit-final-cancel-late").hide();
+                    modal.show();
+                });
 
-    $(".submit-final-cancel-late").click(function () {
-        handleReasonSubmit(this, $(this).data("order-id"), "late_cancel_order");
-    });
-});
-</script>
+
+                $(".confirm-early-cancel-order").click(function() {
+                    var orderId = $(this).data("order-id");
+                    $("#earlyCancelModal_" + orderId).hide();
+                    var modal = $("#cancelReasonModal_" + orderId);
+                    modal.find(".submit-final-cancel-early").show();
+                    modal.find(".submit-final-cancel-normal, .submit-final-cancel-late").hide();
+                    modal.show();
+                });
+
+                $(".confirm-late-cancel-order").click(function() {
+                    var orderId = $(this).data("order-id");
+                    $("#lateCancelModal_" + orderId).hide();
+                    var modal = $("#cancelReasonModal_" + orderId);
+                    modal.find(".submit-final-cancel-late").show();
+                    modal.find(".submit-final-cancel-normal, .submit-final-cancel-early").hide();
+                    modal.show();
+                });
+
+                $(".submit-final-cancel-normal").click(function() {
+                    handleReasonSubmit(this, $(this).data("order-id"), "cancel_order");
+                });
+
+                $(".submit-final-cancel-early").click(function() {
+                    handleReasonSubmit(this, $(this).data("order-id"), "early_cancel_order");
+                });
+
+                $(".submit-final-cancel-late").click(function() {
+                    handleReasonSubmit(this, $(this).data("order-id"), "late_cancel_order");
+                });
+            });
+        </script>
 
 <?php
         return ob_get_clean();
