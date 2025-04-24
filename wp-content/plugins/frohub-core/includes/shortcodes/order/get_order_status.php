@@ -224,6 +224,13 @@ class GetOrderStatus
 
                 $(".submit-final-cancel").click(function() {
 
+                    var button = $(this);
+                    var orderId = button.data("order-id");
+                    var form = $("#cancel-reason-form-" + orderId);
+                    var selectedReason = form.find("input[name='reason']:checked").val();
+                    var otherText = form.find("textarea[name='other_reason']").val();
+
+                    
                     if (!selectedReason) {
                         alert("Please select a reason for cancellation.");
                         hideSpinner(button);
@@ -236,11 +243,6 @@ class GetOrderStatus
                         return;
                     }
 
-                    var button = $(this);
-                    var orderId = button.data("order-id");
-                    var form = $("#cancel-reason-form-" + orderId);
-                    var selectedReason = form.find("input[name='reason']:checked").val();
-                    var otherText = form.find("textarea[name='other_reason']").val();
 
                     showSpinner(button);
 
