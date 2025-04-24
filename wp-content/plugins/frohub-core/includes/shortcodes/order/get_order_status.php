@@ -65,7 +65,7 @@ class GetOrderStatus
                             </div>
                         </div>
                       </div>';
-                echo '<div id="cancelReasonModal_<?php echo esc_attr($order_id); ?>" class="status-modal">
+                echo '<div id="cancelReasonModal_'.$order_id.' class="status-modal">
                         <div class="modal-content">
                             <div class="modal-header">
                             <h5>Help us improve, tell us why you’re cancelling</h5>
@@ -73,7 +73,7 @@ class GetOrderStatus
                             </div>
                             <div class="modal-body">
                             <p>We’d love to know why you decided to cancel. Your feedback helps us improve the booking experience for you and others.</p>
-                            <form id="cancel-reason-form-<?php echo esc_attr($order_id); ?>">
+                            <form id="cancel-reason-form-'.$order_id.'">
                                 <label><input type="radio" name="reason" value="scheduling"> I had a scheduling conflict</label><br>
                                 <label><input type="radio" name="reason" value="changed-mind"> I changed my mind</label><br>
                                 <label><input type="radio" name="reason" value="no-response"> The stylist didn’t respond in time</label><br>
@@ -83,7 +83,7 @@ class GetOrderStatus
                             </form>
                             </div>
                             <div class="modal-footer">
-                            <button class="w-btn us-btn-style_6 w-btn-underlined submit-final-cancel" data-order-id="<?php echo esc_attr($order_id); ?>">Cancel Booking</button>
+                            <button class="w-btn us-btn-style_6 w-btn-underlined submit-final-cancel" data-order-id="'.$order_id.'">Cancel Booking</button>
                             </div>
                         </div>
                         </div>';
