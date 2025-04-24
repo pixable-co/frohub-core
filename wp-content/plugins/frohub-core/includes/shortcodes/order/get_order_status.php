@@ -48,6 +48,7 @@ class GetOrderStatus
                         data-order-id="' . esc_attr($order_id) . '">
                         Cancel Order</button>';
 
+                // Modal for cancellation confirmation
                 echo '<div id="' . esc_attr($modal_cancel) . '" class="status-modal">
                         <div class="modal-content">
                             <div class="modal-header">
@@ -65,6 +66,7 @@ class GetOrderStatus
                             </div>
                         </div>
                       </div>';
+                // Modal for cancellation reason
                 echo '<div id="cancelReasonModal_' . $order_id . '" class="status-modal">
                         <div class="modal-content">
                             <div class="modal-header">
@@ -91,6 +93,20 @@ class GetOrderStatus
                             </div>
                         </div>
                         </div>';
+                // Modal for booking cancellation confirmation
+                echo '<div id="cancelSuccessModal" class="status-modal" style="display:none;">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5>Booking Cancelled – Deposit Refund on Its Way!</h5>
+                            </div>
+                            <div class="modal-body">
+                                <p>Your booking has been successfully cancelled. Your deposit refund is being processed and will be returned to your original payment method shortly.</p>
+                            </div>
+                            <div class="modal-footer">
+                                <a href="/my-account/bookings/" class="w-btn us-btn-style_6 w-btn-underlined">Back to My Bookings</a>
+                            </div>
+                        </div>
+                    </div>';
             } elseif ($status === 'processing') {
                 $start_date = '';
 
@@ -207,6 +223,19 @@ class GetOrderStatus
                 });
 
                 $(".submit-final-cancel").click(function() {
+
+                    if (!selectedReason) {
+                        alert("Please select a reason for cancellation.");
+                        hideSpinner(button);
+                        return;
+                    }
+
+                    if (selectedReason === 'other' && !otherText.trim()) {
+                        alert("Please enter a reason in the text box.");
+                        hideSpinner(button);
+                        return;
+                    }
+
                     var button = $(this);
                     var orderId = button.data("order-id");
                     var form = $("#cancel-reason-form-" + orderId);
@@ -224,8 +253,8 @@ class GetOrderStatus
                     }, function(response) {
                         hideSpinner(button);
                         if (response.success) {
-                            alert(response.data.message);
-                            location.reload();
+                            $(".status-modal").hide(); // Hide all open modals
+                            $("#cancelSuccessModal").fadeIn();
                         } else {
                             alert(response.data.message);
                         }
