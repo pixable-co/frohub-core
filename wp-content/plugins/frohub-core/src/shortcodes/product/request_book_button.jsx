@@ -176,10 +176,8 @@ export default function RequestBookButton() {
                     <div className="w-full bottom-bar">
                         <div className="bottom-bar-notice flex items-center gap-2 text-gray-700 text-sm">
                         <span className="flex items-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-black mr-1" viewBox="0 0 24 24" fill="currentColor">
-                                <path fillRule="evenodd" d="M12 2a10 10 0 1 1-10 10A10 10 0 0 1 12 2zm0 18a8 8 0 1 0-8-8 8 8 0 0 0 8 8zm-1-13a1 1 0 0 1 2 0v4a1 1 0 0 1-2 0zm1 6a1.25 1.25 0 1 1-1.25 1.25A1.25 1.25 0 0 1 12 13z" clipRule="evenodd" />
-                            </svg>
-                            <span>All deposits paid through FroHub are protected. <a href="#" className="text-black font-medium">Learn More</a></span>
+                            <i className="fas fa-shield-alt text-base"></i>
+                            <span>All deposits paid through FroHub are protected. <a href="/help-centre/" className="text-black font-medium">Learn More</a></span>
                         </span>
                         </div>
 
@@ -195,7 +193,7 @@ export default function RequestBookButton() {
                         <button
                             onClick={handleProceedToPayment}
                             disabled={loading || booked}
-                            className={`bg-[#E05748] !text-white font-medium px-6 py-2 rounded-sm transition flex items-center justify-center ${loading || booked ? 'cursor-not-allowed opacity-75' : 'hover:bg-gray-400'}`}
+                            className={`bg-[#E05748] !text-white font-medium px-6 py-2 rounded-full transition flex items-center justify-center ${loading || booked ? 'cursor-not-allowed opacity-75' : 'hover:bg-gray-400'}`}
                             style={{ minWidth: "150px", height: "40px" }}
                         >
                             {loading ? (

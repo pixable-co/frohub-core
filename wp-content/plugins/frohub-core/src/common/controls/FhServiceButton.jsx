@@ -9,9 +9,9 @@ const iconMap = {
 };
 
 const descriptionMap = {
-    "home-based": "You travel to your stylists’ home",
-    "salon-based": "You travel to your stylists’ salon",
-    "mobile": "Your stylist travels to your home",
+    "home-based": "You travel to your stylist’s home",
+    "salon-based": "You travel to your stylist’s salon",
+    "mobile": "Your stylist travels to you",
 };
 
 

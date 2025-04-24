@@ -111,7 +111,7 @@
 #modalproductImg {
     width: 230px;
     height: 270px;
-    background-color: #eee;
+    /*background-color: #eee;*/
     border-radius: 16px;
     background-size: cover;
     background-position: center;

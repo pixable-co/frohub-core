@@ -185,6 +185,7 @@ const FrohubCalender = () => {
 
     return (
         <div className="relative">
+            <p>Search availability and select a time slot</p>
             <FhCalender
                 data={availabilityData}
                 onDateChange={handleDateChange}

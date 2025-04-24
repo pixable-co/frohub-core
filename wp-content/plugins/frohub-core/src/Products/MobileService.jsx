@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { CheckCircle, XCircle, RefreshCw } from "lucide-react";
 import { Skeleton } from "antd";
 import frohubStore from "../frohubStore.js";
@@ -17,7 +17,7 @@ export default function MobileService({ partnerId }) {
     const [loadingPartner, setLoadingPartner] = useState(true);
     const [error, setError] = useState("");
     const [staticLocation, setStaticLocation] = useState(null);
-    const { setMobileTravelFee, setReadyForMobile } = frohubStore();
+    const { setMobileTravelFee, setReadyForMobile, totalService } = frohubStore();
 
     useEffect(() => {
         // Get static location data from cookie using the imported function
@@ -173,7 +173,12 @@ export default function MobileService({ partnerId }) {
             frohubStore.setState((state) => ({ readyForMobile: true }));
         } else {
             setIsValid(false);
-            setError("Sorry, you are outside the service area.");
+            if (totalService < 1) {
+                setError("Oops! They don’t cover your area. Try another stylist nearby.");
+            }
+            else {
+                setError("Oops! Mobile’s not available in your area, but you can still book at their home or salon");
+            }
             setMobileTravelFee(0);
             frohubStore.setState((state) => ({ readyForMobile: false }));
         }
@@ -240,8 +245,14 @@ export default function MobileService({ partnerId }) {
             frohubStore.setState((state) => ({ readyForMobile: true }));
         } else {
             setIsValid(false);
-            setError("Sorry, you are outside the service area.");
-            setErrorMessage("Sorry, you are outside the service area.");
+            if (totalService < 1) {
+                setError("Oops! They don’t cover your area. Try another stylist nearby.");
+                setErrorMessage("Oops! They don’t cover your area. Try another stylist nearby.");
+            }
+            else {
+                setError("Oops! Mobile’s not available in your area, but you can still book at their home or salon");
+                setErrorMessage("Oops! Mobile’s not available in your area, but you can still book at their home or salon");
+            }
             setMobileTravelFee(0);
             frohubStore.setState((state) => ({ readyForMobile: false }));
         }
@@ -286,7 +297,7 @@ export default function MobileService({ partnerId }) {
                             {isValid && travelFee !== null && (
                                 <div className="flex items-center text-green-600 font-semibold mt-2">
                                     <CheckCircle className="w-5 h-5 mr-1" />
-                                    You are inside the service area.
+                                    Yasss! You’re in the service area - this stylist can come to you!
                                 </div>
                             )}
 

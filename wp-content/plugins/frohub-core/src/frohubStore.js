@@ -20,6 +20,7 @@ const frohubStore = create((set) => {
         readyForMobile: false,
         addonTotalTime: 0,
         errorMessage: "Postcode cannot be empty",
+        totalService: 0,
 
         // ✅ Existing actions
         setAvailabilityData: (data) => set({ availabilityData: data, loading: false }),
@@ -39,6 +40,8 @@ const frohubStore = create((set) => {
         // ✅ Reset addonsChanged after fetch
         resetAddonsChanged: () => set({ addonsChanged: false }),
         setErrorMessage: (message) => set({ errorMessage: message }),
+        setTotalService: (total) => set({ totalService: total }),
+
     };
 });
 
