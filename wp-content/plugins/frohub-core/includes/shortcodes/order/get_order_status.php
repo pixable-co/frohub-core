@@ -65,7 +65,7 @@ class GetOrderStatus
                             </div>
                         </div>
                       </div>';
-                echo '<div id="cancelReasonModal_'.$order_id.' class="status-modal">
+                echo '<div id="cancelReasonModal_'.$order_id.'" class="status-modal">
                         <div class="modal-content">
                             <div class="modal-header">
                             <h5>Help us improve, tell us why you’re cancelling</h5>
