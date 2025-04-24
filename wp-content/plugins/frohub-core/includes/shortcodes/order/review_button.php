@@ -93,8 +93,12 @@ class ReviewButton {
                             <p id="productName"></p>
                             <p id="serviceType"></p>
                             <p id="partnerTitle"></p>
-                            <p><i class="fas fa-calendar-alt"></i> <span id="selectedDate"></span></p>
-                            <p><i class="fas fa-map-marker-alt"></i> <span id="partnerAddress"></span></p>
+                            <p id="bookingDate"><i class="fas fa-calendar-alt"></i> <span id="selectedDate"></span></p>
+                            <p id="bookingAddress"><i class="fas fa-map-marker-alt"></i> <span id="partnerAddress"></span></p>
+                            <div class="feedback-form">
+                                <p id="feedbackHeading">Let’s See How You Slay (Share Your Photo)</p>
+                                <p id="feedbackDesc">Feel free to share a photo of your fabulous look! If you're a bit shy, you can always upload a side shot or one that keeps your face covered. Sharing photos helps other clients see the stylist’s work and decide if they’d like to book the service.</p>
+                            </div>
                             <div>
                                 <?php echo do_shortcode('[gravityform id="7" title="false" description="false" ajax="true"]'); ?>
                             </div>

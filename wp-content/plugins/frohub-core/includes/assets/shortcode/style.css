@@ -121,6 +121,10 @@ modal-body-right {
     width: 100%;
 }
 
+.modal-body-right.full-width {
+    width: 100% !important;
+}
+
 .w-hwrapper > div > p {
     margin: 5px 0;
     font-size: 15px;
@@ -213,4 +217,19 @@ modal-body-right {
 
 #gf_progressbar_wrapper_7 {
     display: none;
+}
+
+.feedback-form{
+    display: none;
+}
+
+#feedbackHeading{
+    font-weight: 400;
+    font-size: 24px;
+}
+
+#feedbackDesc {
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 100%;
 }
