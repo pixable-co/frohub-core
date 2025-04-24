@@ -75,6 +75,7 @@ class GetOrderStatus
                             </div>
                             <div class="modal-body">
                             <p>We’d love to know why you decided to cancel. Your feedback helps us improve the booking experience for you and others.</p>
+                            <p id="cancel-reason-error-"' . $order_id . '" class="cancel-error-msg" style="display:none; color: #c00; margin-bottom: 10px;"></p>
                             <form id="cancel-reason-form-' . $order_id . '">
                                 <label><input type="radio" name="reason" value="scheduling"> I had a scheduling conflict</label><br>
                                 <label><input type="radio" name="reason" value="changed-mind"> I changed my mind</label><br>
@@ -97,10 +98,10 @@ class GetOrderStatus
                 echo '<div id="cancelSuccessModal" class="status-modal" style="display:none;">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5>Booking Cancelled – Deposit Refund on Its Way!</h5>
+                                <h5>Booking Cancelled</h5>
                             </div>
                             <div class="modal-body">
-                                <p>Your booking has been successfully cancelled. Your deposit refund is being processed and will be returned to your original payment method shortly.</p>
+                                <p>Your booking has been successfully cancelled.</p>
                             </div>
                             <div class="modal-footer">
                                 <a href="/my-account/bookings/" class="w-btn us-btn-style_6 w-btn-underlined">Back to My Bookings</a>
@@ -229,20 +230,20 @@ class GetOrderStatus
                     var form = $("#cancel-reason-form-" + orderId);
                     var selectedReason = form.find("input[name='reason']:checked").val();
                     var otherText = form.find("textarea[name='other_reason']").val();
+                    var errorBox = $("#cancel-reason-error-" + orderId);
 
-                    
+                    // Reset error box
+                    errorBox.hide().text("");
+
                     if (!selectedReason) {
-                        alert("Please select a reason for cancellation.");
-                        hideSpinner(button);
+                        errorBox.text("Please select a reason for cancellation.").show();
                         return;
                     }
 
                     if (selectedReason === 'other' && !otherText.trim()) {
-                        alert("Please enter a reason in the text box.");
-                        hideSpinner(button);
+                        errorBox.text("Please enter a reason in the text box.").show();
                         return;
                     }
-
 
                     showSpinner(button);
 
