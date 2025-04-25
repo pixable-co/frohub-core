@@ -39,10 +39,17 @@ class GetOrderStatus
             
             $status_label = isset($status_labels[$status]) ? $status_labels[$status] : 'Unknown Status';
             
-            // Override label if status is 'cancelled' and cancellation_status field is meaningful
-            if ($status === 'cancelled' && !empty($cancellation_status) && $cancellation_status !== 'N/A') {
-                $status_label = esc_html($cancellation_status);
-            }
+// Override label if status is 'cancelled' and cancellation_status field is meaningful
+if ($status === 'cancelled') {
+    $field_obj = get_field_object('cancellation_status', $order_id);
+    $value = isset($field_obj['value']) ? $field_obj['value'] : '';
+    $label = isset($field_obj['choices'][$value]) ? $field_obj['choices'][$value] : '';
+
+    if (!empty($value) && $value !== 'N/A' && !empty($label)) {
+        $status_label = esc_html($label);
+    }
+}
+
             
             echo '<span class="status_text">' . esc_html($status_label) . '</span>';
             
