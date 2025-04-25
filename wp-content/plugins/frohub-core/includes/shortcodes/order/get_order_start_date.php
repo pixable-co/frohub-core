@@ -80,7 +80,9 @@ class GetOrderStartDate {
                                         data-order-id="' . esc_attr($order_id) . '"
                                         data-start="' . esc_attr($formatted_proposed_start) . '">
                                         <span class="spinner hidden"></span> Yes, Confirm Appointment</button>
+                                    <button class="w-btn us-btn-style_6 w-btn-underlined close-modal-text">Go Back</button>
                                 </div>
+
                             </div>
                         </div>';
                         
