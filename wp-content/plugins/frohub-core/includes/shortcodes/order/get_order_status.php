@@ -69,7 +69,7 @@ if ($status === 'cancelled') {
                 $cancel_type = ($status === 'on-hold') ? 'normal' : ($is_early_cancel ? 'early' : 'late');
                 $modal_id = $cancel_type . "CancelModal_" . $order_id;
 
-                echo '<button class="modal-trigger w-btn us-btn-style_6"
+                echo '<button class="modal-trigger w-btn us-btn-style_6 w-btn-underlined"
                         data-modal="' . esc_attr($modal_id) . '"
                         data-order-id="' . esc_attr($order_id) . '">
                         Cancel Order</button>';
