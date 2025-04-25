@@ -50,14 +50,14 @@ class GetOrderStartDate {
 
                     echo '<i class="fas fa-arrows-alt-h"></i><span class="text-muted me-3">' . esc_html($formatted_proposed_start) . '</span>';
 
-                    echo '<button class="modal-trigger w-btn us-btn-style_5 w-btn-underlined btn-sm me-2"
+                    echo '<button class="modal-trigger w-btn us-btn-style_5"
                             data-modal="' . esc_attr($modal_accept) . '"
                             data-order-id="' . esc_attr($order_id) . '"
                             data-start="' . esc_attr($formatted_proposed_start) . '"
                             data-end="' . esc_attr($formatted_proposed_end) . '">
                             Accept</button>';
 
-                    echo '<button class="modal-trigger w-btn us-btn-style_6 w-btn-underlined btn-sm me-2"
+                    echo '<button class="modal-trigger w-btn us-btn-style_6"
                             data-modal="' . esc_attr($modal_decline) . '"
                             data-order-id="' . esc_attr($order_id) . '"
                             data-start="' . esc_attr($formatted_proposed_start) . '"
