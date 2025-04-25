@@ -22,6 +22,8 @@ class LateCancelOrder {
         }
 
         $order_id = intval($_POST['order_id']);
+        $cancellation_reason = isset($_POST['reason']) ? sanitize_text_field($_POST['reason']) : '';
+        $cancellation_other_text = isset($_POST['other_reason']) ? sanitize_textarea_field($_POST['other_reason']) : '';
         $order = wc_get_order($order_id);
 
         if (!$order) {
@@ -33,6 +35,9 @@ class LateCancelOrder {
 
         // Update ACF field
         update_field('cancellation_status', 'Late Cancellation', $order_id);
+        update_field('cancellation_reason', $cancellation_reason, $order_id);
+        update_field('cancellation_other_reason_text', $cancellation_other_text, $order_id);
+
 
         // Pull client data
         $client_email = $order->get_billing_email();
