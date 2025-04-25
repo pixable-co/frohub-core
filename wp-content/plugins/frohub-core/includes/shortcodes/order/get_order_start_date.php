@@ -199,34 +199,32 @@ class GetOrderStartDate {
                 });
             });
 
-    function showSpinner(button) {
-var modalFooter = button.closest(".modal-footer");
+            function showSpinner(button) {
+    var modalFooter = button.closest(".modal-footer");
 
-// Disable all buttons in footer
-modalFooter.find("button").prop("disabled", true);
+    // Disable all buttons inside the modal footer
+    modalFooter.find("button").prop("disabled", true);
 
-// Hide all text buttons except the one clicked
-modalFooter.find("button").not(button).hide();
+    // Hide all other buttons except the clicked one
+    modalFooter.find("button").not(button).hide();
 
-// Hide button text and show spinner
-button.contents().filter(function() {
-return this.nodeType === 3; // Text nodes only
-}).wrap('<span class="hidden-text" style="display:none;"></span>');
+    // Hide the btn-text span inside the clicked button (if exists)
+    button.find(".btn-text").hide();
 
-button.find(".spinner").removeClass("hidden");
+    // Show the spinner inside the clicked button
+    button.find(".spinner").removeClass("hidden");
 }
+
 
 
 function hideSpinner(button) {
     var modalFooter = button.closest(".modal-footer");
 
-    // Enable and show all buttons again
+    // Re-enable and show all buttons
     modalFooter.find("button").prop("disabled", false).show();
 
-    // Restore button text
-    button.find(".hidden-text").contents().unwrap();
-
-    // Hide the spinner
+    // Restore btn-text and hide spinner
+    button.find(".btn-text").show();
     button.find(".spinner").addClass("hidden");
 }
 
