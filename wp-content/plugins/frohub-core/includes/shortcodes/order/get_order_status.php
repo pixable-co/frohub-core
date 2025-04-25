@@ -102,7 +102,7 @@ if ($status === 'cancelled') {
                 echo '<div id="lateCancelModal_' . esc_attr($order_id) . '" class="status-modal">
                         <div class="modal-content">
                             <div class="modal-header"><h5>Cancel Booking?</h5><span class="close-modal">×</span></div>
-                            <div class="modal-body"><p>If you cancel now, your deposit and booking fee will not be refunded as per our cancellation policy.</p><p class="confirmation-text">Are you sure you want to cancel?</p></div>
+                            <div class="modal-body"><i class="fas fa-exclamation-triangle" style="font-size:2rem; margin-bottom:1rem;"></i><p>Since your appointment is within 7 days, this counts as a late cancellation. Your deposit and booking fee won’t be refunded as per our cancellation policy.</p><p class="confirmation-text">Are you sure you want to cancel?</p></div>
                             <div class="modal-footer">
                                 <button class="w-btn us-btn-style_6 w-btn-underlined confirm-late-cancel-order" data-order-id="' . esc_attr($order_id) . '"><span class="spinner hidden"></span> Yes, Cancel Anyway</button>
                                 <button class="w-btn us-btn-style_6 w-btn-underlined close-modal-text">Keep My Booking</button>
