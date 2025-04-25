@@ -48,8 +48,7 @@ class GetOrderStartDate {
                     $conversation_url = !empty($conversation_post) ? get_permalink($conversation_post) : '#';
 
 
-                    echo '<i class="fas fa-arrows-alt-h mx-2"></i>
-                          <span class="text-muted me-3">' . esc_html($formatted_proposed_start) . '</span>';
+                    echo '<i class="fas fa-arrows-alt-h" style="margin:0 1rem;"></i><span class="text-muted me-3">' . esc_html($formatted_proposed_start) . '</span>';
 
                     echo '<button class="modal-trigger w-btn us-btn-style_5 w-btn-underlined btn-sm me-2"
                             data-modal="' . esc_attr($modal_accept) . '"
