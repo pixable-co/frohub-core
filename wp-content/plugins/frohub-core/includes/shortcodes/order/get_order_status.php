@@ -156,16 +156,33 @@ if ($status === 'cancelled') {
         <script type="text/javascript">
             jQuery(document).ready(function($) {
                 function showSpinner(button) {
-                    $(button).prop("disabled", true);
-                    $(button).find(".spinner").removeClass("hidden");
-                    $(button).find(".btn-text").hide();
+                    var modalFooter = button.closest(".modal-footer");
+
+                    // Disable all buttons inside the modal footer
+                    modalFooter.find("button").prop("disabled", true);
+
+                    // Hide all other buttons except the clicked one
+                    modalFooter.find("button").not(button).hide();
+
+                    // Hide the btn-text span inside the clicked button (if exists)
+                    button.find(".btn-text").hide();
+
+                    // Show the spinner inside the clicked button
+                    button.find(".spinner").removeClass("hidden");
                 }
 
+
                 function hideSpinner(button) {
-                    $(button).prop("disabled", false);
-                    $(button).find(".spinner").addClass("hidden");
-                    $(button).find(".btn-text").show();
+                    var modalFooter = button.closest(".modal-footer");
+
+                    // Re-enable and show all buttons
+                    modalFooter.find("button").prop("disabled", false).show();
+
+                    // Restore btn-text and hide spinner
+                    button.find(".btn-text").show();
+                    button.find(".spinner").addClass("hidden");
                 }
+
 
                 function handleReasonSubmit(button, orderId, action) {
                     var form = $("#cancel-reason-form-" + orderId);
