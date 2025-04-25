@@ -270,45 +270,6 @@ function hideSpinner(button) {
         });
 
 
-        $(".submit-final-cancel").click(function () {
-    var button = $(this);
-    var orderId = button.data("order-id");
-
-    var selectedReason = $("#cancel-reason-form-" + orderId + " input[name='reason']:checked").val();
-    var otherReason = $("#cancel-reason-form-" + orderId + " textarea[name='other_reason']").val();
-
-    if (!selectedReason) {
-        $("#cancel-reason-error-" + orderId).text("Please select a reason for cancelling.").show();
-        return;
-    }
-
-    showSpinner(button);
-
-    $.ajax({
-        url: "<?php echo admin_url('admin-ajax.php'); ?>",
-        type: "POST",
-        data: {
-            action: "decline_new_proposed_time", // your same server-side handler
-            security: "<?php echo wp_create_nonce('ajax_nonce'); ?>",
-            order_id: orderId,
-            reason: selectedReason,
-            other_reason: otherReason
-        },
-        success: function (response) {
-            hideSpinner(button);
-            if (response.success) {
-                location.reload();
-            } else {
-                alert(response.data.message);
-            }
-        },
-        error: function (xhr, status, error) {
-            hideSpinner(button);
-            alert("Something went wrong. Please try again.");
-        }
-    });
-});
-
 
 $(document).on('change', 'input[name="reason"]', function () {
     if ($(this).val() === "other") {
@@ -330,7 +291,7 @@ $(".submit-final-cancel").click(function () {
 
     errorBox.hide().text("");
 
-    // Error checks:
+    // Validation
     if (!selectedReason) {
         errorBox.text("Please select a reason for declining.").show();
         return;
@@ -340,7 +301,7 @@ $(".submit-final-cancel").click(function () {
         return;
     }
 
-    // Passed validation — proceed
+    // Passed validation
     showSpinner(button);
 
     $.ajax({
@@ -357,7 +318,7 @@ $(".submit-final-cancel").click(function () {
             hideSpinner(button);
             if (response.success) {
                 $(".status-modal").hide();
-                $("#cancelSuccessModal").fadeIn(); // Show success modal (you can have a small success modal)
+                $("#cancelSuccessModal").fadeIn(); // Success modal
             } else {
                 errorBox.text(response.data.message || "An unexpected error occurred.").show();
             }
@@ -368,6 +329,7 @@ $(".submit-final-cancel").click(function () {
         }
     });
 });
+
 
         });
         </script>
