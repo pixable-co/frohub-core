@@ -24,7 +24,8 @@ class GetOrderStatus
 
         if (!empty($order)) {
             $status = $order->get_status();
-
+            $cancellation_status = get_field('cancellation_status', $order_id);
+            
             $status_labels = [
                 'pending'       => 'Pending payment',
                 'processing'    => 'Processing',
@@ -35,10 +36,16 @@ class GetOrderStatus
                 'failed'        => 'Failed',
                 'rescheduling'  => 'Rescheduling'
             ];
-
+            
             $status_label = isset($status_labels[$status]) ? $status_labels[$status] : 'Unknown Status';
-
+            
+            // Override label if status is 'cancelled' and cancellation_status field is meaningful
+            if ($status === 'cancelled' && !empty($cancellation_status) && $cancellation_status !== 'N/A') {
+                $status_label = esc_html($cancellation_status);
+            }
+            
             echo '<span class="status_text">' . esc_html($status_label) . '</span>';
+            
 
             if ($status === 'on-hold' || $status === 'processing') {
                 $is_early_cancel = false;
