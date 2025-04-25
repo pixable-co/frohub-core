@@ -49,11 +49,9 @@ if ($status === 'cancelled') {
         $status_label = esc_html($label);
     }
 }
-
-            
+        
             echo '<span class="status_text">' . esc_html($status_label) . '</span>';
             
-
             if ($status === 'on-hold' || $status === 'processing') {
                 $is_early_cancel = false;
                 if ($status === 'processing') {
@@ -82,7 +80,7 @@ if ($status === 'cancelled') {
                             <div class="modal-header"><h5>Cancel Booking?</h5><span class="close-modal">×</span></div>
                             <div class="modal-body"><p class="confirmation-text">Are you sure you want to cancel this booking request?</p></div>
                             <div class="modal-footer">
-                                <button class="w-btn us-btn-style_6 w-btn-underlined confirm-normal-cancel-order" data-order-id="' . esc_attr($order_id) . '"><span class="spinner hidden"></span> Yes, Cancel Booking</button>
+                                <button class="w-btn us-btn-style_6 w-btn-underlined confirm-normal-cancel-order" data-order-id="' . esc_attr($order_id) . '"> Yes, Cancel Booking</button>
                                 <button class="w-btn us-btn-style_6 w-btn-underlined close-modal-text">Keep My Booking</button>
                             </div>
                         </div>
@@ -93,7 +91,7 @@ if ($status === 'cancelled') {
                             <div class="modal-header"><h5>Cancel Booking?</h5><span class="close-modal">×</span></div>
                             <div class="modal-body"><p>You\'re within the early cancellation window. If you proceed, your deposit will be refunded, but the booking fee is non-refundable.</p></div>
                             <div class="modal-footer">
-                                <button class="w-btn us-btn-style_6 w-btn-underlined confirm-early-cancel-order" data-order-id="' . esc_attr($order_id) . '"><span class="spinner hidden"></span> Yes, Cancel Booking</button>
+                                <button class="w-btn us-btn-style_6 w-btn-underlined confirm-early-cancel-order" data-order-id="' . esc_attr($order_id) . '"> Yes, Cancel Booking</button>
                                 <button class="w-btn us-btn-style_6 w-btn-underlined close-modal-text">Keep My Booking</button>
                             </div>
                         </div>
@@ -104,7 +102,7 @@ if ($status === 'cancelled') {
                             <div class="modal-header"><h5>Cancel Booking?</h5><span class="close-modal">×</span></div>
                             <div class="modal-body"><i class="fas fa-exclamation-triangle" style="font-size:2rem; margin-bottom:1rem;"></i><p>Since your appointment is within 7 days, this counts as a late cancellation. Your deposit and booking fee won’t be refunded as per our cancellation policy.</p><p class="confirmation-text">Are you sure you want to cancel?</p></div>
                             <div class="modal-footer">
-                                <button class="w-btn us-btn-style_6 w-btn-underlined confirm-late-cancel-order" data-order-id="' . esc_attr($order_id) . '"><span class="spinner hidden"></span> Yes, Cancel Anyway</button>
+                                <button class="w-btn us-btn-style_6 w-btn-underlined confirm-late-cancel-order" data-order-id="' . esc_attr($order_id) . '"> Yes, Cancel Anyway</button>
                                 <button class="w-btn us-btn-style_6 w-btn-underlined close-modal-text">Keep My Booking</button>
                             </div>
                         </div>
@@ -127,9 +125,9 @@ if ($status === 'cancelled') {
                                 </form>
                             </div>
                             <div class="modal-footer">
-                                <button class="w-btn us-btn-style_6 w-btn-underlined submit-final-cancel-normal" data-order-id="' . $order_id . '" style="display:none;">Cancel Booking</button>
-                                <button class="w-btn us-btn-style_6 w-btn-underlined submit-final-cancel-early" data-order-id="' . $order_id . '" style="display:none;">Cancel Booking</button>
-                                <button class="w-btn us-btn-style_6 w-btn-underlined submit-final-cancel-late" data-order-id="' . $order_id . '" style="display:none;">Cancel Booking</button>
+                                <button class="w-btn us-btn-style_6 w-btn-underlined submit-final-cancel-normal" data-order-id="' . $order_id . '" style="display:none;"><span class="spinner hidden"></span>Cancel Booking</button>
+                                <button class="w-btn us-btn-style_6 w-btn-underlined submit-final-cancel-early" data-order-id="' . $order_id . '" style="display:none;"><span class="spinner hidden"></span>Cancel Booking</button>
+                                <button class="w-btn us-btn-style_6 w-btn-underlined submit-final-cancel-late" data-order-id="' . $order_id . '" style="display:none;"><span class="spinner hidden"></span>Cancel Booking</button>
                             </div>
                         </div>
                       </div>';
