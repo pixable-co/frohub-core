@@ -73,7 +73,7 @@ class GetOrderStartDate {
                                 </div>
                                 <div class="modal-body">
                                     <p>You’re about to confirm the new appointment time proposed by your stylist. Once confirmed, the booking will be updated.</p>
-                                    <p><strong>Proposed Start:</strong> <span class="modal-start-time"></span></p>
+                                    <p><strong>Proposed Time:</strong> <span class="modal-start-time"></span></p>
                                 </div>
                                 <div class="modal-footer">
                                     <button class="w-btn us-btn-style_6 w-btn-underlined confirm-proposed-date"
@@ -93,7 +93,7 @@ class GetOrderStartDate {
                             </div>
                             <div class="modal-body">
                                 <p>If you decline this proposed appointment time, your booking request will be rejected.</p>
-                                <p><strong>Proposed Start:</strong> <span class="modal-start-time"></span></p>
+                                <p><strong>Proposed Time:</strong> <span class="modal-start-time"></span></p>
                                 <p>Want a different time? <a href="' . esc_url($conversation_url) . '" class="underline" target="_blank">Message your stylist</a> to suggest an alternative before you decline.</p>
                             </div>
                             <div class="modal-footer">
