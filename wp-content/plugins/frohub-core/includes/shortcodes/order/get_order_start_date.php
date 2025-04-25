@@ -140,15 +140,37 @@ class GetOrderStartDate {
                 });
             });
 
-            function showSpinner(button) {
-                $(button).prop("disabled", true);
-                $(button).find(".spinner").removeClass("hidden");
-            }
+    function showSpinner(button) {
+var modalFooter = button.closest(".modal-footer");
 
-            function hideSpinner(button) {
-                $(button).prop("disabled", false);
-                $(button).find(".spinner").addClass("hidden");
-            }
+// Disable all buttons in footer
+modalFooter.find("button").prop("disabled", true);
+
+// Hide all text buttons except the one clicked
+modalFooter.find("button").not(button).hide();
+
+// Hide button text and show spinner
+button.contents().filter(function() {
+return this.nodeType === 3; // Text nodes only
+}).wrap('<span class="hidden-text" style="display:none;"></span>');
+
+button.find(".spinner").removeClass("hidden");
+}
+
+
+function hideSpinner(button) {
+    var modalFooter = button.closest(".modal-footer");
+
+    // Enable and show all buttons again
+    modalFooter.find("button").prop("disabled", false).show();
+
+    // Restore button text
+    button.find(".hidden-text").contents().unwrap();
+
+    // Hide the spinner
+    button.find(".spinner").addClass("hidden");
+}
+
 
             $(".confirm-proposed-date").click(function () {
                 var button = $(this);
