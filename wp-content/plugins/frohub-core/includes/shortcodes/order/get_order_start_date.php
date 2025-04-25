@@ -44,6 +44,10 @@ class GetOrderStartDate {
                     $modal_accept = "acceptModal_" . $item_id;
                     $modal_decline = "declineModal_" . $item_id;
 
+                    $conversation_post = get_field('conversation', $order_id);
+                    $conversation_url = !empty($conversation_post) ? get_permalink($conversation_post) : '#';
+
+
                     echo '<i class="fas fa-arrows-alt-h mx-2"></i>
                           <span class="text-muted me-3">' . esc_html($formatted_proposed_start) . '</span>';
 
@@ -90,7 +94,7 @@ class GetOrderStartDate {
                             <div class="modal-body">
                                 <p>If you decline this proposed appointment time, your booking request will be rejected.</p>
                                 <p><strong>Proposed Start:</strong> <span class="modal-start-time"></span></p>
-                                <p>Want a different time? Message your stylist to suggest an alternative before you decline.</p>
+                                <p>Want a different time? <a href="' . esc_url($conversation_url) . '" class="underline" target="_blank">Message your stylist</a> to suggest an alternative before you decline.</p>
                             </div>
                             <div class="modal-footer">
                                 <button class="w-btn us-btn-style_6 w-btn-underlined decline-proposed-date"
@@ -99,7 +103,7 @@ class GetOrderStartDate {
                                 <button class="w-btn us-btn-style_6 w-btn-underlined close-modal-text">No, Keep Proposed Time</button>
                             </div>
                         </div>
-                    </div>';                    
+                    </div>';                                      
                     
                 }
 
