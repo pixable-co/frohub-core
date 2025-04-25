@@ -136,10 +136,10 @@ class GetOrderStartDate {
                     echo '<div id="cancelSuccessModal" class="status-modal" style="display:none;">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5>Booking Declined</h5>
+                                <h5>Proposed Appointment Declined</h5>
                             </div>
                             <div class="modal-body">
-                                <p>Your booking request has been declined successfully.</p>
+                                <p>Your booking request has been cancelled. No payment has been charged.</p>
                             </div>
                             <div class="modal-footer">
                                 <a href="/my-account/bookings/" class="w-btn us-btn-style_6 w-btn-underlined">Back to My Bookings</a>
@@ -155,7 +155,7 @@ class GetOrderStartDate {
                             <h5>Appointment Confirmed!</h5>
                         </div>
                         <div class="modal-body">
-                            <p>Your new appointment time has been successfully confirmed. 🎉</p>
+                            <p>Your new appointment time has been successfully booked! 🎉</p>
                         </div>
                         <div class="modal-footer">
                             <a href="/my-account/bookings/" class="w-btn us-btn-style_6 w-btn-underlined">Back to My Bookings</a>
