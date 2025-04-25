@@ -105,8 +105,65 @@ class GetOrderStartDate {
                                 <button class="w-btn us-btn-style_6 w-btn-underlined close-modal-text">No, Keep Proposed Time</button>
                             </div>
                         </div>
-                    </div>';                                      
+                    </div>';      
+
+                    // Shared Cancel Reason Modal
+                    echo '<div id="cancelReasonModal_' . esc_attr($order_id) . '" class="status-modal cancel-reason-modal">
+                    <div class="modal-content">
+                        <div class="modal-header"><h5>Help us improve, tell us why you’re cancelling</h5><span class="close-modal">×</span></div>
+                        <div class="modal-body">
+                            <p>Your feedback helps us improve the booking experience.</p>
+                            <p id="cancel-reason-error-' . esc_attr($order_id) . '" class="cancel-error-msg" style="color:#c00; display:none;"></p>
+                            <form id="cancel-reason-form-' . esc_attr($order_id) . '">
+                                <label><input type="radio" name="reason" value="scheduling"> I had a scheduling conflict</label><br>
+                                <label><input type="radio" name="reason" value="changed-mind"> I changed my mind</label><br>
+                                <label><input type="radio" name="reason" value="no-response"> The stylist didn’t respond in time</label><br>
+                                <label><input type="radio" name="reason" value="stylist-cancel"> The stylist asked me to cancel</label><br>
+                                <label><input type="radio" name="reason" value="other"> Other</label>
+                                <div class="other-reason-wrapper" style="display: none; margin-top: 10px;"><textarea name="other_reason" placeholder="Enter your reason here..."></textarea></div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="w-btn us-btn-style_6 w-btn-underlined submit-final-cancel" data-order-id="' . esc_attr($order_id) . '">
+                                <span class="spinner hidden"></span>
+                                <span class="btn-text">Cancel Booking</span>
+                            </button>
+                        </div>
+                    </div>
+                    </div>';
+
+                    // Success Modal for Cancellation
+                    echo '<div id="cancelSuccessModal" class="status-modal" style="display:none;">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5>Booking Declined</h5>
+                            </div>
+                            <div class="modal-body">
+                                <p>Your booking request has been declined successfully.</p>
+                            </div>
+                            <div class="modal-footer">
+                                <a href="/my-account/bookings/" class="w-btn us-btn-style_6 w-btn-underlined">Back to My Bookings</a>
+                            </div>
+                        </div>
+                    </div>
+                    ';
                     
+                    // Success Modal for Acceptance
+                    echo '<div id="acceptSuccessModal" class="status-modal" style="display:none;">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5>Appointment Confirmed!</h5>
+                        </div>
+                        <div class="modal-body">
+                            <p>Your new appointment time has been successfully confirmed. 🎉</p>
+                        </div>
+                        <div class="modal-footer">
+                            <a href="/my-account/bookings/" class="w-btn us-btn-style_6 w-btn-underlined">Back to My Bookings</a>
+                        </div>
+                    </div>
+                </div>
+                ';
+
                 }
 
                 echo '</div>';
@@ -189,44 +246,129 @@ function hideSpinner(button) {
                         order_id: orderId
                     },
                     success: function (response) {
-                        hideSpinner(button);
-                        if (response.success) {
-                            location.reload();
-                        } else {
-                            console.error("Error:", response.data.message);
-                        }
-                    },
+                    hideSpinner(button);
+                    if (response.success) {
+                        $(".status-modal").hide(); // Hide any open modal
+                        $("#acceptSuccessModal").fadeIn(); // Show success modal
+                    } else {
+                        console.error("Error:", response.data.message);
+                    }
+                },
                     error: function (xhr, status, error) {
                         console.error("AJAX Error:", status, error);
                     }
                 });
             });
 
-            $(".decline-proposed-date").click(function () {
-                var button = $(this);
-                var orderId = button.data("order-id");
+        $(".decline-proposed-date").click(function () {
+            var button = $(this);
+            var orderId = button.data("order-id");
 
-                showSpinner(button);
+            // Instead of AJAX, open Cancel Reason Modal
+            $(".status-modal").css("display", "none"); // Close any open modal first
+            $("#cancelReasonModal_" + orderId).css("display", "block");
+        });
 
-                $.ajax({
-                    url: "<?php echo admin_url('admin-ajax.php'); ?>",
-                    type: "POST",
-                    data: {
-                        action: "decline_new_proposed_time",
-                        security: "<?php echo wp_create_nonce('ajax_nonce'); ?>",
-                        order_id: orderId
-                    },
-                    success: function (response) {
-                        hideSpinner(button);
-                        if (response.success) {
-                            alert(response.data.message);
-                            location.reload();
-                        } else {
-                            alert(response.data.message);
-                        }
-                    }
-                });
-            });
+
+        $(".submit-final-cancel").click(function () {
+    var button = $(this);
+    var orderId = button.data("order-id");
+
+    var selectedReason = $("#cancel-reason-form-" + orderId + " input[name='reason']:checked").val();
+    var otherReason = $("#cancel-reason-form-" + orderId + " textarea[name='other_reason']").val();
+
+    if (!selectedReason) {
+        $("#cancel-reason-error-" + orderId).text("Please select a reason for cancelling.").show();
+        return;
+    }
+
+    showSpinner(button);
+
+    $.ajax({
+        url: "<?php echo admin_url('admin-ajax.php'); ?>",
+        type: "POST",
+        data: {
+            action: "decline_new_proposed_time", // your same server-side handler
+            security: "<?php echo wp_create_nonce('ajax_nonce'); ?>",
+            order_id: orderId,
+            reason: selectedReason,
+            other_reason: otherReason
+        },
+        success: function (response) {
+            hideSpinner(button);
+            if (response.success) {
+                location.reload();
+            } else {
+                alert(response.data.message);
+            }
+        },
+        error: function (xhr, status, error) {
+            hideSpinner(button);
+            alert("Something went wrong. Please try again.");
+        }
+    });
+});
+
+
+$(document).on('change', 'input[name="reason"]', function () {
+    if ($(this).val() === "other") {
+        $(this).closest("form").find(".other-reason-wrapper").slideDown();
+    } else {
+        $(this).closest("form").find(".other-reason-wrapper").slideUp();
+    }
+});
+
+
+$(".submit-final-cancel").click(function () {
+    var button = $(this);
+    var orderId = button.data("order-id");
+    var form = $("#cancel-reason-form-" + orderId);
+    var errorBox = $("#cancel-reason-error-" + orderId);
+
+    var selectedReason = form.find("input[name='reason']:checked").val();
+    var otherText = form.find("textarea[name='other_reason']").val();
+
+    errorBox.hide().text("");
+
+    // Error checks:
+    if (!selectedReason) {
+        errorBox.text("Please select a reason for declining.").show();
+        return;
+    }
+    if (selectedReason === 'other' && (!otherText.trim())) {
+        errorBox.text("Please enter your reason in the textbox.").show();
+        return;
+    }
+
+    // Passed validation — proceed
+    showSpinner(button);
+
+    $.ajax({
+        url: "<?php echo admin_url('admin-ajax.php'); ?>",
+        type: "POST",
+        data: {
+            action: "decline_new_proposed_time",
+            security: "<?php echo wp_create_nonce('ajax_nonce'); ?>",
+            order_id: orderId,
+            reason: selectedReason,
+            other_reason: otherText
+        },
+        success: function (response) {
+            hideSpinner(button);
+            if (response.success) {
+                $(".status-modal").hide();
+                $("#cancelSuccessModal").fadeIn(); // Show success modal (you can have a small success modal)
+            } else {
+                errorBox.text(response.data.message || "An unexpected error occurred.").show();
+            }
+        },
+        error: function () {
+            hideSpinner(button);
+            errorBox.text("Something went wrong. Please try again.").show();
+        }
+    });
+});
+
         });
         </script>
 
