@@ -125,9 +125,19 @@ if ($status === 'cancelled') {
                                 </form>
                             </div>
                             <div class="modal-footer">
-                                <button class="w-btn us-btn-style_6 w-btn-underlined submit-final-cancel-normal" data-order-id="' . $order_id . '" style="display:none;"><span class="spinner hidden"></span>Cancel Booking</button>
-                                <button class="w-btn us-btn-style_6 w-btn-underlined submit-final-cancel-early" data-order-id="' . $order_id . '" style="display:none;"><span class="spinner hidden"></span>Cancel Booking</button>
-                                <button class="w-btn us-btn-style_6 w-btn-underlined submit-final-cancel-late" data-order-id="' . $order_id . '" style="display:none;"><span class="spinner hidden"></span>Cancel Booking</button>
+                              <button class="w-btn us-btn-style_6 w-btn-underlined submit-final-cancel-normal" data-order-id="' . $order_id . '" style="display:none;">
+                                    <span class="spinner hidden"></span>
+                                    <span class="btn-text">Cancel Booking</span>
+                                </button>
+                                <button class="w-btn us-btn-style_6 w-btn-underlined submit-final-cancel-early" data-order-id="' . $order_id . '" style="display:none;">
+                                    <span class="spinner hidden"></span>
+                                    <span class="btn-text">Cancel Booking</span>
+                                </button>
+                                <button class="w-btn us-btn-style_6 w-btn-underlined submit-final-cancel-late" data-order-id="' . $order_id . '" style="display:none;">
+                                    <span class="spinner hidden"></span>
+                                    <span class="btn-text">Cancel Booking</span>
+                                </button>
+
                             </div>
                         </div>
                       </div>';
@@ -146,11 +156,15 @@ if ($status === 'cancelled') {
         <script type="text/javascript">
             jQuery(document).ready(function($) {
                 function showSpinner(button) {
-                    $(button).prop("disabled", true).find(".spinner").removeClass("hidden");
+                    $(button).prop("disabled", true);
+                    $(button).find(".spinner").removeClass("hidden");
+                    $(button).find(".btn-text").hide();
                 }
 
                 function hideSpinner(button) {
-                    $(button).prop("disabled", false).find(".spinner").addClass("hidden");
+                    $(button).prop("disabled", false);
+                    $(button).find(".spinner").addClass("hidden");
+                    $(button).find(".btn-text").show();
                 }
 
                 function handleReasonSubmit(button, orderId, action) {
