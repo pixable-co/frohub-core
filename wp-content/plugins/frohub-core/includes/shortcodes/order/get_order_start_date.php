@@ -61,45 +61,48 @@ class GetOrderStartDate {
                             data-end="' . esc_attr($formatted_proposed_end) . '">
                             Decline</button>';
 
-                    echo '<div id="' . esc_attr($modal_accept) . '" class="status-modal">
+                            echo '<div id="' . esc_attr($modal_accept) . '" class="status-modal">
                             <div class="modal-content">
                                 <div class="modal-header">
                                     <h5>Confirm New Appointment</h5>
                                     <span class="close-modal">×</span>
                                 </div>
                                 <div class="modal-body">
-                                    <p>You are about to accept the proposed appointment time.</p>
-                                    <p><strong>Proposed Time:</strong> <span class="modal-start-time"></span></p>
+                                    <p>You’re about to confirm the new appointment time proposed by your stylist. Once confirmed, the booking will be updated.</p>
+                                    <p><strong>Proposed Start:</strong> <span class="modal-start-time"></span></p>
+                                    <p><strong>Proposed End:</strong> <span class="modal-end-time"></span></p>
                                 </div>
                                 <div class="modal-footer">
                                     <button class="w-btn us-btn-style_6 w-btn-underlined confirm-proposed-date"
                                         data-order-id="' . esc_attr($order_id) . '"
                                         data-start="' . esc_attr($formatted_proposed_start) . '"
                                         data-end="' . esc_attr($formatted_proposed_end) . '">
-                                        <span class="spinner hidden"></span> Yes, Accept Appointment</button>
-                                    <button class="w-btn us-btn-style_6 w-btn-underlined close-modal-text">No, Keep Current Time</button>
+                                        <span class="spinner hidden"></span> Yes, Confirm Appointment</button>
                                 </div>
                             </div>
-                          </div>';
-
-                    echo '<div id="' . esc_attr($modal_decline) . '" class="status-modal">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5>Decline Proposed Appointment</h5>
-                                    <span class="close-modal">×</span>
-                                </div>
-                                <div class="modal-body">
-                                    <p>If you decline, the proposed appointment time will be rejected.</p>
-                                    <p><strong>Proposed Time:</strong> <span class="modal-start-time"></span></p>
-                                </div>
-                                <div class="modal-footer">
-                                    <button class="w-btn us-btn-style_6 w-btn-underlined decline-proposed-date"
-                                        data-order-id="' . esc_attr($order_id) . '">
-                                        <span class="spinner hidden"></span> Yes, Decline Appointment</button>
-                                    <button class="w-btn us-btn-style_6 w-btn-underlined close-modal-text">No, Keep Proposed Time</button>
-                                </div>
+                        </div>';
+                        
+                        echo '<div id="' . esc_attr($modal_decline) . '" class="status-modal">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5>Decline Proposed Appointment</h5>
+                                <span class="close-modal">×</span>
                             </div>
-                          </div>';
+                            <div class="modal-body">
+                                <p>If you decline this proposed appointment time, your booking request will be rejected.</p>
+                                <p><strong>Proposed Start:</strong> <span class="modal-start-time"></span></p>
+                                <p><strong>Proposed End:</strong> <span class="modal-end-time"></span></p>
+                                <p>Want a different time? Message your stylist to suggest an alternative before you decline.</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button class="w-btn us-btn-style_6 w-btn-underlined decline-proposed-date"
+                                    data-order-id="' . esc_attr($order_id) . '">
+                                    <span class="spinner hidden"></span> Yes, Decline Appointment</button>
+                                <button class="w-btn us-btn-style_6 w-btn-underlined close-modal-text">No, Keep Proposed Time</button>
+                            </div>
+                        </div>
+                    </div>';
+                    
                 }
 
                 echo '</div>';
@@ -110,16 +113,20 @@ class GetOrderStartDate {
         <script type="text/javascript">
         jQuery(document).ready(function ($) {
             $(".modal-trigger").click(function () {
-                var modalId = $(this).data("modal");
-                var startTime = $(this).data("start");
-                var orderId = $(this).data("order-id");
+    var modalId = $(this).data("modal");
+    var startTime = $(this).data("start");
+    var endTime = $(this).data("end");
+    var orderId = $(this).data("order-id");
 
-                $("#" + modalId).css("display", "block");
-                $("#" + modalId).find(".modal-start-time").text(startTime);
-                $("#" + modalId).find(".confirm-proposed-date, .decline-proposed-date")
-                    .attr("data-order-id", orderId)
-                    .attr("data-start", startTime);
-            });
+    $("#" + modalId).css("display", "block");
+    $("#" + modalId).find(".modal-start-time").text(startTime);
+    $("#" + modalId).find(".modal-end-time").text(endTime);
+    $("#" + modalId).find(".confirm-proposed-date, .decline-proposed-date")
+        .attr("data-order-id", orderId)
+        .attr("data-start", startTime)
+        .attr("data-end", endTime);
+});
+
 
             $(".close-modal, .close-modal-text").click(function () {
                 $(".status-modal").css("display", "none");
