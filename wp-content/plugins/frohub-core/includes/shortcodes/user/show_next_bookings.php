@@ -21,6 +21,7 @@ class ShowNextBookings {
             'customer'       => $current_user_id,
             'orderby'        => 'date',
             'order'          => 'ASC',
+            'status'         => ['on-hold', 'rescheduling', 'processing'],
         );
 
         $orders = wc_get_orders($args);
