@@ -28,8 +28,8 @@ class GetOrderStatus
             
             $status_labels = [
                 'pending'       => 'Pending payment',
-                'processing'    => 'Processing',
-                'on-hold'       => 'On hold',
+                'processing'    => 'Confirmed',
+                'on-hold'       => 'Pending',
                 'completed'     => 'Completed',
                 'cancelled'     => 'Cancelled',
                 'refunded'      => 'Refunded',
