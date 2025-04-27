@@ -19,44 +19,31 @@ class GetOrderShippingAddress {
         $order = wc_get_order($order_id);
 
         if ($order && in_array($order->get_status(), ['processing', 'completed', 'on-hold'])) {
-            $items = $order->get_items();
-            foreach ($items as $item) {
-                $product_id = $item->get_product_id();
-                $variation_id = $item->get_variation_id();
-                $variation_data = $item->get_data()['variation'];
+            foreach ($order->get_items() as $item) {
+                $service_type = $item->get_meta('pa_service-type'); // Fetching service-type attribute
+                
+                if (!empty($service_type)) {
+                    $service_type = strtolower($service_type); // just in case (uniform)
+                    
+                    $product_id = $item->get_product_id();
+                    $partner_id = get_field('partner_id', $product_id); // ACF field on product
 
-                // Try to get the "service type" from variation attributes
-                $service_type = '';
-                if (!empty($variation_data)) {
-                    foreach ($variation_data as $key => $value) {
-                        if (strpos($key, 'service_type') !== false) {
-                            $service_type = $value;
-                            break;
+                    if ($service_type === 'mobile') {
+                        echo $this->render_shipping_address($order);
+                    } elseif (in_array($service_type, ['salon-based', 'home-based'])) {
+                        if ($partner_id) {
+                            echo $this->render_partner_address($partner_id);
+                        } else {
+                            echo '<p>No partner assigned.</p>';
                         }
-                    }
-                }
-
-                if (empty($service_type)) {
-                    // Fallback if variation attributes are not properly populated
-                    $service_type = $item->get_meta('Service Type');
-                }
-
-                // Also get the partner_id (ACF field stored on product)
-                $partner_id = get_field('partner_id', $product_id);
-
-                if ($service_type === 'mobile') {
-                    echo $this->render_shipping_address($order);
-                } elseif (in_array($service_type, ['salon-based', 'home-based'])) {
-                    if ($partner_id) {
-                        echo $this->render_partner_address($partner_id);
                     } else {
-                        echo '<p>No partner assigned.</p>';
+                        echo '<p>Unknown service type selected.</p>';
                     }
                 } else {
-                    echo '<p>Service type unknown or not selected.</p>';
+                    echo '<p>Service type not available for this item.</p>';
                 }
 
-                break; // One item per order
+                break; // Only one item handled
             }
         } else {
             echo '<p>Order not found or not in a displayable status.</p>';
@@ -89,7 +76,7 @@ class GetOrderShippingAddress {
     private function render_partner_address($partner_id) {
         $output = '';
 
-        $partner_postcode = get_field('postcode', $partner_id); // Assuming ACF field on Partner
+        $partner_postcode = get_field('postcode', $partner_id); // Assuming Partner has 'postcode' field
 
         if ($partner_postcode) {
             $output .= 'Postcode: ' . esc_html($partner_postcode) . '<br>';
