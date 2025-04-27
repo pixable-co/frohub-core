@@ -18,17 +18,33 @@ class GetOrderShippingAddress {
         $order_id = $GLOBALS['single_order_id'];
         $order = wc_get_order($order_id);
 
-        if ($order && in_array($order->get_status(), ['processing', 'completed', 'on-hold'])) { // Only show for certain statuses
+        if ($order && in_array($order->get_status(), ['processing', 'completed', 'on-hold'])) {
             $items = $order->get_items();
             foreach ($items as $item) {
                 $product_id = $item->get_product_id();
-                
-                // Assuming product has a 'service_type' ACF field: salon-based, home-based, mobile
-                $service_type = get_field('service_type', $product_id);
-                $partner_id = get_field('partner_id', $product_id); // Assuming there's a partner_id ACF field
+                $variation_id = $item->get_variation_id();
+                $variation_data = $item->get_data()['variation'];
+
+                // Try to get the "service type" from variation attributes
+                $service_type = '';
+                if (!empty($variation_data)) {
+                    foreach ($variation_data as $key => $value) {
+                        if (strpos($key, 'service_type') !== false) {
+                            $service_type = $value;
+                            break;
+                        }
+                    }
+                }
+
+                if (empty($service_type)) {
+                    // Fallback if variation attributes are not properly populated
+                    $service_type = $item->get_meta('Service Type');
+                }
+
+                // Also get the partner_id (ACF field stored on product)
+                $partner_id = get_field('partner_id', $product_id);
 
                 if ($service_type === 'mobile') {
-                    // Show the customer's shipping address
                     echo $this->render_shipping_address($order);
                 } elseif (in_array($service_type, ['salon-based', 'home-based'])) {
                     if ($partner_id) {
@@ -37,11 +53,10 @@ class GetOrderShippingAddress {
                         echo '<p>No partner assigned.</p>';
                     }
                 } else {
-                    echo '<p>Service type unknown.</p>';
+                    echo '<p>Service type unknown or not selected.</p>';
                 }
 
-                // You probably want to only show one item address per order
-                break;
+                break; // One item per order
             }
         } else {
             echo '<p>Order not found or not in a displayable status.</p>';
