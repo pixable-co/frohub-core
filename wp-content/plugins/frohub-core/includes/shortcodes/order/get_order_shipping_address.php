@@ -18,7 +18,7 @@ class GetOrderShippingAddress {
         $order_id = $GLOBALS['single_order_id'];
         $order = wc_get_order($order_id);
 
-        if ($order && in_array($order->get_status(), ['processing', 'completed'])) { // Only show for certain statuses
+        if ($order && in_array($order->get_status(), ['processing', 'completed', 'on-hold'])) { // Only show for certain statuses
             $items = $order->get_items();
             foreach ($items as $item) {
                 $product_id = $item->get_product_id();
