@@ -20,19 +20,19 @@ class GetOrderShippingAddress {
 
         if ($order && in_array($order->get_status(), ['processing', 'completed', 'on-hold'])) {
             foreach ($order->get_items() as $item) {
-                $service_type = $item->get_meta('pa_service-type'); // Fetching service-type attribute
+                $service_type = $item->get_meta('pa_service-type'); // Fetch service-type attribute
                 
                 if (!empty($service_type)) {
-                    $service_type = strtolower($service_type); // just in case (uniform)
+                    $service_type = strtolower($service_type);
                     
                     $product_id = $item->get_product_id();
-                    $partner_id = get_field('partner_id', $product_id); // ACF field on product
+                    $partner_id = get_field('partner_id', $product_id);
 
                     if ($service_type === 'mobile') {
                         echo $this->render_shipping_address($order);
                     } elseif (in_array($service_type, ['salon-based', 'home-based'])) {
                         if ($partner_id) {
-                            echo $this->render_partner_address($partner_id);
+                            echo $this->render_partner_address($partner_id, $order->get_status());
                         } else {
                             echo '<p>No partner assigned.</p>';
                         }
@@ -60,7 +60,6 @@ class GetOrderShippingAddress {
         $shipping_city = $order->get_shipping_city();
         $shipping_state = $order->get_shipping_state();
         $shipping_postcode = $order->get_shipping_postcode();
-        $shipping_country = $order->get_shipping_country();
 
         $output .= esc_html($shipping_address_1) . '<br>';
 
@@ -73,15 +72,57 @@ class GetOrderShippingAddress {
         return $output;
     }
 
-    private function render_partner_address($partner_id) {
+    private function render_partner_address($partner_id, $order_status) {
         $output = '';
 
-        $partner_postcode = get_field('postcode', $partner_id); // Assuming Partner has 'postcode' field
+        $street_address   = get_field('street_address', $partner_id);
+        $city             = get_field('city', $partner_id);
+        $county_district  = get_field('county_district', $partner_id);
+        $postcode         = get_field('postcode', $partner_id);
 
-        if ($partner_postcode) {
-            $output .= 'Postcode: ' . esc_html($partner_postcode) . '<br>';
-        } else {
-            $output .= '<p>Partner postcode not available.</p>';
+        if ($order_status === 'on-hold') {
+            // On-hold: show only city and postcode, if available
+            $parts = array();
+
+            if (!empty($city)) {
+                $parts[] = esc_html($city);
+            }
+
+            if (!empty($postcode)) {
+                $parts[] = esc_html($postcode);
+            }
+
+            if (!empty($parts)) {
+                $output .= implode(', ', $parts) . '<br>';
+            } else {
+                $output .= '<p>Partner address information unavailable.</p>';
+            }
+
+        } elseif (in_array($order_status, ['processing', 'completed'])) {
+            // Processing/Completed: show full address
+            $parts = array();
+
+            if (!empty($street_address)) {
+                $parts[] = esc_html($street_address);
+            }
+
+            if (!empty($city)) {
+                $parts[] = esc_html($city);
+            }
+
+            if (!empty($county_district)) {
+                $parts[] = esc_html($county_district);
+            }
+
+            if (!empty($postcode)) {
+                $parts[] = esc_html($postcode);
+            }
+
+            if (!empty($parts)) {
+                $output .= implode(', ', $parts) . '<br>';
+            } else {
+                $output .= '<p>Full partner address not available.</p>';
+            }
         }
 
         return $output;
