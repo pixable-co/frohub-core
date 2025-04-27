@@ -23,6 +23,8 @@ class CancelOrder {
         check_ajax_referer('ajax_nonce', 'security');
 
         $order_id = isset($_POST['order_id']) ? intval($_POST['order_id']) : 0;
+        $cancellation_reason = isset($_POST['reason']) ? sanitize_text_field($_POST['reason']) : '';
+        $cancellation_other_text = isset($_POST['other_reason']) ? sanitize_textarea_field($_POST['other_reason']) : '';
 
         if (!$order_id) {
             wp_send_json_error(['message' => 'Error: Missing order ID!']);
@@ -117,6 +119,8 @@ class CancelOrder {
 
         // ❌ Cancel the order
         $order->update_status('cancelled', 'Order has been cancelled.');
+        update_field('cancellation_reason', $cancellation_reason, $order_id);
+        update_field('cancellation_other_reason_text', $cancellation_other_text, $order_id);
         $order->save();
 
         wp_send_json_success(['message' => 'Order has been cancelled.']);

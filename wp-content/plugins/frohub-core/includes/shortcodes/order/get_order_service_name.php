@@ -23,9 +23,16 @@ class GetOrderServiceName {
                 $product_id = $item->get_product_id();
                 if ($product_id != 28990) {
                     $product_link = get_permalink($product_id);
-                    echo '<a href="' . esc_url($product_link) . '">' . esc_html($item->get_name()) . '</a>';
+                    $full_name = $item->get_name();
+            
+                    // Get everything before the first " - "
+                    $name_parts = explode(' - ', $full_name);
+                    $clean_name = trim($name_parts[0]);
+            
+                    echo '<a href="' . esc_url($product_link) . '">' . esc_html($clean_name) . '</a>';
                 }
             }
+            
         }
 
         return ob_get_clean();

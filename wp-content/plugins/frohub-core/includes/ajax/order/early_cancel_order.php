@@ -20,6 +20,10 @@ class EarlyCancelOrder {
             wp_send_json_error(['message' => 'Order ID is missing.']);
         }
 
+        $cancellation_reason = isset($_POST['reason']) ? sanitize_text_field($_POST['reason']) : '';
+        $cancellation_other_text = isset($_POST['other_reason']) ? sanitize_textarea_field($_POST['other_reason']) : '';
+
+
         $order_id = intval($_POST['order_id']);
         $order = wc_get_order($order_id);
 
@@ -63,6 +67,9 @@ class EarlyCancelOrder {
 
         $order->update_status('cancelled', 'Order cancelled with partial refund');
         update_field('cancellation_status', 'Early Cancellation', $order_id);
+        update_field('cancellation_reason', $cancellation_reason, $order_id);
+        update_field('cancellation_other_reason_text', $cancellation_other_text, $order_id);
+
 
         // Data collection
         $client_email = $order->get_billing_email();

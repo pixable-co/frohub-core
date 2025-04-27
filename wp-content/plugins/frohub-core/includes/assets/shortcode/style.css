@@ -91,15 +91,16 @@
 
 
 /*Review Form Styling*/
-.modal-body {
+
+/* COMMENTED THIS OUT AS IT WAS CONFLICTING WITH CANCEL AND RESCHEDULE MODAL */
+/* .modal-body {
     font-family: "Poppins", sans-serif;
     background: #fff;
     border-radius: 20px;
     padding: 30px;
     max-width: 800px;
     margin: auto;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-}
+} */
 
 .w-hwrapper {
     display: grid;
@@ -232,4 +233,4 @@ modal-body-right {
     font-weight: 400;
     font-size: 14px;
     line-height: 100%;
-}
+} */

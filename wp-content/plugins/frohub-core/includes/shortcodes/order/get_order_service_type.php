@@ -24,7 +24,9 @@ class GetOrderServiceType {
                 if (!empty($item_meta_data)) {
                     foreach ($item_meta_data as $meta) {
                         if ($meta->key === 'pa_service-type') {
-                            echo esc_html($meta->value);
+                            // Capitalize first letter only
+                            $capitalized_value = ucwords(str_replace('-', ' ', strtolower($meta->value)));
+                            echo esc_html($capitalized_value);
                         }
                     }
                 }
@@ -34,3 +36,4 @@ class GetOrderServiceType {
         return ob_get_clean();
     }
 }
+?>
