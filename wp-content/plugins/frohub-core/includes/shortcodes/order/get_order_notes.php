@@ -26,8 +26,27 @@ class GetOrderNotes {
                 echo esc_html($customer_note);
                 echo '</div>';
             } else {
+                // Try to fetch the conversation field
+                $conversation_post_id = get_field('conversation', $order_id);
+
+                if ($conversation_post_id) {
+                    $conversation_url = get_permalink($conversation_post_id);
+                } else {
+                    $conversation_url = ''; // fallback if conversation field is missing
+                }
+
                 echo '<div class="no_customer_note">';
-                echo esc_html("You didn't add any notes for the stylist. If you need to contact them, you can use the messaging feature.");
+                echo esc_html("You didn't add any notes for the stylist.");
+
+                if (!empty($conversation_url)) {
+                    echo ' ';
+                    echo '<a href="' . esc_url($conversation_url) . '" class="message_link">';
+                    echo esc_html('Message them here');
+                    echo '</a>.';
+                } else {
+                    echo ' ' . esc_html('If you need to contact them, please use the messaging feature.');
+                }
+
                 echo '</div>';
             }
         }
