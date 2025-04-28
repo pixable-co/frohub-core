@@ -52,6 +52,8 @@ class GetOrderStatus
             // Override label and description if status is 'cancelled' and cancellation_status is meaningful
             if ($status === 'cancelled') {
                 $field_obj = get_field_object('cancellation_status', $order_id);
+
+                print_r($field_obj); // Debugging line to check the field object
                 $value = isset($field_obj['value']) ? $field_obj['value'] : '';
                 $label = isset($field_obj['choices'][$value]) ? $field_obj['choices'][$value] : '';
 
