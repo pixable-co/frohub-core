@@ -88,60 +88,50 @@ class GetOrderShippingAddress
         // Statuses that should only show city + postcode
         $partial_display_statuses = ['on-hold', 'cancelled', 'rescheduling'];
 
-        if (in_array($order_status, $partial_display_statuses)) {
-            // Show only city and postcode
-            $parts = array();
+        $parts = [];
 
+        if (in_array($order_status, $partial_display_statuses)) {
+            // Partial address mode: city + postcode
             if (!empty($city)) {
                 $parts[] = esc_html($city);
             }
-
             if (!empty($postcode)) {
                 $parts[] = esc_html($postcode);
-            }
-
-            if (!empty($parts)) {
-                $output .= implode(', ', $parts) . '<br>';
-            } else {
-                $output .= '<p>Partner address information unavailable.</p>';
             }
 
         } elseif (in_array($order_status, ['processing', 'completed'])) {
-            // Show full address with Google Maps link
-            $parts = array();
-
+            // Full address mode: street, city, county, postcode
             if (!empty($street_address)) {
                 $parts[] = esc_html($street_address);
             }
-
             if (!empty($city)) {
                 $parts[] = esc_html($city);
             }
-
             if (!empty($county_district)) {
                 $parts[] = esc_html($county_district);
             }
-
             if (!empty($postcode)) {
                 $parts[] = esc_html($postcode);
             }
+        }
 
-            if (!empty($parts)) {
-                $full_address = implode(', ', $parts);
-                $output .= $full_address . '<br>';
+        if (!empty($parts)) {
+            $address_text = implode(', ', $parts);
+            $output .= $address_text . '<br>';
 
-                // Prepare a clean URL for Google Maps
-                $maps_query = urlencode($full_address);
-                $google_maps_url = 'https://www.google.com/maps/search/?api=1&query=' . $maps_query;
+            // Always generate Google Maps link if address is available
+            $maps_query = urlencode($address_text);
+            $google_maps_url = 'https://www.google.com/maps/search/?api=1&query=' . $maps_query;
 
-                // Append "Open in Google Maps" link
-                $output .= '<a href="' . esc_url($google_maps_url) . '" target="_blank" rel="noopener noreferrer" style="margin-top: 5px; display: inline-block;">Open in Google Maps <i class="far fa-external-link-alt"></i></a>';
-            } else {
-                $output .= '<p>Full partner address not available.</p>';
-            }
+            $output .= '<a href="' . esc_url($google_maps_url) . '" target="_blank" rel="noopener noreferrer" style="margin-top: 5px; display: inline-block;">
+                        Open in Google Maps <i class="far fa-external-link-alt"></i>
+                    </a>';
+        } else {
+            $output .= '<p>Partner address information unavailable.</p>';
         }
 
         return $output;
     }
+
 
 }
