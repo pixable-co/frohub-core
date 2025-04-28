@@ -67,9 +67,7 @@ class ReviewButton
             <!-- FIXED HTML STRUCTURE -->
             <div class="modal-content">
                 <div class="modal-header">
-                    <div class="w-hwrapper valign_middle align_justify" style="width: 100%;">
                         <h5>Leave a Review</h5>
-                    </div>
                 </div>
 
                 <div class="modal-body">
