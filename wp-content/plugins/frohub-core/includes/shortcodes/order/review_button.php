@@ -1,18 +1,21 @@
 <?php
 namespace FECore;
 
-if ( ! defined( 'ABSPATH' ) ) {
+if (!defined('ABSPATH')) {
     exit;
 }
 
-class ReviewButton {
+class ReviewButton
+{
 
-    public static function init() {
+    public static function init()
+    {
         $self = new self();
-        add_shortcode( 'review_button', array($self, 'review_button_shortcode') );
+        add_shortcode('review_button', array($self, 'review_button_shortcode'));
     }
 
-    public function review_button_shortcode() {
+    public function review_button_shortcode()
+    {
         ob_start();
 
         $order_id = isset($GLOBALS['single_order_id']) ? $GLOBALS['single_order_id'] : null;
@@ -70,37 +73,43 @@ class ReviewButton {
                     </div>
                 </div>
                 <div class="modal-body">
-                    <div class="w-hwrapper valign_top align_left">
-                        <div id="modalproductImg">
-                            <?php if ($product_id) { echo '<img src="' . esc_url(get_the_post_thumbnail_url($product_id, 'thumbnail')) . '" alt="">'; } ?>
-                        </div>
-                        <div class="modal-body-right">
-                            <p id="productName"><?php echo $service_name ?? ''; ?></p>
-                            <p id="serviceType"><span class="status_text"><?php echo $service_type ?? ''; ?></span></p>
-                            <p id="partnerTitle"><?php echo $partner_title ?? ''; ?></p>
-                            <p id="bookingDate"><i class="fas fa-calendar-alt"></i> <span id="selectedDate"><?php echo $appointment ?? ''; ?></span></p>
-                            <p id="bookingAddress"><i class="fas fa-map-marker-alt"></i> <span id="partnerAddress"><?php echo $partner_address ?? ''; ?></span></p>
+                    <div class="product-details"></div>
+                    <div id="modalproductImg">
+                        <?php if ($product_id) {
+                            echo '<img src="' . esc_url(get_the_post_thumbnail_url($product_id, 'thumbnail')) . '" alt="">';
+                        } ?>
+                    </div>
+                    <div class="modal-body-right">
+                        <p id="productName"><?php echo $service_name ?? ''; ?></p>
+                        <p id="serviceType"><span class="status_text"><?php echo $service_type ?? ''; ?></span></p>
+                        <p id="partnerTitle"><?php echo $partner_title ?? ''; ?></p>
+                        <p id="bookingDate"><i class="fas fa-calendar-alt"></i> <span
+                                id="selectedDate"><?php echo $appointment ?? ''; ?></span></p>
+                        <p id="bookingAddress"><i class="fas fa-map-marker-alt"></i> <span
+                                id="partnerAddress"><?php echo $partner_address ?? ''; ?></span></p>
 
-                            <div class="feedback-form" style="margin-top: 20px;">
-                                <p id="feedbackHeading">Let’s See How You Slay (Share Your Photo)</p>
-                                <p id="feedbackDesc">Feel free to share a photo of your fabulous look! If you're a bit shy, you can always upload a side shot or one that keeps your face covered. Sharing photos helps other clients see the stylist’s work and decide if they’d like to book the service.</p>
-
-                                <?php echo do_shortcode('[gravityform id="7" title="false" description="false" ajax="true"]'); ?>
-                            </div>
-                        </div>
                     </div>
                 </div>
+                <div class="feedback-form" style="margin-top: 20px;">
+                    <p id="feedbackHeading">Let’s See How You Slay (Share Your Photo)</p>
+                    <p id="feedbackDesc">Feel free to share a photo of your fabulous look! If you're a bit shy, you can always
+                        upload a side shot or one that keeps your face covered. Sharing photos helps other clients see the stylist’s
+                        work and decide if they’d like to book the service.</p>
+
+                    <?php echo do_shortcode('[gravityform id="7" title="false" description="false" ajax="true"]'); ?>
+                </div>
+            </div>
             </div>
 
             <script type="text/javascript">
-            jQuery(document).ready(function($) {
-                $(document).on('gform_post_render', function(event, formId) {
-                    if (formId === 7) {
-                        $('#input_7_18').val('<?php echo esc_js($order_id); ?>').prop('readonly', true);
-                        $('#input_7_19').val('<?php echo esc_js($product_id); ?>').prop('readonly', true);
-                    }
+                jQuery(document).ready(function ($) {
+                    $(document).on('gform_post_render', function (event, formId) {
+                        if (formId === 7) {
+                            $('#input_7_18').val('<?php echo esc_js($order_id); ?>').prop('readonly', true);
+                            $('#input_7_19').val('<?php echo esc_js($product_id); ?>').prop('readonly', true);
+                        }
+                    });
                 });
-            });
             </script>
 
             <?php
