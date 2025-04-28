@@ -62,44 +62,60 @@ class ReviewButton
                     }
                 }
             }
-
             ?>
 
-            <!-- DIRECT OUTPUT WITHOUT DROPDOWN -->
+            <!-- FIXED HTML STRUCTURE -->
             <div class="modal-content">
                 <div class="modal-header">
                     <div class="w-hwrapper valign_middle align_justify" style="width: 100%;">
                         <h5>Leave a Review</h5>
                     </div>
                 </div>
+
                 <div class="modal-body">
-                    <div class="product-details"></div>
-                    <div id="modalproductImg">
-                        <?php if ($product_id) {
-                            echo '<img src="' . esc_url(get_the_post_thumbnail_url($product_id, 'thumbnail')) . '" alt="">';
-                        } ?>
-                    </div>
-                    <div class="modal-body-right">
-                        <p id="productName"><?php echo $service_name ?? ''; ?></p>
-                        <p id="serviceType"><span class="status_text"><?php echo $service_type ?? ''; ?></span></p>
-                        <p id="partnerTitle"><?php echo $partner_title ?? ''; ?></p>
-                        <p id="bookingDate"><i class="fas fa-calendar-alt"></i> <span
-                                id="selectedDate"><?php echo $appointment ?? ''; ?></span></p>
-                        <p id="bookingAddress"><i class="fas fa-map-marker-alt"></i> <span
-                                id="partnerAddress"><?php echo $partner_address ?? ''; ?></span></p>
+                    <div class="w-hwrapper valign_top align_left">
+                        <div class="modal-body-left" id="modalproductImg">
+                            <?php if ($product_id) : ?>
+                                <img src="<?php echo esc_url(get_the_post_thumbnail_url($product_id, 'thumbnail')); ?>" alt="">
+                            <?php endif; ?>
+                        </div>
 
-                    </div>
-                </div>
-                <div class="feedback-form" style="margin-top: 20px;">
-                    <p id="feedbackHeading">Let’s See How You Slay (Share Your Photo)</p>
-                    <p id="feedbackDesc">Feel free to share a photo of your fabulous look! If you're a bit shy, you can always
-                        upload a side shot or one that keeps your face covered. Sharing photos helps other clients see the stylist’s
-                        work and decide if they’d like to book the service.</p>
+                        <div class="modal-body-right">
+                            <?php if (!empty($service_name)) : ?>
+                                <p id="productName"><?php echo $service_name; ?></p>
+                            <?php endif; ?>
 
-                    <?php echo do_shortcode('[gravityform id="7" title="false" description="false" ajax="true"]'); ?>
-                </div>
-            </div>
-            </div>
+                            <?php if (!empty($service_type)) : ?>
+                                <p id="serviceType"><span class="status_text"><?php echo $service_type; ?></span></p>
+                            <?php endif; ?>
+
+                            <?php if (!empty($partner_title)) : ?>
+                                <p id="partnerTitle"><?php echo $partner_title; ?></p>
+                            <?php endif; ?>
+
+                            <?php if (!empty($appointment)) : ?>
+                                <p id="bookingDate"><i class="fas fa-calendar-alt"></i> <span id="selectedDate"><?php echo $appointment; ?></span></p>
+                            <?php endif; ?>
+
+                            <?php if (!empty($partner_address)) : ?>
+                                <p id="bookingAddress"><i class="fas fa-map-marker-alt"></i> <span id="partnerAddress"><?php echo $partner_address; ?></span></p>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+
+                    <!-- Feedback form inside modal-body -->
+                    <div class="feedback-form" style="margin-top: 20px;">
+                        <p id="feedbackHeading">Let’s See How You Slay (Share Your Photo)</p>
+                        <p id="feedbackDesc">
+                            Feel free to share a photo of your fabulous look! If you're a bit shy, you can always upload a side shot or one that keeps your face covered.
+                            Sharing photos helps other clients see the stylist’s work and decide if they’d like to book the service.
+                        </p>
+
+                        <?php echo do_shortcode('[gravityform id="7" title="false" description="false" ajax="true"]'); ?>
+                    </div>
+
+                </div> <!-- End of modal-body -->
+            </div> <!-- End of modal-content -->
 
             <script type="text/javascript">
                 jQuery(document).ready(function ($) {
