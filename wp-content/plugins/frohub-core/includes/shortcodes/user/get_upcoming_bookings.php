@@ -162,10 +162,10 @@ class GetUpcomingBookings {
             echo '</table>';
             echo $mobile_cards;
             echo '</div>'; // .frohub_table_wrapper
-            echo do_shortcode('[us_separator size="large"]');
 
             if (!$found_upcoming) {
                 echo '<p>You don’t have any upcoming bookings</p>';
+                echo do_shortcode('[us_separator size="large"]');
             }
         }
 
