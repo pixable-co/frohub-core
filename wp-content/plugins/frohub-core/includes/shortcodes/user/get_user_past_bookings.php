@@ -32,6 +32,11 @@ class GetUserPastBookings
 
         ob_start();
 
+        if ($found_past_booking) {
+            echo '<h5>Past Bookings</h5>';
+            echo do_shortcode('[us_separator size="large"]');
+        }
+        
         echo '<div class="frohub_table_wrapper">';
 
         // Desktop Table
@@ -174,10 +179,7 @@ class GetUserPastBookings
         echo $mobile_cards;
         echo '</div>'; // frohub_table_wrapper
 
-        if ($found_past_booking) {
-            echo '<h5>Past Bookings</h5>';
-            echo do_shortcode('[us_separator size="large"]');
-        }
+
 
 ?>
         <!-- Modal -->
