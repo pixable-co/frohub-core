@@ -129,9 +129,9 @@ class GetUpcomingBookings {
                 echo '<td>';
                 if ($order_status === 'rescheduling') {
                     echo '<div class="table-action-buttons">';
-                    echo '<a href="#" class="w-btn us-btn-style_7 accept-button" data-order-id="' . esc_attr($order_id) . '">Accept</a>';
+                    echo '<a href="#" class="w-btn us-btn-style_7 w-btn-underlined accept-button" data-order-id="' . esc_attr($order_id) . '">Accept</a>';
                     echo '<span> / </span>';
-                    echo '<a href="#" class="w-btn us-btn-style_7 decline-button" data-order-id="' . esc_attr($order_id) . '">Decline</a>';
+                    echo '<a href="#" class="w-btn us-btn-style_7 w-btn-underlined decline-button" data-order-id="' . esc_attr($order_id) . '">Decline</a>';
                     echo '</div>';
                 } else {
                     echo '<a href="' . home_url('/my-account/view-order/' . $order_id) . '" class="w-btn us-btn-style_7 view-button">View</a>';
@@ -149,10 +149,10 @@ class GetUpcomingBookings {
                 $mobile_cards .= '<div class="actions">';
 
                 if ($order_status === 'rescheduling') {
-                    $mobile_cards .= '<a href="#" class="w-btn us-btn-style_7 accept-button" data-order-id="' . esc_attr($order_id) . '">Accept</a>';
-                    $mobile_cards .= '<a href="#" class="w-btn us-btn-style_7 decline-button" data-order-id="' . esc_attr($order_id) . '">Decline</a>';
+                    $mobile_cards .= '<a href="#" class="w-btn us-btn-style_7 w-btn-underlined accept-button" data-order-id="' . esc_attr($order_id) . '">Accept</a>';
+                    $mobile_cards .= '<a href="#" class="w-btn us-btn-style_7 w-btn-underlined decline-button" data-order-id="' . esc_attr($order_id) . '">Decline</a>';
                 } else {
-                    $mobile_cards .= '<a href="' . home_url('/my-account/view-order/' . $order_id) . '" class="w-btn us-btn-style_7 view-button">View</a>';
+                    $mobile_cards .= '<a href="' . home_url('/my-account/view-order/' . $order_id) . '" class="w-btn us-btn-style_7 w-btn-underlined view-button">View</a>';
                 }
 
                 $mobile_cards .= '</div>';
