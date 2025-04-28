@@ -37,7 +37,7 @@ class ReviewButton
         $cancellation_status = get_field('cancellation_status', $order_id); // ACF field
     
         $allowed_wc_statuses = ['completed'];
-        $allowed_cancellation_statuses = ['declined-by-stylist', 'cancelled-by-stylist'];
+        $allowed_cancellation_statuses = [ 'cancelled-by-stylist'];
     
         if (!in_array($order_status, $allowed_wc_statuses) && !in_array($cancellation_status, $allowed_cancellation_statuses)) {
             // If neither matches, do not show the review form
