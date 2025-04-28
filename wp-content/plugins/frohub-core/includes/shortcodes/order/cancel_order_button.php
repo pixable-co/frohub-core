@@ -181,7 +181,7 @@ class CancelOrderButton
             });
             </script>
             <?php
-            echo do_shortcode('[us_separator]');
+            echo do_shortcode('[us_separator size="small"]');
         }
 
         return ob_get_clean();
