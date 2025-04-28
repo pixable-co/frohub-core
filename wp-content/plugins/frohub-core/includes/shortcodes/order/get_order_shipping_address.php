@@ -18,7 +18,7 @@ class GetOrderShippingAddress {
         $order_id = $GLOBALS['single_order_id'];
         $order = wc_get_order($order_id);
 
-        if ($order && in_array($order->get_status(), ['processing', 'completed', 'on-hold'])) {
+        if ($order && in_array($order->get_status(), ['processing', 'completed', 'on-hold','rescheduling', 'cancelled'])) {
             foreach ($order->get_items() as $item) {
                 $service_type = $item->get_meta('pa_service-type'); // Fetch service-type attribute
                 
