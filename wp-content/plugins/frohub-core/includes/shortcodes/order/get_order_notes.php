@@ -20,8 +20,15 @@ class GetOrderNotes {
 
         if ($order) {
             $customer_note = $order->get_customer_note();
-            if ($customer_note) {
+
+            if (!empty($customer_note)) {
+                echo '<div class="customer_note">';
                 echo esc_html($customer_note);
+                echo '</div>';
+            } else {
+                echo '<div class="no_customer_note">';
+                echo esc_html("You didn't add any notes for the stylist. If you need to contact them, you can use the messaging feature.");
+                echo '</div>';
             }
         }
 
