@@ -94,6 +94,8 @@ use FECore\DisplayComments;
 use FECore\DisplayExistingConversations;
 use FECore\SubmitCommentForm;
 
+use FECore\CancelOrderButton;
+
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -155,5 +157,6 @@ class Shortcodes {
 		FrohubRenderReviews::init();
 		FrohubGetPolicies::init();
 		FrohubReviewSummary::init();
+		CancelOrderButton::init();
 	}
 }
