@@ -134,7 +134,7 @@ class GetUpcomingBookings {
                     echo '<a href="#" class="w-btn us-btn-style_7 w-btn-underlined decline-button" data-order-id="' . esc_attr($order_id) . '">Decline</a>';
                     echo '</div>';
                 } else {
-                    echo '<a href="' . home_url('/my-account/view-order/' . $order_id) . '" class="w-btn us-btn-style_7 view-button">View</a>';
+                    echo '<a href="' . home_url('/my-account/view-order/' . $order_id) . '" class="w-btn us-btn-style_7 w-btn-underlined view-button">View</a>';
                 }
                 echo '</td>';
                 echo '</tr>';
