@@ -113,7 +113,7 @@ class GetUpcomingBookings {
                 echo '<td>';
                 echo '<div class="price-block">';
                 echo '<div><strong>Deposit:</strong> £' . number_format($deposit, 2) . '</div>';
-                echo '<div class="due-on-day"><input type="text" value="Due on the day: ' . esc_attr($total_due) . '" readonly></div>';
+                echo '<div class="due-on-day"> Due on the day: ' . esc_attr($total_due) . '</div>';
                 echo '</div>';
                 echo '</td>';
 
