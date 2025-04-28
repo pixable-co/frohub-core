@@ -23,9 +23,7 @@ class GetOrderStatus
         $order = wc_get_order($order_id);
 
         if (!empty($order)) {
-            $status = $order->get_status();
-            $cancellation_status = get_field('cancellation_status', $order_id);
-            
+            $status = $order->get_status();            
             $status_labels = [
                 'pending'       => 'Pending payment',
                 'processing'    => 'Confirmed',

@@ -41,6 +41,7 @@ class GetOrderStartDate
                 echo '<div class="appointment-container">
                         <span class="fw-bold me-2">' . esc_html($formatted_start_date_time) . '</span>';
 
+                // If order is rescheduling proposed time
                 if ($order_status === 'rescheduling' && !empty($proposed_start_date_time)) {
                     $formatted_proposed_start = date('d M Y, \a\t H:i', strtotime($proposed_start_date_time));
                     $formatted_proposed_end = !empty($proposed_end_date_time) ? date('d M Y, \a\t H:i', strtotime($proposed_end_date_time)) : '';
@@ -169,10 +170,10 @@ class GetOrderStartDate
 
                 }
 
-                // If order is on hold or processing
-                if ($status === 'on-hold' || $status === 'processing') {
+                // If order is on hold or processing and user can cancel
+                if ($order_status === 'on-hold' || $order_status === 'processing') {
                     $is_early_cancel = false;
-                    if ($status === 'processing') {
+                    if ($order_status === 'processing') {
                         $start_date = '';
                         foreach ($order->get_items() as $item) {
                             $product_id = $item->get_product_id();
@@ -186,7 +187,7 @@ class GetOrderStartDate
                         $is_early_cancel = $days_difference > 7;
                     }
 
-                    $cancel_type = ($status === 'on-hold') ? 'normal' : ($is_early_cancel ? 'early' : 'late');
+                    $cancel_type = ($order_status === 'on-hold') ? 'normal' : ($is_early_cancel ? 'early' : 'late');
                     $modal_id = $cancel_type . "CancelModal_" . $order_id;
 
                     echo '<button class="modal-trigger w-btn us-btn-style_6 w-btn-underlined"
