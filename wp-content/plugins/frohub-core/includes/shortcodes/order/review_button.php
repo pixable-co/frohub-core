@@ -73,7 +73,7 @@ class ReviewButton
                 </div>
 
                 <div class="modal-body">
-                    <div class="w-hwrapper valign_top align_left">
+                    <div class="product-details">
                         <div class="modal-body-left" id="modalproductImg">
                             <?php if ($product_id) : ?>
                                 <img src="<?php echo esc_url(get_the_post_thumbnail_url($product_id, 'thumbnail')); ?>" alt="">
