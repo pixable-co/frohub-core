@@ -41,7 +41,6 @@ class GetOrderStartDate
                 echo '<div class="appointment-container">
                         <span class="fw-bold me-2">' . esc_html($formatted_start_date_time) . '</span>';
 
-                // If order is rescheduling proposed time
                 if ($order_status === 'rescheduling' && !empty($proposed_start_date_time)) {
                     $formatted_proposed_start = date('d M Y, \a\t H:i', strtotime($proposed_start_date_time));
                     $formatted_proposed_end = !empty($proposed_end_date_time) ? date('d M Y, \a\t H:i', strtotime($proposed_end_date_time)) : '';
@@ -170,7 +169,107 @@ class GetOrderStartDate
 
                 }
 
+                // If order is on hold or processing
+                if ($status === 'on-hold' || $status === 'processing') {
+                    $is_early_cancel = false;
+                    if ($status === 'processing') {
+                        $start_date = '';
+                        foreach ($order->get_items() as $item) {
+                            $product_id = $item->get_product_id();
+                            if ($product_id == 28990)
+                                continue;
+                            $start_date = $item->get_meta('Start Date Time');
+                            if (!empty($start_date))
+                                break;
+                        }
+                        $days_difference = floor((strtotime($start_date) - time()) / (60 * 60 * 24));
+                        $is_early_cancel = $days_difference > 7;
+                    }
 
+                    $cancel_type = ($status === 'on-hold') ? 'normal' : ($is_early_cancel ? 'early' : 'late');
+                    $modal_id = $cancel_type . "CancelModal_" . $order_id;
+
+                    echo '<button class="modal-trigger w-btn us-btn-style_6 w-btn-underlined"
+                        data-modal="' . esc_attr($modal_id) . '"
+                        data-order-id="' . esc_attr($order_id) . '">
+                        Cancel Order</button>';
+
+                    // Confirmation modals
+                    echo '<div id="normalCancelModal_' . esc_attr($order_id) . '" class="status-modal">
+                        <div class="modal-content">
+                            <div class="modal-header"><h5>Cancel Booking?</h5><span class="close-modal">×</span></div>
+                            <div class="modal-body"><p class="confirmation-text">Are you sure you want to cancel this booking request?</p></div>
+                            <div class="modal-footer">
+                                <button class="w-btn us-btn-style_6 w-btn-underlined confirm-normal-cancel-order" data-order-id="' . esc_attr($order_id) . '"> Yes, Cancel Booking</button>
+                                <button class="w-btn us-btn-style_6 w-btn-underlined close-modal-text">Keep My Booking</button>
+                            </div>
+                        </div>
+                      </div>';
+
+                    echo '<div id="earlyCancelModal_' . esc_attr($order_id) . '" class="status-modal">
+                        <div class="modal-content">
+                            <div class="modal-header"><h5>Cancel Booking?</h5><span class="close-modal">×</span></div>
+                            <div class="modal-body"><p>You\'re within the early cancellation window. If you proceed, your deposit will be refunded, but the booking fee is non-refundable.</p></div>
+                            <div class="modal-footer">
+                                <button class="w-btn us-btn-style_6 w-btn-underlined confirm-early-cancel-order" data-order-id="' . esc_attr($order_id) . '"> Yes, Cancel Booking</button>
+                                <button class="w-btn us-btn-style_6 w-btn-underlined close-modal-text">Keep My Booking</button>
+                            </div>
+                        </div>
+                      </div>';
+
+                    echo '<div id="lateCancelModal_' . esc_attr($order_id) . '" class="status-modal">
+                        <div class="modal-content">
+                            <div class="modal-header"><h5>Cancel Booking?</h5><span class="close-modal">×</span></div>
+                            <div class="modal-body"><i class="fas fa-exclamation-triangle" style="font-size:2rem; margin-bottom:1rem;"></i><p>Since your appointment is within 7 days, this counts as a late cancellation. Your deposit and booking fee won’t be refunded as per our cancellation policy.</p><p class="confirmation-text">Are you sure you want to cancel?</p></div>
+                            <div class="modal-footer">
+                                <button class="w-btn us-btn-style_6 w-btn-underlined confirm-late-cancel-order" data-order-id="' . esc_attr($order_id) . '"> Yes, Cancel Anyway</button>
+                                <button class="w-btn us-btn-style_6 w-btn-underlined close-modal-text">Keep My Booking</button>
+                            </div>
+                        </div>
+                      </div>';
+
+                    // Shared reason modal
+                    echo '<div id="cancelReasonModal_' . $order_id . '" class="status-modal cancel-reason-modal">
+                        <div class="modal-content">
+                            <div class="modal-header"><h5>Help us improve, tell us why you’re cancelling</h5><span class="close-modal">×</span></div>
+                            <div class="modal-body">
+                                <p>Your feedback helps us improve the booking experience.</p>
+                                <p id="cancel-reason-error-' . $order_id . '" class="cancel-error-msg" style="color:#c00; display:none;"></p>
+                                <form id="cancel-reason-form-' . $order_id . '">
+                                    <label><input type="radio" name="reason" value="scheduling"> I had a scheduling conflict</label><br>
+                                    <label><input type="radio" name="reason" value="changed-mind"> I changed my mind</label><br>
+                                    <label><input type="radio" name="reason" value="no-response"> The stylist didn’t respond in time</label><br>
+                                    <label><input type="radio" name="reason" value="stylist-cancel"> The stylist asked me to cancel</label><br>
+                                    <label><input type="radio" name="reason" value="other"> Other</label>
+                                    <div class="other-reason-wrapper" style="display: none; margin-top: 10px;"><textarea name="other_reason" placeholder="Enter your reason here..."></textarea></div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                              <button class="w-btn us-btn-style_6 w-btn-underlined submit-final-cancel-normal" data-order-id="' . $order_id . '" style="display:none;">
+                                    <span class="spinner hidden"></span>
+                                    <span class="btn-text">Cancel Booking</span>
+                                </button>
+                                <button class="w-btn us-btn-style_6 w-btn-underlined submit-final-cancel-early" data-order-id="' . $order_id . '" style="display:none;">
+                                    <span class="spinner hidden"></span>
+                                    <span class="btn-text">Cancel Booking</span>
+                                </button>
+                                <button class="w-btn us-btn-style_6 w-btn-underlined submit-final-cancel-late" data-order-id="' . $order_id . '" style="display:none;">
+                                    <span class="spinner hidden"></span>
+                                    <span class="btn-text">Cancel Booking</span>
+                                </button>
+
+                            </div>
+                        </div>
+                      </div>';
+
+                    // Success modal (shared with dynamic content)
+                    echo '<div id="cancelSuccessModal" class="status-modal" style="display:none;">
+                        <div class="modal-content">
+                            <div class="modal-header"><h5 id="cancel-success-title">Booking Cancelled</h5></div>
+                            <div class="modal-body"><p id="cancel-success-message">Your booking has been successfully cancelled.</p></div>
+                            <div class="modal-footer"><a href="/my-account/bookings/" class="w-btn us-btn-style_6 w-btn-underlined">Back to My Bookings</a></div>
+                      </div></div>';
+                }
 
                 echo '</div>';
             }
@@ -337,8 +436,6 @@ class GetOrderStartDate
 
             });
         </script>
-
-        
 
         <?php
         return ob_get_clean();
