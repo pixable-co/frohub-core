@@ -64,10 +64,10 @@ class GetOrderStatus
                     $normalized_value = strtolower(str_replace(' ', '_', $value));
                 
                     switch ($normalized_value) {
-                        case 'cancelled_by_client_early':
+                        case 'early_cancellation':
                             $status_description = 'You cancelled within the allowed time and will receive a deposit refund.';
                             break;
-                        case 'cancelled_by_client_late':
+                        case 'late_cancellation':
                             $status_description = 'You cancelled too late to receive a deposit refund.';
                             break;
                         case 'cancelled_by_stylist':
