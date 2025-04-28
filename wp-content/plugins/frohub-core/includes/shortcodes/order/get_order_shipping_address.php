@@ -84,12 +84,12 @@ class GetOrderShippingAddress
         $city = get_field('city', $partner_id);
         $county_district = get_field('county_district', $partner_id);
         $postcode = get_field('postcode', $partner_id);
-        
-        // statuses that should only show city + postcode
+
+        // Statuses that should only show city + postcode
         $partial_display_statuses = ['on-hold', 'cancelled', 'rescheduling'];
 
         if (in_array($order_status, $partial_display_statuses)) {
-            // On-hold: show only city and postcode, if available
+            // Show only city and postcode
             $parts = array();
 
             if (!empty($city)) {
@@ -107,7 +107,7 @@ class GetOrderShippingAddress
             }
 
         } elseif (in_array($order_status, ['processing', 'completed'])) {
-            // Processing/Completed: show full address
+            // Show full address with Google Maps link
             $parts = array();
 
             if (!empty($street_address)) {
@@ -127,7 +127,15 @@ class GetOrderShippingAddress
             }
 
             if (!empty($parts)) {
-                $output .= implode(', ', $parts) . '<br>';
+                $full_address = implode(', ', $parts);
+                $output .= $full_address . '<br>';
+
+                // Prepare a clean URL for Google Maps
+                $maps_query = urlencode($full_address);
+                $google_maps_url = 'https://www.google.com/maps/search/?api=1&query=' . $maps_query;
+
+                // Append "Open in Google Maps" link
+                $output .= '<a href="' . esc_url($google_maps_url) . '" target="_blank" rel="noopener noreferrer" style="margin-top: 5px; display: inline-block;">Open in Google Maps <i class="far fa-external-link-alt"></i></a>';
             } else {
                 $output .= '<p>Full partner address not available.</p>';
             }
@@ -135,4 +143,5 @@ class GetOrderShippingAddress
 
         return $output;
     }
+
 }
