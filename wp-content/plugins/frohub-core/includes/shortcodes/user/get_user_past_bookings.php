@@ -155,7 +155,6 @@ class GetUserPastBookings
         // === Final Output ===
         if ($found_past_booking) {
             echo '<h5>Past Bookings</h5>';
-            echo do_shortcode('[us_separator size="large"]');
             echo '<div class="frohub_table_wrapper">';
             echo '<table class="frohub_table">
                     <tr>
