@@ -123,13 +123,13 @@ class GetUserPastBookings
                     $rating = (int)get_field('overall_rating', $review->ID);
                     $table_rows .= $rating > 0 ? str_repeat('<i class="fas fa-star" style="color: black;"></i>', $rating) : 'Thank you';
                 } else {
-                    $table_rows .= '<button class="myBtn w-btn us-btn-style_3" data-info=\'' . esc_attr(json_encode($review_data)) . '\'>Leave Review</button>';
+                    $table_rows .= '<button class="myBtn w-btn us-btn-style_7 w-btn-underlined" data-info=\'' . esc_attr(json_encode($review_data)) . '\'>Leave Review</button>';
                 }
             }
             $table_rows .= '</td>';
 
             // Book Again Column
-            $table_rows .= '<td><a href="' . esc_url(get_permalink($product_id)) . '" class="w-btn us-btn-style_7">Book again</a></td>';
+            $table_rows .= '<td><a href="' . esc_url(get_permalink($product_id)) . '" class="w-btn us-btn-style_7 w-btn-underlined">Book again</a></td>';
             $table_rows .= '</tr>';
 
             // --- Build Mobile Card ---
@@ -145,10 +145,10 @@ class GetUserPastBookings
                     $rating = (int)get_field('overall_rating', $review->ID);
                     $mobile_cards .= '<div class="review-stars">' . ($rating > 0 ? str_repeat('<i class="fas fa-star" style="color: black;"></i>', $rating) : 'Thank you') . '</div>';
                 } else {
-                    $mobile_cards .= '<button class="myBtn w-btn us-btn-style_3" data-info=\'' . esc_attr(json_encode($review_data)) . '\'>Leave Review</button>';
+                    $mobile_cards .= '<button class="myBtn w-btn us-btn-style_7 w-btn-underlined" data-info=\'' . esc_attr(json_encode($review_data)) . '\'>Leave Review</button>';
                 }
             }
-            $mobile_cards .= '<a href="' . esc_url(get_permalink($product_id)) . '" class="w-btn us-btn-style_7">Book again</a>';
+            $mobile_cards .= '<a href="' . esc_url(get_permalink($product_id)) . '" class="w-btn us-btn-style_7 w-btn-underlined">Book again</a>';
             $mobile_cards .= '</div></div>';
         }
 
