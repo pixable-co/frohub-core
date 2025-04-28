@@ -112,7 +112,7 @@ class GetUpcomingBookings {
 
                 echo '<td>';
                 echo '<div class="price-block">';
-                echo '<div><strong>Deposit:</strong> £' . number_format($deposit, 2) . '</div>';
+                echo '<div class="deposit"><strong>Deposit:</strong> £' . number_format($deposit, 2) . '</div>';
                 echo '<div class="due-on-day"> Due on the day: ' . esc_attr($total_due) . '</div>';
                 echo '</div>';
                 echo '</td>';
@@ -127,7 +127,7 @@ class GetUpcomingBookings {
                 echo '<td><span class="status_text">' . esc_html($status_label) . '</span></td>';
 
                 echo '<td>';
-                if ($order_status === 'on-hold') {
+                if ($order_status === 'rescheduling') {
                     echo '<div class="table-action-buttons">';
                     echo '<a href="#" class="w-btn us-btn-style_7 accept-button" data-order-id="' . esc_attr($order_id) . '">Accept</a>';
                     echo '<span> / </span>';
@@ -148,7 +148,7 @@ class GetUpcomingBookings {
                 $mobile_cards .= '<p><input disabled type="text" value="Due on the day: ' . esc_attr($total_due) . '" /></p>';
                 $mobile_cards .= '<div class="actions">';
 
-                if ($order_status === 'on-hold') {
+                if ($order_status === 'rescheduling') {
                     $mobile_cards .= '<a href="#" class="w-btn us-btn-style_7 accept-button" data-order-id="' . esc_attr($order_id) . '">Accept</a>';
                     $mobile_cards .= '<a href="#" class="w-btn us-btn-style_7 decline-button" data-order-id="' . esc_attr($order_id) . '">Decline</a>';
                 } else {
