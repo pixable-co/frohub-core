@@ -129,6 +129,7 @@ class ReviewButton
                 </div> <!-- End of modal-body -->
             </div> <!-- End of modal-content -->
     
+
             <script type="text/javascript">
                 jQuery(document).ready(function ($) {
                     $(document).on('gform_post_render', function (event, formId) {
@@ -141,6 +142,7 @@ class ReviewButton
             </script>
     
             <?php
+             echo do_shortcode('[us_separator]');
         } else {
             echo '<span>Thank you for your review.</span>';
         }
