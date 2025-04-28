@@ -60,49 +60,103 @@ class ReviewButton {
                 }
             }
 
-            // Render the "Leave Review" button
-            echo '<button id="leaveReviewButton" class="w-btn us-btn-style_3">Leave Review</button>';
+            $data = json_encode([
+                'productImgURL'   => get_the_post_thumbnail_url($product_id, 'thumbnail'),
+                'productName'     => $service_name,
+                'serviceType'     => $service_type,
+                'partnerTitle'    => $partner_title,
+                'selectedDate'    => $appointment,
+                'partnerAddress'  => $partner_address,
+                'orderId'         => $order_id,
+                'productId'       => $product_id,
+            ]);
 
-            // Hidden review form
-            ?>
-            <div id="reviewForm" style="display:none; margin-top: 20px;">
-                <div class="review-form-content">
-                    <div id="productImg"><?php if ($product_id) { echo '<img src="' . esc_url(get_the_post_thumbnail_url($product_id, 'thumbnail')) . '" alt="">'; } ?></div>
-                    <p><strong>Service:</strong> <?php echo $service_name ?? ''; ?></p>
-                    <p><strong>Type:</strong> <?php echo $service_type ?? ''; ?></p>
-                    <p><strong>Stylist:</strong> <?php echo $partner_title ?? ''; ?></p>
-                    <p><strong>Date:</strong> <?php echo $appointment ?? ''; ?></p>
-                    <p><strong>Location:</strong> <?php echo $partner_address ?? ''; ?></p>
+            echo '<button class="myBtn w-btn us-btn-style_3" data-info=\'' . esc_attr($data) . '\'>Leave Review</button>';
+        } else {
+            echo '<span>Thank you for your review</span>';
+        }
+        ?>
 
-                    <div class="feedback-form" style="margin-top: 20px;">
-                        <p id="feedbackHeading">Let’s See How You Slay (Share Your Photo)</p>
-                        <p id="feedbackDesc">Feel free to share a photo of your fabulous look! If you're a bit shy, you can always upload a side shot or one that keeps your face covered. Sharing photos helps other clients see the stylist’s work and decide if they’d like to book the service.</p>
-
-                        <?php echo do_shortcode('[gravityform id="7" title="false" description="false" ajax="true"]'); ?>
+        <!-- Review Modal -->
+        <div id="myModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="w-hwrapper valign_middle align_justify" style="width: 100%;">
+                        <h5>Leave a Review</h5>
+                        <span class="close"><i class="fas fa-times"></i></span>
+                    </div>
+                </div>
+                <div class="modal-body">
+                    <div class="w-hwrapper valign_top align_left">
+                        <div id="modalproductImg"></div>
+                        <div class="modal-body-right">
+                            <p id="productName"></p>
+                            <p id="serviceType"></p>
+                            <p id="partnerTitle"></p>
+                            <p id="bookingDate"><i class="fas fa-calendar-alt"></i> <span id="selectedDate"></span></p>
+                            <p id="bookingAddress"><i class="fas fa-map-marker-alt"></i> <span id="partnerAddress"></span></p>
+                            <div class="feedback-form">
+                                <p id="feedbackHeading">Let’s See How You Slay (Share Your Photo)</p>
+                                <p id="feedbackDesc">Feel free to share a photo of your fabulous look! If you're a bit shy, you can always upload a side shot or one that keeps your face covered. Sharing photos helps other clients see the stylist’s work and decide if they’d like to book the service.</p>
+                            </div>
+                            <div>
+                                <?php echo do_shortcode('[gravityform id="7" title="false" description="false" ajax="true"]'); ?>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <script type="text/javascript">
-            jQuery(document).ready(function($) {
-                $('#leaveReviewButton').on('click', function() {
-                    $('#reviewForm').slideDown(); // Smooth reveal
-                    $(this).hide(); // Hide the button after click
-                });
+        <script type="text/javascript">
+        jQuery(document).ready(function ($) {
+            window.reviewData = <?php echo json_encode([
+                'productImgURL'   => get_the_post_thumbnail_url($product_id, 'thumbnail') ?: '',
+                'productName'     => $service_name ?? '',
+                'serviceType'     => $service_type ?? '',
+                'partnerTitle'    => $partner_title ?? '',
+                'selectedDate'    => $appointment ?? '',
+                'partnerAddress'  => $partner_address ?? '',
+                'orderId'         => $order_id ?? '',
+                'productId'       => $product_id ?? '',
+            ]); ?>;
 
-                $(document).on('gform_post_render', function(event, formId) {
-                    if (formId === 7) {
-                        $('#input_7_18').val('<?php echo esc_js($order_id); ?>').prop('readonly', true);
-                        $('#input_7_19').val('<?php echo esc_js($product_id); ?>').prop('readonly', true);
-                    }
-                });
+
+            $('#selectedDate').text(window.reviewData.selectedDate);
+            $('#partnerAddress').text(window.reviewData.partnerAddress);
+
+            $(document).on('gform_post_render', function (event, formId) {
+                if (formId === 7 && window.reviewData) {
+                    $('#input_7_18').val(window.reviewData.orderId).prop('readonly', true);
+                    $('#input_7_19').val(window.reviewData.productId).prop('readonly', true);
+                }
             });
-            </script>
-            <?php
-        } else {
-            echo '<span>Thank you for your review.</span>';
-        }
 
+
+            $(document).on('click', '.myBtn', function () {
+                const data = JSON.parse($(this).attr('data-info'));
+                $('#modalproductImg').html('<img src="' + data.productImgURL + '">');
+                $('#productName').text(data.productName);
+                $('#serviceType').html('<span class="status_text">' + data.serviceType + '</span>');
+                $('#partnerTitle').text(data.partnerTitle);
+                $('#selectedDate').text(data.selectedDate);       // Optional (overwrites value)
+                $('#partnerAddress').text(data.partnerAddress);   // Optional (overwrites value)
+                $('#myModal').css('display', 'block');
+            });
+
+            $('.close').click(function () {
+                $('#myModal').css('display', 'none');
+            });
+
+            $(window).click(function (event) {
+                if (event.target === $('#myModal')[0]) {
+                    $('#myModal').css('display', 'none');
+                }
+            });
+        });
+        </script>
+
+        <?php
         return ob_get_clean();
     }
 }
