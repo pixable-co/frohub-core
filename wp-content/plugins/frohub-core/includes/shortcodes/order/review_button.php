@@ -73,7 +73,7 @@ class ReviewButton
                 <div class="modal-body">
                     <div class="product-details">
                         <?php if ($product_id): ?>
-                            <img src="<?php echo esc_url(get_the_post_thumbnail_url($product_id, 'thumbnail')); ?>" alt="">
+                            <img class="review-product-img" src="<?php echo esc_url(get_the_post_thumbnail_url($product_id, 'thumbnail')); ?>" alt="">
                         <?php endif; ?>
 
                         <div class="modal-body-right">
