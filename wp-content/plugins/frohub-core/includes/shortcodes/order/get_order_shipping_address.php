@@ -1,30 +1,33 @@
 <?php
 namespace FECore;
 
-if ( ! defined( 'ABSPATH' ) ) {
+if (!defined('ABSPATH')) {
     exit;
 }
 
-class GetOrderShippingAddress {
+class GetOrderShippingAddress
+{
 
-    public static function init() {
+    public static function init()
+    {
         $self = new self();
-        add_shortcode( 'get_order_shipping_address', array($self, 'get_order_shipping_address_shortcode') );
+        add_shortcode('get_order_shipping_address', array($self, 'get_order_shipping_address_shortcode'));
     }
 
-    public function get_order_shipping_address_shortcode() {
+    public function get_order_shipping_address_shortcode()
+    {
         ob_start();
 
         $order_id = $GLOBALS['single_order_id'];
         $order = wc_get_order($order_id);
 
-        if ($order && in_array($order->get_status(), ['processing', 'completed', 'on-hold','rescheduling', 'cancelled'])) {
+        if ($order && in_array($order->get_status(), ['processing', 'completed', 'on-hold', 'rescheduling', 'cancelled'])) {
             foreach ($order->get_items() as $item) {
                 $service_type = $item->get_meta('pa_service-type'); // Fetch service-type attribute
-                
+
                 if (!empty($service_type)) {
                     $service_type = strtolower($service_type);
-                    
+
                     $product_id = $item->get_product_id();
                     $partner_id = get_field('partner_id', $product_id);
 
@@ -52,7 +55,8 @@ class GetOrderShippingAddress {
         return ob_get_clean();
     }
 
-    private function render_shipping_address($order) {
+    private function render_shipping_address($order)
+    {
         $output = '';
 
         $shipping_address_1 = $order->get_shipping_address_1();
@@ -72,15 +76,19 @@ class GetOrderShippingAddress {
         return $output;
     }
 
-    private function render_partner_address($partner_id, $order_status) {
+    private function render_partner_address($partner_id, $order_status)
+    {
         $output = '';
 
-        $street_address   = get_field('street_address', $partner_id);
-        $city             = get_field('city', $partner_id);
-        $county_district  = get_field('county_district', $partner_id);
-        $postcode         = get_field('postcode', $partner_id);
+        $street_address = get_field('street_address', $partner_id);
+        $city = get_field('city', $partner_id);
+        $county_district = get_field('county_district', $partner_id);
+        $postcode = get_field('postcode', $partner_id);
+        
+        // statuses that should only show city + postcode
+        $partial_display_statuses = ['on-hold', 'cancelled', 'rescheduling'];
 
-        if ($order_status === 'on-hold') {
+        if (in_array($order_status, $partial_display_statuses)) {
             // On-hold: show only city and postcode, if available
             $parts = array();
 
