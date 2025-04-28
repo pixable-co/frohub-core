@@ -59,9 +59,11 @@ class GetOrderStatus
 
                 if (!empty($value) && $value !== 'N/A' && !empty($label)) {
                     $status_label = esc_html($label);
-
-                    // Set specific description based on cancellation_status value
-                    switch ($value) {
+                
+                    // Normalize value to match switch cases
+                    $normalized_value = strtolower(str_replace(' ', '_', $value));
+                
+                    switch ($normalized_value) {
                         case 'cancelled_by_client_early':
                             $status_description = 'You cancelled within the allowed time and will receive a deposit refund.';
                             break;
@@ -84,6 +86,7 @@ class GetOrderStatus
                             $status_description = '';
                     }
                 }
+                
             }
 
             echo '<div class="status_block">';
