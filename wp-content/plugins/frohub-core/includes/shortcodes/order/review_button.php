@@ -41,7 +41,7 @@ class ReviewButton
     
         if (!in_array($order_status, $allowed_wc_statuses) && !in_array($cancellation_status, $allowed_cancellation_statuses)) {
             // If neither matches, do not show the review form
-            echo '<span>Reviews are available only after your appointment is completed or cancelled.</span>';
+            //echo '<span>Reviews are available only after your appointment is completed or cancelled.</span>';
             return ob_get_clean();
         }
     
