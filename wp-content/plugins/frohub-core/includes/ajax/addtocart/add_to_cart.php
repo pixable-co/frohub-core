@@ -198,6 +198,8 @@ public function add_to_cart() {
         if (isset($values['selected_add_ons'])) {
             $cart_item['selected_add_ons'] = $values['selected_add_ons'];
         }
+
+
         // Restore selected service type from session
         if (isset($values['selected_service_type'])) {
             $cart_item['selected_service_type'] = $values['selected_service_type'];
@@ -232,18 +234,32 @@ public function add_to_cart() {
 
     public function display_selected_add_ons($item_data, $cart_item) {
         // Display selected add-ons in cart and checkout
-        if (isset($cart_item['selected_add_ons']) && ! empty($cart_item['selected_add_ons'])) {
-            $add_ons = array_map(function($add_on) {
-                return $add_on['name'];
-            }, $cart_item['selected_add_ons']);
-            
-            // Convert array to comma-separated string
-            $add_ons_string = implode(', ', $add_ons);
-            $item_data[] = array(
-                'name' => __('Selected Add-Ons', 'frohub'),
-                'value' => $add_ons_string,
-            );
-        }
+//         if (isset($cart_item['selected_add_ons']) && ! empty($cart_item['selected_add_ons'])) {
+//             $add_ons = array_map(function($add_on) {
+//                 return $add_on['name'];
+//             }, $cart_item['selected_add_ons']);
+//
+//             // Convert array to comma-separated string
+//             $add_ons_string = implode(', ', $add_ons);
+//             $item_data[] = array(
+//                 'name' => __('Selected Add-Ons', 'frohub'),
+//                 'value' => $add_ons_string,
+//             );
+//         }
+
+        if (isset($cart_item['selected_add_ons']) && is_array($cart_item['selected_add_ons'])) {
+                $formatted_add_ons = array_map(function($add_on) {
+                    $name = isset($add_on['name']) ? $add_on['name'] : '';
+                    $price = isset($add_on['price']) ? floatval($add_on['price']) : 0;
+                    return "<strong>{$name}</strong> (£" . number_format($price, 2) . ")";
+                }, $cart_item['selected_add_ons']);
+
+                $item_data[] = array(
+                    'name'    => __('Add Ons', 'frohub'),
+                    'value'   => implode(', ', $formatted_add_ons),
+                    'display' => implode(', ', $formatted_add_ons),
+                );
+            }
 
         if (isset($cart_item['deposit_due']) && !empty($cart_item['deposit_due'])) {
                 $item_data[] = array(
@@ -342,14 +358,16 @@ public function add_to_cart() {
             wc_add_order_item_meta($item_id, 'Stylist', $values['stylist_name']);
         }
 
-        if(isset($values['selected_add_ons'])) {
-            // $add_ons = array_map(function($add_on) {
-            //     return $add_on['name'];
-            // }, $values['selected_add_ons']);
-            
-            // Convert array to comma-separated string
-            //$add_ons_string = implode(', ', $add_ons);
-            wc_add_order_item_meta($item_id, 'Selected Add-Ons', $values['selected_add_ons']);
+        if (isset($values['selected_add_ons']) && is_array($values['selected_add_ons'])) {
+            $formatted_add_ons = array_map(function($add_on) {
+                $name = isset($add_on['name']) ? $add_on['name'] : '';
+                $price = isset($add_on['price']) ? floatval($add_on['price']) : 0;
+                return "<strong>{$name}</strong> (£" . number_format($price, 2) . ")";
+            }, $values['selected_add_ons']);
+
+            $formatted_string = implode(', ', $formatted_add_ons);
+
+            wc_add_order_item_meta($item_id, 'Selected Add Ons', $formatted_string);
         }
 
         if (!empty($values['extra_charge'])) {
