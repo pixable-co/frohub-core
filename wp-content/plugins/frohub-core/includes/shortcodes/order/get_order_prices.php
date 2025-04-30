@@ -7,7 +7,6 @@ if (!defined('ABSPATH')) {
 
 class GetOrderPrices
 {
-
     public static function init()
     {
         $self = new self();
@@ -34,58 +33,53 @@ class GetOrderPrices
             foreach ($order->get_items() as $item) {
                 $product_id = $item->get_product_id();
 
-                if ($product_id != 28990) {
-                    // Base service price from ACF
-                    $base_service_price = (float) get_field('service_price', $product_id);
-
-                    // Loop through all metadata
-                    foreach ($item->get_meta_data() as $meta) {
-                        $key = $meta->key;
-                        $value = $meta->value;
-
-                        switch ($key) {
-                            case 'selected add ons':
-                                // ✅ Strip <strong> tags from the raw value first
-                                $value = wp_strip_all_tags($value);
-                            
-                                // ✅ Parse now-safe plain-text version
-                                preg_match_all('/([^,]+?) \(£([\d\.]+)\)/', $value, $matches, PREG_SET_ORDER);
-                                foreach ($matches as $match) {
-                                    $label = trim($match[1]);
-                                    $price = floatval($match[2]);
-                                    $addons_total += $price;
-                                    $addon_items[] = array('label' => $label, 'price' => $price);
-                                }
-                                break;
-                            
-                        
-                            case 'extra charge':
-                                $extra_charge += (float) str_replace(['£', ','], '', $value);
-                                break;
-                        
-                            case 'mobile travel fee':
-                                $mobile_fee += (float) str_replace(['£', ','], '', $value);
-                                break;
-                        
-                            case 'total due on the day':
-                                $due_on_the_day += (float) str_replace(['£', ','], '', $value);
-                                break;
-                        }
-                        
-                    }
-
-                    // Deposit = total line item cost
-                    $deposit_paid += $item->get_total();
-                }
-
-                // Booking fee product
+                // Booking fee (special product ID)
                 if ($product_id == 28990) {
-                    $booking_fee = (float) $item->get_total();
+                    $booking_fee += (float) $item->get_total();
+                    continue;
                 }
+
+                // Accumulate base service price
+                $base_service_price += (float) get_field('service_price', $product_id);
+
+                // Loop through and normalize metadata
+                foreach ($item->get_meta_data() as $meta) {
+                    $key = strtolower(trim($meta->key));
+                    $value = $meta->value;
+
+                    switch ($key) {
+                        case 'selected add ons':
+                            $value = wp_strip_all_tags($value);
+                            preg_match_all('/([^,]+?) \(£([\d\.]+)\)/', $value, $matches, PREG_SET_ORDER);
+                            foreach ($matches as $match) {
+                                $label = trim($match[1]);
+                                $price = floatval($match[2]);
+                                $addons_total += $price;
+                                $addon_items[] = array('label' => $label, 'price' => $price);
+                            }
+                            break;
+
+                        case 'extra charge':
+                            $extra_charge += (float) str_replace(['£', ','], '', $value);
+                            break;
+
+                        case 'mobile travel fee':
+                            $mobile_fee += (float) str_replace(['£', ','], '', $value);
+                            break;
+
+                        case 'total due on the day':
+                            $due_on_the_day += (float) str_replace(['£', ','], '', $value);
+                            break;
+                    }
+                }
+
+                // Accumulate deposit
+                $deposit_paid += $item->get_total();
             }
 
             $total_service_fee = $base_service_price + $addons_total + $extra_charge + $mobile_fee;
 
+            // Output the table
             echo '<table border="0" cellpadding="5">';
             echo '<tr><td><strong>Base Service Price</strong></td><td>£' . number_format($base_service_price, 2) . '</td></tr>';
 
@@ -118,7 +112,6 @@ class GetOrderPrices
                 echo '<p class="order_date">Order date: ' . esc_html($order_date->date('d M Y')) . '</p>';
             }
         }
-
 
         return ob_get_clean();
     }
