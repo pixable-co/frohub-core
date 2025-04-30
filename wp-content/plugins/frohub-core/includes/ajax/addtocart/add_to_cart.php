@@ -233,73 +233,80 @@ public function add_to_cart() {
     }
 
     public function display_selected_add_ons($item_data, $cart_item) {
-        // Display selected add-ons in cart and checkout
-//         if (isset($cart_item['selected_add_ons']) && ! empty($cart_item['selected_add_ons'])) {
-//             $add_ons = array_map(function($add_on) {
-//                 return $add_on['name'];
-//             }, $cart_item['selected_add_ons']);
-//
-//             // Convert array to comma-separated string
-//             $add_ons_string = implode(', ', $add_ons);
-//             $item_data[] = array(
-//                 'name' => __('Selected Add-Ons', 'frohub'),
-//                 'value' => $add_ons_string,
-//             );
-//         }
-
+        // Display selected add-ons
         if (isset($cart_item['selected_add_ons']) && is_array($cart_item['selected_add_ons'])) {
-                $formatted_add_ons = array_map(function($add_on) {
-                    $name = isset($add_on['name']) ? $add_on['name'] : '';
-                    $price = isset($add_on['price']) ? floatval($add_on['price']) : 0;
-                    return "<strong>{$name}</strong> (£" . number_format($price, 2) . ")";
-                }, $cart_item['selected_add_ons']);
-
-                $item_data[] = array(
-                    'name'    => __('Add Ons', 'frohub'),
-                    'value'   => implode(', ', $formatted_add_ons),
-                    'display' => implode(', ', $formatted_add_ons),
-                );
-            }
-
+            $formatted_add_ons = array_map(function($add_on) {
+                $name = isset($add_on['name']) ? $add_on['name'] : '';
+                $price = isset($add_on['price']) ? floatval($add_on['price']) : 0;
+                return "<strong>{$name}</strong> (£" . number_format($price, 2) . ")";
+            }, $cart_item['selected_add_ons']);
+    
+            $item_data[] = array(
+                'name'    => __('Add Ons', 'frohub'),
+                'value'   => implode(', ', $formatted_add_ons),
+                'display' => implode(', ', $formatted_add_ons),
+            );
+        }
+    
+        // Total due on the day
         if (isset($cart_item['deposit_due']) && !empty($cart_item['deposit_due'])) {
-                $item_data[] = array(
-                    'name' => __('Total due on day', 'frohub'),
-                    'value' => '£' . number_format($cart_item['deposit_due'], 2),
-                );
+            $item_data[] = array(
+                'name' => __('Total due on day', 'frohub'),
+                'value' => '£' . number_format($cart_item['deposit_due'], 2),
+            );
         }
-
-        // Display selected service type in cart and checkout
-        if (isset($cart_item['selected_service_type']) && ! empty($cart_item['selected_service_type'])) {
-        $item_data[] = array(
-            'name' => __('Service Type', 'frohub'),
-            'value' => ucwords(str_replace('-', ' ', $cart_item['selected_service_type'])),
-          );
+    
+        // Service Type
+        if (isset($cart_item['selected_service_type']) && !empty($cart_item['selected_service_type'])) {
+            $service_type = ucwords(str_replace('-', ' ', $cart_item['selected_service_type']));
+            $service_label = $service_type;
+    
+            // Append mobile fee if service is Mobile
+            if (strtolower($service_type) === 'mobile' && !empty($cart_item['mobile_travel_fee'])) {
+                $mobile_fee = floatval($cart_item['mobile_travel_fee']);
+                $service_label .= ' (£' . number_format($mobile_fee, 2) . ')';
+            }
+    
+            $item_data[] = array(
+                'name' => __('Service Type', 'frohub'),
+                'value' => $service_label,
+            );
         }
-
+    
+        // Requested Date
         $formatted_date = $this->format_date($cart_item['booking_date']);
-        if (isset($cart_item['booking_date']) && !empty($cart_item['booking_date'])) {
-                $item_data[] = array(
-                    'name' => __('Requested Date', 'frohub'),
-                    'value' => $formatted_date,
-                );
+        if (!empty($cart_item['booking_date'])) {
+            $item_data[] = array(
+                'name' => __('Requested Date', 'frohub'),
+                'value' => $formatted_date,
+            );
         }
-        if (isset($cart_item['booking_time']) && !empty($cart_item['booking_time'])) { // Display time
-                $item_data[] = array(
-                    'name' => __('Requested Time', 'frohub'),
-                    'value' => $cart_item['booking_time'],
-                );
+    
+        // Requested Time + Extra Charge
+        if (!empty($cart_item['booking_time'])) {
+            $time_value = $cart_item['booking_time'];
+            if (!empty($cart_item['extra_charge'])) {
+                $extra = floatval($cart_item['extra_charge']);
+                $time_value .= ' (£' . number_format($extra, 2) . ')';
+            }
+    
+            $item_data[] = array(
+                'name' => __('Requested Time', 'frohub'),
+                'value' => $time_value,
+            );
         }
-
-        // Display stylist name
-        if (isset($cart_item['stylist_name']) && !empty($cart_item['stylist_name'])) {
-        $item_data[] = array(
-        'name' => __('Stylist', 'frohub'),
-        'value' => $cart_item['stylist_name'],
-        );
+    
+        // Stylist
+        if (!empty($cart_item['stylist_name'])) {
+            $item_data[] = array(
+                'name' => __('Stylist', 'frohub'),
+                'value' => $cart_item['stylist_name'],
+            );
         }
-
+    
         return $item_data;
     }
+    
 
     public function add_order_item_meta($item_id, $values) {
         $order_id = wc_get_order_id_by_order_item_id($item_id);
