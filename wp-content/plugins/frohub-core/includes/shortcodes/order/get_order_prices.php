@@ -45,7 +45,6 @@ class GetOrderPrices
 
                         switch ($key) {
                             case 'Selected Add Ons':
-                                // Parse format: "Blow-Dry (£10.00), Wash and Cut (£20.00)"
                                 preg_match_all('/([^,]+?) \(£([\d\.]+)\)/', $value, $matches, PREG_SET_ORDER);
                                 foreach ($matches as $match) {
                                     $label = trim($match[1]);
@@ -54,19 +53,20 @@ class GetOrderPrices
                                     $addon_items[] = array('label' => $label, 'price' => $price);
                                 }
                                 break;
-
+                        
                             case 'Extra Charge':
                                 $extra_charge += (float) str_replace(['£', ','], '', $value);
                                 break;
-
+                        
                             case 'Mobile Travel Fee':
                                 $mobile_fee += (float) str_replace(['£', ','], '', $value);
                                 break;
-
-                            case 'Total Due on the Day':
+                        
+                            case 'Total due on the day': // ✅ Fix: Correct key case
                                 $due_on_the_day += (float) str_replace(['£', ','], '', $value);
                                 break;
                         }
+                        
                     }
 
                     // Deposit = total line item cost
