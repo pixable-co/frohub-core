@@ -96,7 +96,6 @@ class GetOrderPrices
                 }
                 echo '<tr><td><strong>Add-Ons Total</strong></td><td>£' . number_format($addons_total, 2) . '</td></tr>';
             }
-            
 
             if ($extra_charge > 0) {
                 echo '<tr><td>Extra Charges</td><td>£' . number_format($extra_charge, 2) . '</td></tr>';
