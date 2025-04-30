@@ -76,7 +76,7 @@ class GetOrderPrices
             $total_service_fee = $base_service_price + $addons_total + $extra_charge + $mobile_fee;
 
             // --- OUTPUT SECTION ---
-            echo '<div class="payment-summary" style="font-family: monospace; white-space: pre-wrap; line-height: 1.8;">';
+            echo '<div class="payment-summary">';
 
             echo '<div class="base-service-price line-item">
                     <div class="label">' . esc_html('Base Service Price') . '</div>
@@ -96,7 +96,7 @@ class GetOrderPrices
                         <div class="label">' . esc_html('Add-Ons Total') . '</div>
                         <div class="price">£' . number_format($addons_total, 2) . '</div>
                       </div>';
-                echo '<div class="add-ons-separator">----------------------------</div>';
+                echo '<div class="receipt-separator"></div>';
                 echo '</div>';
             }
             
@@ -131,9 +131,7 @@ class GetOrderPrices
                     <div class="price">£' . number_format($due_on_the_day, 2) . '</div>
                   </div><br>';
             
-            echo '<div class="booking-fee-note">
-                    * Exclusive of £' . number_format($booking_fee, 2) . ' Booking fee. 
-                    Total paid on FroHub: £' . number_format($order->get_total(), 2) . '
+            echo '<div class="booking-fee-note">* Exclusive of £' . number_format($booking_fee, 2) . ' Booking fee. Total paid on FroHub: £' . number_format($order->get_total(), 2) . '
                   </div><br>';
             
             if ($order_date = $order->get_date_created()) {
