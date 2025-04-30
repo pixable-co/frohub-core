@@ -33,16 +33,13 @@ class GetOrderPrices
             foreach ($order->get_items() as $item) {
                 $product_id = $item->get_product_id();
 
-                // Booking fee (special product ID)
                 if ($product_id == 28990) {
                     $booking_fee += (float) $item->get_total();
                     continue;
                 }
 
-                // Accumulate base service price
                 $base_service_price += (float) get_field('service_price', $product_id);
 
-                // Loop through and normalize metadata
                 foreach ($item->get_meta_data() as $meta) {
                     $key = strtolower(trim($meta->key));
                     $value = $meta->value;
@@ -73,44 +70,48 @@ class GetOrderPrices
                     }
                 }
 
-                // Accumulate deposit
                 $deposit_paid += $item->get_total();
             }
 
             $total_service_fee = $base_service_price + $addons_total + $extra_charge + $mobile_fee;
 
-            // Output the table
-            echo '<table border="0" cellpadding="5">';
-            echo '<tr><td><strong>Base Service Price</strong></td><td>£' . number_format($base_service_price, 2) . '</td></tr>';
+            // --- OUTPUT SECTION ---
+            echo '<div style="line-height: 1.8;">';
+
+            echo 'Base Service Price&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;£' . number_format($base_service_price, 2) . '<br><br>';
 
             if (!empty($addon_items)) {
-                echo '<tr><td colspan="2"><strong>Selected Add-Ons</strong></td></tr>';
+                echo 'Selected Add-Ons<br>';
                 foreach ($addon_items as $addon) {
-                    echo '<tr><td>' . esc_html($addon['label']) . '</td><td>£' . number_format($addon['price'], 2) . '</td></tr>';
+                    echo esc_html($addon['label']) . '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;£' . number_format($addon['price'], 2) . '<br>';
                 }
-                echo '<tr><td><strong>Add-Ons Total</strong></td><td>£' . number_format($addons_total, 2) . '</td></tr>';
+                echo 'Add-Ons Total&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;£' . number_format($addons_total, 2) . '<br>';
+                echo '--------------------<br>';
             }
 
             if ($extra_charge > 0) {
-                echo '<tr><td>Extra Charges</td><td>£' . number_format($extra_charge, 2) . '</td></tr>';
+                echo 'Extra Charges&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;£' . number_format($extra_charge, 2) . '<br>';
             }
 
             if ($mobile_fee > 0) {
-                echo '<tr><td>Mobile Travel Fee</td><td>£' . number_format($mobile_fee, 2) . '</td></tr>';
+                echo 'Mobile Travel Fee&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;£' . number_format($mobile_fee, 2) . '<br>';
             }
 
-            echo '<tr style="font-weight:bold;"><td>Total Service Fee</td><td>£' . number_format($total_service_fee, 2) . '</td></tr>';
-            echo '<tr><td>Deposit Paid *</td><td>£' . number_format($deposit_paid, 2) . '</td></tr>';
-            echo '<tr><td>Due on the Day</td><td>£' . number_format($due_on_the_day, 2) . '</td></tr>';
-            echo '</table>';
+            echo '<br>';
+            echo 'Total Service Fee&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>£' . number_format($total_service_fee, 2) . '</strong><br><br>';
 
-            echo '<hr><br>';
-            echo '* Exclusive of £' . number_format($booking_fee, 2) . ' Booking fee. Total paid on FroHub: £' . number_format($order->get_total(), 2) . '<br><br>';
+            echo 'Deposit Paid *&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;£' . number_format($deposit_paid, 2) . '<br>';
+            echo 'Due on the Day&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;£' . number_format($due_on_the_day, 2) . '<br><br>';
+
+            echo '* Exclusive of £' . number_format($booking_fee, 2) . ' Booking fee. ';
+            echo 'Total paid on FroHub: £' . number_format($order->get_total(), 2) . '<br><br>';
 
             $order_date = $order->get_date_created();
             if ($order_date) {
-                echo '<p class="order_date">Order date: ' . esc_html($order_date->date('d M Y')) . '</p>';
+                echo 'Order date: ' . esc_html($order_date->date('d M Y')) . '<br>';
             }
+
+            echo '</div>';
         }
 
         return ob_get_clean();
