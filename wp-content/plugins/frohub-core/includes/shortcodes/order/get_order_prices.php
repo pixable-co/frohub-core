@@ -26,15 +26,16 @@ class GetOrderPrices {
             $deposit_paid = 0.0;
             $due_on_the_day = 0.0;
             $booking_fee = 0.0;
+            $addon_items = [];
     
             foreach ($order->get_items() as $item) {
                 $product_id = $item->get_product_id();
     
                 if ($product_id != 28990) {
-                    // Base service price from ACF
+                    // Get base price from ACF
                     $base_service_price = (float) get_field('service_price', $product_id);
     
-                    // Add-ons: parse HTML string
+                    // Add-ons parsing
                     $add_ons = $item->get_meta('Selected Add Ons', true);
                     if (!empty($add_ons)) {
                         preg_match_all('/<strong>(.*?)<\/strong> \(£([\d\.]+)\)/', $add_ons, $matches, PREG_SET_ORDER);
@@ -46,29 +47,32 @@ class GetOrderPrices {
                         }
                     }
     
-                    // Extra Charge
+                    // Extra charge
                     $extra = $item->get_meta('Extra Charge');
                     if (!empty($extra)) {
-                        $extra_charge += floatval(str_replace(['£', ','], '', $extra));
+                        $extra_charge += (float) str_replace(['£', ','], '', $extra);
                     }
     
-                    // Mobile Travel Fee
+                    // Mobile travel fee
                     $mobile = $item->get_meta('Mobile Travel Fee');
                     if (!empty($mobile)) {
-                        $mobile_fee += floatval(str_replace(['£', ','], '', $mobile));
+                        $mobile_fee += (float) str_replace(['£', ','], '', $mobile);
                     }
     
-                    // Total Due on the Day
-                    $due = $item->get_meta('Total due on day');
-                    if (!empty($due)) {
-                        $due_on_the_day += floatval(str_replace(['£', ','], '', $due));
+                    // ✅ Total due on day (EXACTLY copied logic from your working version)
+                    $item_meta_data = $item->get_meta_data();
+                    if (!empty($item_meta_data)) {
+                        foreach ($item_meta_data as $meta) {
+                            if ($meta->key == 'Total due on day') {
+                                $due_on_the_day += (float) $meta->value;
+                            }
+                        }
                     }
     
-                    // Deposit paid for non-booking-fee product
                     $deposit_paid += $item->get_total();
                 }
     
-                // Booking Fee Product
+                // Booking fee product
                 if ($product_id == 28990) {
                     $booking_fee = (float) $item->get_total();
                 }
@@ -79,7 +83,6 @@ class GetOrderPrices {
             echo '<table border="0" cellpadding="5">';
             echo '<tr><td><strong>Base Service Price</strong></td><td>£' . number_format($base_service_price, 2) . '</td></tr>';
     
-            // Show individual add-ons
             if (!empty($addon_items)) {
                 echo '<tr><td colspan="2"><strong>Selected Add-Ons</strong></td></tr>';
                 foreach ($addon_items as $addon) {
