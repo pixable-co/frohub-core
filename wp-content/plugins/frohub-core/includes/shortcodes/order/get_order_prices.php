@@ -61,9 +61,11 @@ class GetOrderPrices {
 
                     // ✅ Correctly retrieve Total due on day
                     $due_meta = $item->get_meta('Total due on day', true);
+                    echo $due_meta;
                     if (!empty($due_meta)) {
                         $due_on_the_day += (float) str_replace(['£', ','], '', $due_meta);
                     }
+
 
                     // Deposit paid (non-booking fee product)
                     $deposit_paid += $item->get_total();
