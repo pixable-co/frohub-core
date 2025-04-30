@@ -45,6 +45,7 @@ class GetOrderPrices
 
                         switch ($key) {
                             case 'Selected Add Ons':
+                                // Parse plain text format like "Blow-Dry (£10.00), Wash and Cut (£20.00)"
                                 preg_match_all('/([^,]+?) \(£([\d\.]+)\)/', $value, $matches, PREG_SET_ORDER);
                                 foreach ($matches as $match) {
                                     $label = trim($match[1]);
@@ -53,7 +54,6 @@ class GetOrderPrices
                                     $addon_items[] = array('label' => $label, 'price' => $price);
                                 }
                                 break;
-                        
                             case 'Extra Charge':
                                 $extra_charge += (float) str_replace(['£', ','], '', $value);
                                 break;
