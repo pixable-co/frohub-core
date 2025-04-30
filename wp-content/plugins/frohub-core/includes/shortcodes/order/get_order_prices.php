@@ -1,18 +1,21 @@
 <?php
 namespace FECore;
 
-if ( ! defined( 'ABSPATH' ) ) {
+if (!defined('ABSPATH')) {
     exit;
 }
 
-class GetOrderPrices {
+class GetOrderPrices
+{
 
-    public static function init() {
+    public static function init()
+    {
         $self = new self();
-        add_shortcode( 'get_order_prices', array($self, 'get_order_prices_shortcode') );
+        add_shortcode('get_order_prices', array($self, 'get_order_prices_shortcode'));
     }
 
-    public function get_order_prices_shortcode() {
+    public function get_order_prices_shortcode()
+    {
         ob_start();
 
         $order_id = $GLOBALS['single_order_id'];
@@ -32,42 +35,41 @@ class GetOrderPrices {
                 $product_id = $item->get_product_id();
 
                 if ($product_id != 28990) {
-                    // Get base price from ACF
+                    // Base service price from ACF
                     $base_service_price = (float) get_field('service_price', $product_id);
 
-                    // Add-ons parsing
-                    $add_ons = $item->get_meta('Selected Add Ons', true);
-                    if (!empty($add_ons)) {
-                        preg_match_all('/<strong>(.*?)<\/strong> \(£([\d\.]+)\)/', $add_ons, $matches, PREG_SET_ORDER);
-                        foreach ($matches as $match) {
-                            $label = $match[1];
-                            $price = floatval($match[2]);
-                            $addons_total += $price;
-                            $addon_items[] = array('label' => $label, 'price' => $price);
+                    // Loop through all metadata
+                    foreach ($item->get_meta_data() as $meta) {
+                        $key = $meta->key;
+                        $value = $meta->value;
+
+                        switch ($key) {
+                            case 'Selected Add Ons':
+                                // Parse format: "Blow-Dry (£10.00), Wash and Cut (£20.00)"
+                                preg_match_all('/([^,]+?) \(£([\d\.]+)\)/', $value, $matches, PREG_SET_ORDER);
+                                foreach ($matches as $match) {
+                                    $label = trim($match[1]);
+                                    $price = floatval($match[2]);
+                                    $addons_total += $price;
+                                    $addon_items[] = array('label' => $label, 'price' => $price);
+                                }
+                                break;
+
+                            case 'Extra Charge':
+                                $extra_charge += (float) str_replace(['£', ','], '', $value);
+                                break;
+
+                            case 'Mobile Travel Fee':
+                                $mobile_fee += (float) str_replace(['£', ','], '', $value);
+                                break;
+
+                            case 'Total Due on the Day':
+                                $due_on_the_day += (float) str_replace(['£', ','], '', $value);
+                                break;
                         }
                     }
 
-                    // Extra charge
-                    $extra = $item->get_meta('Extra Charge', true);
-                    if (!empty($extra)) {
-                        $extra_charge += (float) str_replace(['£', ','], '', $extra);
-                    }
-
-                    // Mobile travel fee
-                    $mobile = $item->get_meta('Mobile Travel Fee', true);
-                    if (!empty($mobile)) {
-                        $mobile_fee += (float) str_replace(['£', ','], '', $mobile);
-                    }
-
-                    // ✅ Correctly retrieve Total due on day
-                    $due_meta = $item->get_meta('Total due on day', true);
-                    echo $due_meta;
-                    if (!empty($due_meta)) {
-                        $due_on_the_day += (float) str_replace(['£', ','], '', $due_meta);
-                    }
-
-
-                    // Deposit paid (non-booking fee product)
+                    // Deposit = total line item cost
                     $deposit_paid += $item->get_total();
                 }
 
@@ -111,6 +113,7 @@ class GetOrderPrices {
                 echo '<p class="order_date">Order date: ' . esc_html($order_date->date('d M Y')) . '</p>';
             }
         }
+
 
         return ob_get_clean();
     }
