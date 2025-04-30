@@ -78,6 +78,7 @@ class GetOrderPrices
             // --- OUTPUT SECTION ---
             echo '<div class="payment-summary">';
 
+            echo '<h6>Payment Summary</h6>';
             
             if (!empty($addon_items)) {
                 echo '<div class="add-on-line-items">';
