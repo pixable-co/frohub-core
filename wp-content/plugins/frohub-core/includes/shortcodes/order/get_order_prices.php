@@ -78,10 +78,6 @@ class GetOrderPrices
             // --- OUTPUT SECTION ---
             echo '<div class="payment-summary">';
 
-            echo '<div class="base-service-price line-item">
-                    <div class="label">' . esc_html('Base Service Price') . '</div>
-                    <div class="price">£' . number_format($base_service_price, 2) . '</div>
-                  </div><br>';
             
             if (!empty($addon_items)) {
                 echo '<div class="add-on-line-items">';
