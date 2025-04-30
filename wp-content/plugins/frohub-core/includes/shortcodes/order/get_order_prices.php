@@ -76,41 +76,62 @@ class GetOrderPrices
             $total_service_fee = $base_service_price + $addons_total + $extra_charge + $mobile_fee;
 
             // --- OUTPUT SECTION ---
-            echo '<div style="font-family: monospace; white-space: pre-wrap; line-height: 1.8;">';
+            echo '<div class="payment-summary" style="font-family: monospace; white-space: pre-wrap; line-height: 1.8;">';
 
-            echo str_pad('Base Service Price', 28) . '£' . number_format($base_service_price, 2) . "\n\n";
+            echo '<div class="base-service-price">' .
+                str_pad('Base Service Price', 28) . '£' . number_format($base_service_price, 2) .
+                '</div><br>';
 
             if (!empty($addon_items)) {
-                echo "Selected Add-Ons\n";
+                echo '<div class="add-on-line-items">';
+                echo '<div>Selected Add-Ons</div>';
                 foreach ($addon_items as $addon) {
-                    echo str_pad($addon['label'], 28) . '£' . number_format($addon['price'], 2) . "\n";
+                    echo '<div>' . str_pad($addon['label'], 28) . '£' . number_format($addon['price'], 2) . '</div>';
                 }
-                echo str_pad('Add-Ons Total', 28) . '£' . number_format($addons_total, 2) . "\n";
-                echo str_repeat('-', 28) . "\n";
+                echo '<div class="add-ons-total">' .
+                    str_pad('Add-Ons Total', 28) . '£' . number_format($addons_total, 2) .
+                    '</div>';
+                echo '<div class="add-ons-separator">----------------------------</div>';
+                echo '</div>';
             }
 
             if ($extra_charge > 0) {
-                echo str_pad('Extra Charges', 28) . '£' . number_format($extra_charge, 2) . "\n";
+                echo '<div class="extra-charges">' .
+                    str_pad('Extra Charges', 28) . '£' . number_format($extra_charge, 2) .
+                    '</div>';
             }
 
             if ($mobile_fee > 0) {
-                echo str_pad('Mobile Travel Fee', 28) . '£' . number_format($mobile_fee, 2) . "\n";
+                echo '<div class="mobile-travel-fee">' .
+                    str_pad('Mobile Travel Fee', 28) . '£' . number_format($mobile_fee, 2) .
+                    '</div>';
             }
 
-            echo str_pad('Total Service Fee', 28) . '£' . number_format($total_service_fee, 2) . "\n\n";
+            echo '<br>';
 
-            echo str_pad('Deposit Paid *', 28) . '£' . number_format($deposit_paid, 2) . "\n";
-            echo str_pad('Due on the Day', 28) . '£' . number_format($due_on_the_day, 2) . "\n\n";
+            echo '<div class="total-service-fee">' .
+                str_pad('Total Service Fee', 28) . '£' . number_format($total_service_fee, 2) .
+                '</div><br>';
 
+            echo '<div class="deposit-paid">' .
+                str_pad('Deposit Paid *', 28) . '£' . number_format($deposit_paid, 2) .
+                '</div>';
+
+            echo '<div class="due-on-the-day">' .
+                str_pad('Due on the Day', 28) . '£' . number_format($due_on_the_day, 2) .
+                '</div><br>';
+
+            echo '<div class="booking-fee-note">';
             echo '* Exclusive of £' . number_format($booking_fee, 2) . ' Booking fee. ';
-            echo 'Total paid on FroHub: £' . number_format($order->get_total(), 2) . "\n\n";
+            echo 'Total paid on FroHub: £' . number_format($order->get_total(), 2);
+            echo '</div><br>';
 
-            $order_date = $order->get_date_created();
-            if ($order_date) {
-                echo 'Order date: ' . esc_html($order_date->date('d M Y')) . "\n";
+            if ($order_date = $order->get_date_created()) {
+                echo '<div class="order-date">Order date: ' . esc_html($order_date->date('d M Y')) . '</div>';
             }
 
             echo '</div>';
+
         }
 
         return ob_get_clean();
