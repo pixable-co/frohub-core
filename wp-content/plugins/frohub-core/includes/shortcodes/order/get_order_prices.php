@@ -45,6 +45,10 @@ class GetOrderPrices
 
                         switch ($key) {
                             case 'selected add ons':
+                                // ✅ Strip <strong> tags from the raw value first
+                                $value = wp_strip_all_tags($value);
+                            
+                                // ✅ Parse now-safe plain-text version
                                 preg_match_all('/([^,]+?) \(£([\d\.]+)\)/', $value, $matches, PREG_SET_ORDER);
                                 foreach ($matches as $match) {
                                     $label = trim($match[1]);
@@ -53,6 +57,7 @@ class GetOrderPrices
                                     $addon_items[] = array('label' => $label, 'price' => $price);
                                 }
                                 break;
+                            
                         
                             case 'extra charge':
                                 $extra_charge += (float) str_replace(['£', ','], '', $value);
@@ -91,6 +96,7 @@ class GetOrderPrices
                 }
                 echo '<tr><td><strong>Add-Ons Total</strong></td><td>£' . number_format($addons_total, 2) . '</td></tr>';
             }
+            
 
             if ($extra_charge > 0) {
                 echo '<tr><td>Extra Charges</td><td>£' . number_format($extra_charge, 2) . '</td></tr>';
