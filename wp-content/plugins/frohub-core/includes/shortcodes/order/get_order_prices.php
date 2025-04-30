@@ -14,10 +14,10 @@ class GetOrderPrices {
 
     public function get_order_prices_shortcode() {
         ob_start();
-    
+
         $order_id = $GLOBALS['single_order_id'];
         $order = wc_get_order($order_id);
-    
+
         if (!empty($order)) {
             $base_service_price = 0.0;
             $addons_total = 0.0;
@@ -27,14 +27,14 @@ class GetOrderPrices {
             $due_on_the_day = 0.0;
             $booking_fee = 0.0;
             $addon_items = [];
-    
+
             foreach ($order->get_items() as $item) {
                 $product_id = $item->get_product_id();
-    
+
                 if ($product_id != 28990) {
                     // Get base price from ACF
                     $base_service_price = (float) get_field('service_price', $product_id);
-    
+
                     // Add-ons parsing
                     $add_ons = $item->get_meta('Selected Add Ons', true);
                     if (!empty($add_ons)) {
@@ -46,43 +46,40 @@ class GetOrderPrices {
                             $addon_items[] = array('label' => $label, 'price' => $price);
                         }
                     }
-    
+
                     // Extra charge
-                    $extra = $item->get_meta('Extra Charge');
+                    $extra = $item->get_meta('Extra Charge', true);
                     if (!empty($extra)) {
                         $extra_charge += (float) str_replace(['£', ','], '', $extra);
                     }
-    
+
                     // Mobile travel fee
-                    $mobile = $item->get_meta('Mobile Travel Fee');
+                    $mobile = $item->get_meta('Mobile Travel Fee', true);
                     if (!empty($mobile)) {
                         $mobile_fee += (float) str_replace(['£', ','], '', $mobile);
                     }
-    
-                    // ✅ Total due on day (EXACTLY copied logic from your working version)
-                    $item_meta_data = $item->get_meta_data();
-                    if (!empty($item_meta_data)) {
-                        foreach ($item_meta_data as $meta) {
-                            if ($meta->key == 'Total due on day') {
-                                $due_on_the_day += (float) $meta->value;
-                            }
-                        }
+
+                    // ✅ Correctly retrieve Total due on day
+                    $due_meta = $item->get_meta('Total due on day', true);
+                    if (!empty($due_meta)) {
+                        $due_on_the_day += (float) str_replace(['£', ','], '', $due_meta);
                     }
-    
+
+                    // Deposit paid (non-booking fee product)
                     $deposit_paid += $item->get_total();
                 }
-    
+
                 // Booking fee product
                 if ($product_id == 28990) {
                     $booking_fee = (float) $item->get_total();
                 }
             }
-    
+
             $total_service_fee = $base_service_price + $addons_total + $extra_charge + $mobile_fee;
-    
+
             echo '<table border="0" cellpadding="5">';
             echo '<tr><td><strong>Base Service Price</strong></td><td>£' . number_format($base_service_price, 2) . '</td></tr>';
-    
+
             if (!empty($addon_items)) {
                 echo '<tr><td colspan="2"><strong>Selected Add-Ons</strong></td></tr>';
                 foreach ($addon_items as $addon) {
@@ -90,30 +87,29 @@ class GetOrderPrices {
                 }
                 echo '<tr><td><strong>Add-Ons Total</strong></td><td>£' . number_format($addons_total, 2) . '</td></tr>';
             }
-    
+
             if ($extra_charge > 0) {
                 echo '<tr><td>Extra Charges</td><td>£' . number_format($extra_charge, 2) . '</td></tr>';
             }
-    
+
             if ($mobile_fee > 0) {
                 echo '<tr><td>Mobile Travel Fee</td><td>£' . number_format($mobile_fee, 2) . '</td></tr>';
             }
-    
+
             echo '<tr style="font-weight:bold;"><td>Total Service Fee</td><td>£' . number_format($total_service_fee, 2) . '</td></tr>';
             echo '<tr><td>Deposit Paid *</td><td>£' . number_format($deposit_paid, 2) . '</td></tr>';
             echo '<tr><td>Due on the Day</td><td>£' . number_format($due_on_the_day, 2) . '</td></tr>';
             echo '</table>';
-    
+
             echo '<hr><br>';
             echo '* Exclusive of £' . number_format($booking_fee, 2) . ' Booking fee. Total paid on FroHub: £' . number_format($order->get_total(), 2) . '<br><br>';
-    
+
             $order_date = $order->get_date_created();
             if ($order_date) {
                 echo '<p class="order_date">Order date: ' . esc_html($order_date->date('d M Y')) . '</p>';
             }
         }
-    
+
         return ob_get_clean();
     }
-    
 }
