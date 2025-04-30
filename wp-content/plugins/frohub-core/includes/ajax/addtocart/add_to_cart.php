@@ -248,14 +248,6 @@ public function add_to_cart() {
             );
         }
     
-        // Total due on the day
-        if (isset($cart_item['deposit_due']) && !empty($cart_item['deposit_due'])) {
-            $item_data[] = array(
-                'name' => __('Total due on day', 'frohub'),
-                'value' => '£' . number_format($cart_item['deposit_due'], 2),
-            );
-        }
-    
         // Service Type
         if (isset($cart_item['selected_service_type']) && !empty($cart_item['selected_service_type'])) {
             $service_type = ucwords(str_replace('-', ' ', $cart_item['selected_service_type']));
@@ -304,6 +296,13 @@ public function add_to_cart() {
             );
         }
     
+              // Total due on the day
+              if (isset($cart_item['deposit_due']) && !empty($cart_item['deposit_due'])) {
+                $item_data[] = array(
+                    'name' => __('Total due on day', 'frohub'),
+                    'value' => '£' . number_format($cart_item['deposit_due'], 2),
+                );
+            }
         return $item_data;
     }
     
