@@ -3,10 +3,8 @@ import { CheckCircle, XCircle, RefreshCw } from "lucide-react";
 import { Skeleton } from "antd";
 import frohubStore from "../frohubStore.js";
 import { getLocationDataFromCookie } from "../utils/locationUtils.js";
-import {fetchData} from "../services/fetchData.js";
-import {toastNotification} from "../utils/toastNotification.js";
-
-const GOOGLE_MAPS_API_KEY = "AIzaSyA_myRdC3Q1OUQBmZ22dxxd3rGtwrVC1sI";
+import { fetchData } from "../services/fetchData.js";
+import { toastNotification } from "../utils/toastNotification.js";
 
 export default function MobileService({ partnerId }) {
     const [postcode, setPostcode] = useState("");
@@ -19,10 +17,10 @@ export default function MobileService({ partnerId }) {
     const [staticLocation, setStaticLocation] = useState(null);
     const { setMobileTravelFee, setReadyForMobile, totalService } = frohubStore();
 
-    // New state for location suggestions
-    const [suggestions, setSuggestions] = useState([]);
-    const [showSuggestions, setShowSuggestions] = useState(false);
-    const suggestionsRef = useRef(null);
+    // Reference for the input element
+    const autocompleteInputRef = useRef(null);
+    // Reference to store the Google Places Autocomplete instance
+    const autocompleteRef = useRef(null);
 
     useEffect(() => {
         // Get static location data from cookie using the imported function
@@ -45,18 +43,91 @@ export default function MobileService({ partnerId }) {
             fetchPartnerLocation();
         }
 
-        // Add click outside listener to close suggestions
-        const handleClickOutside = (event) => {
-            if (suggestionsRef.current && !suggestionsRef.current.contains(event.target)) {
-                setShowSuggestions(false);
+        // Initialize Google Places Autocomplete
+        if (window.google && window.google.maps && window.google.maps.places && autocompleteInputRef.current && !autocompleteRef.current) {
+            const options = {
+                componentRestrictions: { country: "uk" },
+                types: ["geocode"]
+            };
+
+            autocompleteRef.current = new window.google.maps.places.Autocomplete(
+                autocompleteInputRef.current,
+                options
+            );
+
+            // Add listener for place selection
+            autocompleteRef.current.addListener("place_changed", () => {
+                const place = autocompleteRef.current.getPlace();
+
+                if (!place.geometry) {
+                    console.error("No geometry for this place");
+                    return;
+                }
+
+                setPostcode(place.formatted_address);
+
+                const locationData = {
+                    latitude: place.geometry.location.lat(),
+                    longitude: place.geometry.location.lng(),
+                    address: place.formatted_address
+                };
+
+                handleCheckLocation(locationData);
+            });
+        }
+
+        return () => {
+            // Clean up the autocomplete when component unmounts
+            if (autocompleteRef.current) {
+                window.google.maps.event.clearInstanceListeners(autocompleteRef.current);
+                autocompleteRef.current = null;
+            }
+        };
+    }, [partnerId]);
+
+    // Re-initialize autocomplete if Google Maps loads after component mount
+    useEffect(() => {
+        const checkAndInitAutocomplete = () => {
+            if (window.google && window.google.maps && window.google.maps.places &&
+                autocompleteInputRef.current && !autocompleteRef.current) {
+                const options = {
+                    componentRestrictions: { country: "uk" },
+                    types: ["geocode"]
+                };
+
+                autocompleteRef.current = new window.google.maps.places.Autocomplete(
+                    autocompleteInputRef.current,
+                    options
+                );
+
+                autocompleteRef.current.addListener("place_changed", () => {
+                    const place = autocompleteRef.current.getPlace();
+
+                    if (!place.geometry) {
+                        console.error("No geometry for this place");
+                        return;
+                    }
+
+                    setPostcode(place.formatted_address);
+
+                    const locationData = {
+                        latitude: place.geometry.location.lat(),
+                        longitude: place.geometry.location.lng(),
+                        address: place.formatted_address
+                    };
+
+                    handleCheckLocation(locationData);
+                });
             }
         };
 
-        document.addEventListener("mousedown", handleClickOutside);
+        // Check every 500ms if Google Maps has loaded
+        const interval = setInterval(checkAndInitAutocomplete, 500);
+
         return () => {
-            document.removeEventListener("mousedown", handleClickOutside);
+            clearInterval(interval);
         };
-    }, [partnerId]);
+    }, []);
 
     // Fetch the partner's location and radius pricing
     const fetchPartnerLocation = () => {
@@ -94,96 +165,6 @@ export default function MobileService({ partnerId }) {
             calculateTravelFeeForStatic();
         }
     }, [partnerLocation, staticLocation, loadingPartner]);
-
-    // New function to fetch location suggestions
-    const fetchLocationSuggestions = async (input) => {
-        if (!input || input.length < 3) {
-            setSuggestions([]);
-            return;
-        }
-
-        try {
-            const response = await fetch(
-                `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${encodeURIComponent(input)}&types=geocode&components=country:uk&key=${GOOGLE_MAPS_API_KEY}`
-            );
-            const data = await response.json();
-
-            if (data.status === "OK") {
-                setSuggestions(data.predictions.map(prediction => ({
-                    id: prediction.place_id,
-                    description: prediction.description
-                })));
-                setShowSuggestions(true);
-            } else {
-                setSuggestions([]);
-            }
-        } catch (err) {
-            console.error("Error fetching location suggestions:", err);
-            setSuggestions([]);
-        }
-    };
-
-    // Debounce search input
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            fetchLocationSuggestions(postcode);
-        }, 300);
-
-        return () => clearTimeout(timer);
-    }, [postcode]);
-
-    // Get latitude & longitude of the postcode using Google Maps API
-    const getCoordinatesFromPostcode = async (postcode) => {
-        try {
-            const response = await fetch(
-                `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(postcode)}&key=${GOOGLE_MAPS_API_KEY}`
-            );
-            const data = await response.json();
-            if (data.status === "OK") {
-                const location = data.results[0].geometry.location;
-                return { latitude: location.lat, longitude: location.lng };
-            }
-            throw new Error("Invalid postcode");
-            frohubStore.setState((state) => ({ readyForMobile: false }));
-        } catch (err) {
-            console.error("Error fetching coordinates:", err);
-            return null;
-        }
-    };
-
-    // Get details from place ID
-    const getDetailsFromPlaceId = async (placeId) => {
-        try {
-            const response = await fetch(
-                `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&fields=geometry,formatted_address&key=${GOOGLE_MAPS_API_KEY}`
-            );
-            const data = await response.json();
-
-            if (data.status === "OK") {
-                const location = data.result.geometry.location;
-                return {
-                    latitude: location.lat,
-                    longitude: location.lng,
-                    address: data.result.formatted_address
-                };
-            }
-            throw new Error("Invalid location");
-        } catch (err) {
-            console.error("Error fetching place details:", err);
-            return null;
-        }
-    };
-
-    // Handle suggestion selection
-    const handleSelectSuggestion = async (suggestion) => {
-        setPostcode(suggestion.description);
-        setShowSuggestions(false);
-
-        const locationDetails = await getDetailsFromPlaceId(suggestion.id);
-        if (locationDetails) {
-            handleCheckLocation(locationDetails);
-        }
-    };
 
     // Calculate distance between two coordinates (Haversine formula)
     const calculateDistance = (lat1, lon1, lat2, lon2) => {
@@ -302,21 +283,9 @@ export default function MobileService({ partnerId }) {
         setLoading(false);
     };
 
-    // Handle postcode validation and price calculation
-    const handleCheckPostcode = async (value) => {
-        setPostcode(value);
-        const { setErrorMessage } = frohubStore.getState();
-
-        // If postcode is empty, clear everything and don't show validation messages
-        if (!value.trim()) {
-            setTravelFee(null);
-            setIsValid(false);
-            setError("");
-            setMobileTravelFee(0);
-            setLoading(false);
-            frohubStore.setState((state) => ({ readyForMobile: false }));
-            return;
-        }
+    // Handle postcode input change
+    const handlePostcodeChange = (e) => {
+        setPostcode(e.target.value);
     };
 
     // Show Skeleton only while fetching partner location
@@ -332,35 +301,21 @@ export default function MobileService({ partnerId }) {
     return (
         <div className="mt-4 mb-6 p-4 border border-gray-300 rounded-lg bg-white">
             {!staticLocation ? (
-                // UI with location search and suggestions
+                // UI with Google Places Autocomplete
                 <>
                     <p className="text-sm text-gray-700">
                         To check if you are within their mobile service area, enter your location or postcode.
                     </p>
                     <div className="flex justify-start items-center gap-6 mt-3">
-                        <div className="relative w-full" ref={suggestionsRef}>
+                        <div className="w-full">
                             <input
+                                ref={autocompleteInputRef}
                                 type="text"
                                 placeholder="Enter location or postcode"
                                 value={postcode}
-                                onChange={(e) => handleCheckPostcode(e.target.value)}
+                                onChange={handlePostcodeChange}
                                 className="w-full px-4 py-2 text-gray-600 border rounded-md bg-gray-100 border-gray-300 focus:ring focus:ring-indigo-300 focus:outline-none"
                             />
-
-                            {/* Location suggestions dropdown */}
-                            {showSuggestions && suggestions.length > 0 && (
-                                <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
-                                    {suggestions.map((suggestion) => (
-                                        <div
-                                            key={suggestion.id}
-                                            className="px-4 py-2 cursor-pointer hover:bg-gray-100 text-sm"
-                                            onClick={() => handleSelectSuggestion(suggestion)}
-                                        >
-                                            {suggestion.description}
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
                         </div>
 
                         <div>
