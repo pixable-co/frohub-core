@@ -221,81 +221,139 @@ class GetUserPastBookings
 
 
         <style>
-            .fas.fa-star {
-                margin-right: 2px;
-                font-size: 16px;
-                color: black;
-            }
+            /* General Modal Overlay */
+.frohub-modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5);
+}
 
-            .frohub-modal {
-                display: none;
-                position: fixed;
-                z-index: 1000;
-                left: 0;
-                top: 0;
-                width: 100%;
-                height: 100%;
-                overflow: auto;
-                background: rgba(0, 0, 0, 0.5);
-            }
+/* Modal Wrapper */
+.frohub-modal-content {
+    background-color: #fff;
+    margin: 5% auto;
+    padding: 3rem;
+    border-radius: 5px;
+    width: 90%;
+    max-width: 800px;
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+    position: relative;
+}
 
-            .frohub-modal-content {
-                background: #fff;
-                margin: 10% auto;
-                padding: 20px;
-                border-radius: 8px;
-                width: 90%;
-                max-width: 600px;
-                position: relative;
-                height: 800px;
-                overflow: auto;
-            }
+/* Close Button */
+.frohub-close {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 24px;
+    font-weight: bold;
+    cursor: pointer;
+    color: #999;
+}
 
-            .frohub-close {
-                position: absolute;
-                top: 10px;
-                right: 15px;
-                font-size: 24px;
-                cursor: pointer;
-            }
+/* Header */
+.modal-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 2rem;
+    text-align: center;
+}
 
-            @media only screen and (max-width: 768px) {
-                .frohub_table {
-                    display: none;
-                }
+/* Modal Body */
+.modal-body {
+    margin-bottom: 2rem;
+    text-align: center;
+}
 
-                .frohub_card {
-                    display: block;
-                    padding: 1rem;
-                    border: 1px solid #ccc;
-                    border-radius: 8px;
-                    background: #fff;
-                    margin-bottom: 1rem;
-                }
+/* Product Details Grid */
+.product-details {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 20px;
+    margin-bottom: 2rem;
+    text-align: left;
+}
 
-                .frohub_card p {
-                    margin: 0.25rem 0;
-                    font-size: 0.9rem;
-                }
+/* Left column (image) */
+.modal-body-left {
+    flex: 1 1 40%;
+    display: flex;
+    justify-content: center;
+}
 
-                .frohub_card .actions {
-                    margin-top: 0.75rem;
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                }
+.review-product-img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+}
 
-                .frohub_card .actions button,
-                .frohub_card .actions a {
-                    font-size: 0.8rem;
-                }
-            }
+/* Right column (info) */
+.modal-body-right {
+    flex: 1 1 55%;
+    font-size: 0.95rem;
+}
 
-            @media only screen and (min-width: 769px) {
-                .frohub_card {
-                    display: none;
-                }
-            }
+.modal-body-right p {
+    margin: 0.5rem 0;
+}
+
+.modal-body-right .status_text {
+    font-weight: 600;
+    color: #333;
+}
+
+/* Feedback form */
+.feedback-form {
+    margin-top: 2rem;
+    text-align: left;
+}
+
+#feedbackHeading {
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+}
+
+#feedbackDesc {
+    font-size: 0.95rem;
+    color: #666;
+    margin-bottom: 1.5rem;
+}
+
+/* Star rating */
+.fas.fa-star {
+    margin-right: 2px;
+    font-size: 16px;
+    color: black;
+}
+
+/* Responsive Tweaks */
+@media only screen and (max-width: 768px) {
+    .product-details {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .modal-body-left,
+    .modal-body-right {
+        flex: 1 1 100%;
+    }
+
+    .modal-body-right {
+        text-align: center;
+    }
+}
+
         </style>
 
         <script>
