@@ -209,7 +209,7 @@ class GetUserPastBookings
                 $('.myBtn').on('click', function() {
                     reviewData = $(this).data('info');
                     $('.review-data').html(`
-                        <img src="${reviewData.productImgURL}" alt="${reviewData.productName}" style="max-width: 100px; height: auto; display: block; margin-bottom: 10px;" />
+                        <img src="${reviewData.productImgURL}" alt="${reviewData.productName}" style="max-width: 350px; height: 350px; display: block; margin-bottom: 10px;" />
                         <strong>Service:</strong> ${reviewData.productName}<br>
                         <strong>Type:</strong> ${reviewData.serviceType}<br>
                         <strong>Date:</strong> ${reviewData.selectedDate}<br>
