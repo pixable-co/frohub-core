@@ -11,6 +11,7 @@
     "watch": "vite build --watch"
   },
   "dependencies": {
+    "@react-google-maps/api": "^2.20.6",
     "@tailwindcss/postcss": "^4.0.0",
     "@tailwindcss/vite": "^4.0.0",
     "antd": "^5.23.3",

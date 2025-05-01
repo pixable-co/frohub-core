@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { CheckCircle, XCircle, RefreshCw } from "lucide-react";
 import { Skeleton } from "antd";
 import frohubStore from "../frohubStore.js";
-import { getLocationDataFromCookie } from "../utils/locationUtils.js"; // Import the cookie function
+import { getLocationDataFromCookie } from "../utils/locationUtils.js";
 import {fetchData} from "../services/fetchData.js";
 import {toastNotification} from "../utils/toastNotification.js";
 
@@ -18,6 +18,11 @@ export default function MobileService({ partnerId }) {
     const [error, setError] = useState("");
     const [staticLocation, setStaticLocation] = useState(null);
     const { setMobileTravelFee, setReadyForMobile, totalService } = frohubStore();
+
+    // New state for location suggestions
+    const [suggestions, setSuggestions] = useState([]);
+    const [showSuggestions, setShowSuggestions] = useState(false);
+    const suggestionsRef = useRef(null);
 
     useEffect(() => {
         // Get static location data from cookie using the imported function
@@ -39,16 +44,27 @@ export default function MobileService({ partnerId }) {
         if (partnerId) {
             fetchPartnerLocation();
         }
+
+        // Add click outside listener to close suggestions
+        const handleClickOutside = (event) => {
+            if (suggestionsRef.current && !suggestionsRef.current.contains(event.target)) {
+                setShowSuggestions(false);
+            }
+        };
+
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
     }, [partnerId]);
 
     // Fetch the partner's location and radius pricing
-    // Fetch the partner's location and radius pricing using AJAX
     const fetchPartnerLocation = () => {
         setLoadingPartner(true);
         setError("");
 
         fetchData(
-            "frohub/get_mobile_location_data", // Match your AJAX action in PHP
+            "frohub/get_mobile_location_data",
             (response) => {
                 console.log(response)
                 if (response.success) {
@@ -71,31 +87,6 @@ export default function MobileService({ partnerId }) {
             }
         );
     };
-    // const fetchPartnerLocation = async () => {
-    //     try {
-    //         const API_URL = `/wp-json/frohub/v1/get-location-data/${partnerId}`;
-    //         const response = await fetch(API_URL);
-    //         const data = await response.json();
-    //
-    //         if (data.success) {
-    //             setPartnerLocation({
-    //                 latitude: parseFloat(data.data.latitude),
-    //                 longitude: parseFloat(data.data.longitude),
-    //                 radiusFees: data.data.radius_fees.map((fee) => ({
-    //                     radius: parseFloat(fee.radius),
-    //                     price: parseFloat(fee.price),
-    //                 })),
-    //             });
-    //         } else {
-    //             setError("Failed to fetch partner location.");
-    //         }
-    //     } catch (err) {
-    //         setError("Error fetching location data.");
-    //         console.error(err);
-    //     } finally {
-    //         setLoadingPartner(false);
-    //     }
-    // };
 
     useEffect(() => {
         // When both partner location and static location are loaded, calculate fee automatically
@@ -103,6 +94,43 @@ export default function MobileService({ partnerId }) {
             calculateTravelFeeForStatic();
         }
     }, [partnerLocation, staticLocation, loadingPartner]);
+
+    // New function to fetch location suggestions
+    const fetchLocationSuggestions = async (input) => {
+        if (!input || input.length < 3) {
+            setSuggestions([]);
+            return;
+        }
+
+        try {
+            const response = await fetch(
+                `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${encodeURIComponent(input)}&types=geocode&components=country:uk&key=${GOOGLE_MAPS_API_KEY}`
+            );
+            const data = await response.json();
+
+            if (data.status === "OK") {
+                setSuggestions(data.predictions.map(prediction => ({
+                    id: prediction.place_id,
+                    description: prediction.description
+                })));
+                setShowSuggestions(true);
+            } else {
+                setSuggestions([]);
+            }
+        } catch (err) {
+            console.error("Error fetching location suggestions:", err);
+            setSuggestions([]);
+        }
+    };
+
+    // Debounce search input
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            fetchLocationSuggestions(postcode);
+        }, 300);
+
+        return () => clearTimeout(timer);
+    }, [postcode]);
 
     // Get latitude & longitude of the postcode using Google Maps API
     const getCoordinatesFromPostcode = async (postcode) => {
@@ -123,19 +151,39 @@ export default function MobileService({ partnerId }) {
         }
     };
 
-    // Calculate distance between two coordinates (Haversine formula)
-    // const calculateDistance = (lat1, lon1, lat2, lon2) => {
-    //     const R = 6371; // Radius of Earth in km
-    //     const dLat = ((lat2 - lat1) * Math.PI) / 180;
-    //     const dLon = ((lon2 - lon1) * Math.PI) / 180;
-    //     const a =
-    //         Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-    //         Math.cos((lat1 * Math.PI) / 180) *
-    //         Math.cos((lat2 * Math.PI) / 180) *
-    //         Math.sin(dLon / 2) * Math.sin(dLon / 2);
-    //     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    //     return R * c; // Distance in km
-    // };
+    // Get details from place ID
+    const getDetailsFromPlaceId = async (placeId) => {
+        try {
+            const response = await fetch(
+                `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&fields=geometry,formatted_address&key=${GOOGLE_MAPS_API_KEY}`
+            );
+            const data = await response.json();
+
+            if (data.status === "OK") {
+                const location = data.result.geometry.location;
+                return {
+                    latitude: location.lat,
+                    longitude: location.lng,
+                    address: data.result.formatted_address
+                };
+            }
+            throw new Error("Invalid location");
+        } catch (err) {
+            console.error("Error fetching place details:", err);
+            return null;
+        }
+    };
+
+    // Handle suggestion selection
+    const handleSelectSuggestion = async (suggestion) => {
+        setPostcode(suggestion.description);
+        setShowSuggestions(false);
+
+        const locationDetails = await getDetailsFromPlaceId(suggestion.id);
+        if (locationDetails) {
+            handleCheckLocation(locationDetails);
+        }
+    };
 
     // Calculate distance between two coordinates (Haversine formula)
     const calculateDistance = (lat1, lon1, lat2, lon2) => {
@@ -188,10 +236,10 @@ export default function MobileService({ partnerId }) {
         } else {
             setIsValid(false);
             if (totalService < 1) {
-                setError("Oops! They don’t cover your area. Try another stylist nearby.");
+                setError("Oops! They don't cover your area. Try another stylist nearby.");
             }
             else {
-                setError("Oops! Mobile’s not available in your area, but you can still book at their home or salon");
+                setError("Oops! Mobile's not available in your area, but you can still book at their home or salon");
             }
             setMobileTravelFee(0);
             frohubStore.setState((state) => ({ readyForMobile: false }));
@@ -200,21 +248,10 @@ export default function MobileService({ partnerId }) {
         setLoading(false);
     };
 
-    // Handle postcode validation and price calculation
-    const handleCheckPostcode = async (value) => {
-        setPostcode(value);
-        const { setErrorMessage } = frohubStore.getState(); // ✅ Get from Zustand
+    // Handle location validation and price calculation
+    const handleCheckLocation = async (locationData) => {
+        const { setErrorMessage } = frohubStore.getState();
 
-        // If postcode is empty, clear everything and don't show validation messages
-        if (!value.trim()) {
-            setTravelFee(null);
-            setIsValid(false);
-            setError("");
-            setMobileTravelFee(0);
-            setLoading(false);
-            frohubStore.setState((state) => ({ readyForMobile: false }));
-            return;
-        }
         setTravelFee(null);
         setIsValid(false);
         setError("");
@@ -227,20 +264,11 @@ export default function MobileService({ partnerId }) {
             return;
         }
 
-        const userLocation = await getCoordinatesFromPostcode(value);
-        if (!userLocation) {
-            setError("Invalid postcode.");
-            setErrorMessage("Invalid postcode.");
-            setLoading(false);
-            frohubStore.setState((state) => ({ readyForMobile: false }));
-            return;
-        }
-
         const distance = calculateDistance(
             partnerLocation.latitude,
             partnerLocation.longitude,
-            userLocation.latitude,
-            userLocation.longitude
+            locationData.latitude,
+            locationData.longitude
         );
 
         // Find the applicable price based on radius
@@ -260,18 +288,35 @@ export default function MobileService({ partnerId }) {
         } else {
             setIsValid(false);
             if (totalService < 1) {
-                setError("Oops! They don’t cover your area. Try another stylist nearby.");
-                setErrorMessage("Oops! They don’t cover your area. Try another stylist nearby.");
+                setError("Oops! They don't cover your area. Try another stylist nearby.");
+                setErrorMessage("Oops! They don't cover your area. Try another stylist nearby.");
             }
             else {
-                setError("Oops! Mobile’s not available in your area, but you can still book at their home or salon");
-                setErrorMessage("Oops! Mobile’s not available in your area, but you can still book at their home or salon");
+                setError("Oops! Mobile's not available in your area, but you can still book at their home or salon");
+                setErrorMessage("Oops! Mobile's not available in your area, but you can still book at their home or salon");
             }
             setMobileTravelFee(0);
             frohubStore.setState((state) => ({ readyForMobile: false }));
         }
 
         setLoading(false);
+    };
+
+    // Handle postcode validation and price calculation
+    const handleCheckPostcode = async (value) => {
+        setPostcode(value);
+        const { setErrorMessage } = frohubStore.getState();
+
+        // If postcode is empty, clear everything and don't show validation messages
+        if (!value.trim()) {
+            setTravelFee(null);
+            setIsValid(false);
+            setError("");
+            setMobileTravelFee(0);
+            setLoading(false);
+            frohubStore.setState((state) => ({ readyForMobile: false }));
+            return;
+        }
     };
 
     // Show Skeleton only while fetching partner location
@@ -287,31 +332,46 @@ export default function MobileService({ partnerId }) {
     return (
         <div className="mt-4 mb-6 p-4 border border-gray-300 rounded-lg bg-white">
             {!staticLocation ? (
-                // Original UI with postcode input
+                // UI with location search and suggestions
                 <>
                     <p className="text-sm text-gray-700">
-                        To check if you are within their mobile service area, enter your postcode.
+                        To check if you are within their mobile service area, enter your location or postcode.
                     </p>
                     <div className="flex justify-start items-center gap-6 mt-3">
-                        <div>
+                        <div className="relative w-full" ref={suggestionsRef}>
                             <input
                                 type="text"
-                                placeholder="Enter postcode"
+                                placeholder="Enter location or postcode"
                                 value={postcode}
                                 onChange={(e) => handleCheckPostcode(e.target.value)}
                                 className="w-full px-4 py-2 text-gray-600 border rounded-md bg-gray-100 border-gray-300 focus:ring focus:ring-indigo-300 focus:outline-none"
                             />
+
+                            {/* Location suggestions dropdown */}
+                            {showSuggestions && suggestions.length > 0 && (
+                                <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
+                                    {suggestions.map((suggestion) => (
+                                        <div
+                                            key={suggestion.id}
+                                            className="px-4 py-2 cursor-pointer hover:bg-gray-100 text-sm"
+                                            onClick={() => handleSelectSuggestion(suggestion)}
+                                        >
+                                            {suggestion.description}
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
                         </div>
 
                         <div>
-                            {/* Loading Indicator for postcode check */}
-                            {loading && <p className="text-sm text-gray-500 mt-2">Checking postcode...</p>}
+                            {/* Loading Indicator for location check */}
+                            {loading && <p className="text-sm text-gray-500 mt-2">Checking location...</p>}
 
                             {/* Success Message */}
                             {isValid && travelFee !== null && (
                                 <div className="flex items-center text-green-600 font-semibold mt-2">
                                     <CheckCircle className="w-5 h-5 mr-1" />
-                                    Yasss! You’re in the service area - this stylist can come to you!
+                                    Yasss! You're in the service area - this stylist can come to you!
                                 </div>
                             )}
 
@@ -363,7 +423,7 @@ export default function MobileService({ partnerId }) {
                     </p>
                     <input type="hidden" name="travelFee" value={travelFee.toFixed(2)} />
                 </>
-    )}
+            )}
             {/* Reset Button to clear location cookie */}
             {staticLocation && (
                 <button
