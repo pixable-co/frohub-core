@@ -21,9 +21,9 @@ class GetUserPastBookings
 
         $args = [
             'customer' => $current_user_id,
-            'orderby'  => 'date',
-            'order'    => 'DESC',
-            'status'   => ['completed', 'cancelled'],
+            'orderby' => 'date',
+            'order' => 'DESC',
+            'status' => ['completed', 'cancelled'],
         ];
 
         $orders = wc_get_orders($args);
@@ -38,7 +38,8 @@ class GetUserPastBookings
             $order_status = $order->get_status();
             $review = get_field('review', $order_id);
 
-            if (!in_array($order_status, ['completed', 'cancelled'])) continue;
+            if (!in_array($order_status, ['completed', 'cancelled']))
+                continue;
 
             $found_past_booking = true;
 
@@ -49,7 +50,7 @@ class GetUserPastBookings
             foreach ($order->get_items() as $item) {
                 if ($item->get_product_id() !== 28990) {
                     $product_id = $item->get_product_id();
-                    $deposit += (float)$item->get_total();
+                    $deposit += (float) $item->get_total();
 
                     foreach ($item->get_meta_data() as $meta) {
                         switch ($meta->key) {
@@ -61,7 +62,7 @@ class GetUserPastBookings
                                 break;
                             case 'Total Due on the Day':
                                 $cleaned = str_replace(['£', ','], '', $meta->value);
-                                $total_due = (float)$cleaned;
+                                $total_due = (float) $cleaned;
                                 break;
                         }
                     }
@@ -120,7 +121,7 @@ class GetUserPastBookings
             $table_rows .= '<td>';
             if ($can_review) {
                 if ($review && is_object($review)) {
-                    $rating = (int)get_field('overall_rating', $review->ID);
+                    $rating = (int) get_field('overall_rating', $review->ID);
                     $table_rows .= $rating > 0 ? str_repeat('<i class="fas fa-star" style="color: black;"></i>', $rating) : 'Thank you';
                 } else {
                     $table_rows .= '<button class="myBtn w-btn us-btn-style_7 w-btn-underlined" data-info=\'' . esc_attr(json_encode($review_data)) . '\'>Leave Review</button>';
@@ -142,7 +143,7 @@ class GetUserPastBookings
             $mobile_cards .= '<div class="actions">';
             if ($can_review) {
                 if ($review && is_object($review)) {
-                    $rating = (int)get_field('overall_rating', $review->ID);
+                    $rating = (int) get_field('overall_rating', $review->ID);
                     $mobile_cards .= '<div class="review-stars">' . ($rating > 0 ? str_repeat('<i class="fas fa-star" style="color: black;"></i>', $rating) : 'Thank you') . '</div>';
                 } else {
                     $mobile_cards .= '<button class="myBtn w-btn us-btn-style_7 w-btn-underlined" data-info=\'' . esc_attr(json_encode($review_data)) . '\'>Leave Review</button>';
@@ -189,32 +190,97 @@ class GetUserPastBookings
         </div>
 
         <style>
-            .fas.fa-star { margin-right: 2px; font-size: 16px; color: black; }
-            .frohub-modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background: rgba(0, 0, 0, 0.5); }
-            .frohub-modal-content { background: #fff; margin: 10% auto; padding: 20px; border-radius: 8px; width: 90%; max-width: 600px; position: relative; height: 800px; overflow: auto; }
-            .frohub-close { position: absolute; top: 10px; right: 15px; font-size: 24px; cursor: pointer; }
-            @media only screen and (max-width: 768px) {
-                .frohub_table { display: none; }
-                .frohub_card { display: block; padding: 1rem; border: 1px solid #ccc; border-radius: 8px; background: #fff; margin-bottom: 1rem; }
-                .frohub_card p { margin: 0.25rem 0; font-size: 0.9rem; }
-                .frohub_card .actions { margin-top: 0.75rem; display: flex; justify-content: space-between; align-items: center; }
-                .frohub_card .actions button, .frohub_card .actions a { font-size: 0.8rem; }
+            .fas.fa-star {
+                margin-right: 2px;
+                font-size: 16px;
+                color: black;
             }
-            @media only screen and (min-width: 769px) { .frohub_card { display: none; } }
+
+            .frohub-modal {
+                display: none;
+                position: fixed;
+                z-index: 1000;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                overflow: auto;
+                background: rgba(0, 0, 0, 0.5);
+            }
+
+            .frohub-modal-content {
+                background: #fff;
+                margin: 10% auto;
+                padding: 20px;
+                border-radius: 8px;
+                width: 90%;
+                max-width: 600px;
+                position: relative;
+                height: 800px;
+                overflow: auto;
+            }
+
+            .frohub-close {
+                position: absolute;
+                top: 10px;
+                right: 15px;
+                font-size: 24px;
+                cursor: pointer;
+            }
+
+            @media only screen and (max-width: 768px) {
+                .frohub_table {
+                    display: none;
+                }
+
+                .frohub_card {
+                    display: block;
+                    padding: 1rem;
+                    border: 1px solid #ccc;
+                    border-radius: 8px;
+                    background: #fff;
+                    margin-bottom: 1rem;
+                }
+
+                .frohub_card p {
+                    margin: 0.25rem 0;
+                    font-size: 0.9rem;
+                }
+
+                .frohub_card .actions {
+                    margin-top: 0.75rem;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                }
+
+                .frohub_card .actions button,
+                .frohub_card .actions a {
+                    font-size: 0.8rem;
+                }
+            }
+
+            @media only screen and (min-width: 769px) {
+                .frohub_card {
+                    display: none;
+                }
+            }
         </style>
 
         <script>
-            jQuery(function($) {
+            jQuery(function ($) {
                 let reviewData = null;
-                $('.myBtn').on('click', function() {
+                $('.myBtn').on('click', function () {
                     reviewData = $(this).data('info');
                     $('.review-data').html(`
                         <img src="${reviewData.productImgURL}" alt="${reviewData.productName}" style="max-width: 350px; height: 350px; display: block; margin-bottom: 10px;" />
-                        <strong>Service:</strong> ${reviewData.productName}<br>
-                        <strong>Type:</strong> ${reviewData.serviceType}<br>
-                        <strong>Date:</strong> ${reviewData.selectedDate}<br>
-                        <strong>Stylist:</strong> ${reviewData.partnerTitle}<br>
-                        <strong>Address:</strong> ${reviewData.partnerAddress}<br><br>
+                        <div class="review-data-text">
+                            <strong>Service:</strong> ${reviewData.productName}<br>
+                            <strong>Type:</strong> ${reviewData.serviceType}<br>
+                            <strong>Date:</strong> ${reviewData.selectedDate}<br>
+                            <strong>Stylist:</strong> ${reviewData.partnerTitle}<br>
+                            <strong>Address:</strong> ${reviewData.partnerAddress}<br><br>
+                        </div>
                     `);
                     $('#frohubReviewModal').fadeIn();
                     setTimeout(() => {
@@ -222,10 +288,10 @@ class GetUserPastBookings
                         $('#input_7_19').val(reviewData.productId).attr('readonly', true);
                     }, 200);
                 });
-                $('.frohub-close').on('click', function() {
+                $('.frohub-close').on('click', function () {
                     $('#frohubReviewModal').fadeOut();
                 });
-                $(window).on('click', function(e) {
+                $(window).on('click', function (e) {
                     if ($(e.target).is('#frohubReviewModal')) {
                         $('#frohubReviewModal').fadeOut();
                     }
@@ -240,12 +306,12 @@ class GetUserPastBookings
     private function get_cancellation_label($status)
     {
         return match ($status) {
-            'Early Cancellation'   => 'Cancelled by client (early)',
-            'Late Cancellation'    => 'Cancelled by client (late)',
-            'Declined by Client'   => 'Declined by Client',
-            'Declined by Stylist'  => 'Declined by Stylist',
+            'Early Cancellation' => 'Cancelled by client (early)',
+            'Late Cancellation' => 'Cancelled by client (late)',
+            'Declined by Client' => 'Declined by Client',
+            'Declined by Stylist' => 'Declined by Stylist',
             'Cancelled by Stylist' => 'Cancelled by Stylist',
-            default                => 'Cancelled',
+            default => 'Cancelled',
         };
     }
 }
