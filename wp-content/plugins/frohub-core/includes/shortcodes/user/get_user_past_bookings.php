@@ -238,7 +238,6 @@ class GetUserPastBookings
 .frohub-modal-content {
     background-color: #fff;
     margin: 5% auto;
-    padding: 3rem;
     border-radius: 5px;
     width: 90%;
     max-width: 800px;
