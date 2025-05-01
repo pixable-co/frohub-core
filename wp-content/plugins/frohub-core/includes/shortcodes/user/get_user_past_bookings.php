@@ -178,16 +178,37 @@ class GetUserPastBookings
 
         ?>
         <!-- Modal + Styles + Script (unchanged) -->
-        <div id="frohubReviewModal" class="frohub-modal">
-            <div class="frohub-modal-content">
-                <span class="frohub-close">×</span>
-                <div class="frohub-modal-body">
-                    <h3>Leave a Review</h3>
-                    <div class="review-data"></div>
-                    <?php echo do_shortcode('[gravityform id="7" title="false" ajax="true"]'); ?>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5>Leave a Review</h5>
+            </div>
+
+            <div class="modal-body">
+                <div class="product-details">
+                    <div class="modal-body-left">
+                        <img class="review-product-img" src="" alt="">
+                    </div>
+                    <div class="modal-body-right">
+                        <p id="productName"></p>
+                        <p id="serviceType"><span class="status_text"></span></p>
+                        <p id="partnerTitle"></p>
+                        <p id="bookingDate"><i class="fas fa-calendar-alt"></i> <span id="selectedDate"></span></p>
+                        <p id="bookingAddress"><i class="fas fa-map-marker-alt"></i> <span id="partnerAddress"></span></p>
+                    </div>
+                </div>
+
+                <div class="feedback-form" style="margin-top: 20px;">
+                    <p id="feedbackHeading">Let’s See How You Slay (Share Your Photo)</p>
+                    <p id="feedbackDesc">
+                        Feel free to share a photo of your fabulous look! If you're a bit shy, you can always upload a side shot
+                        or one that keeps your face covered.
+                        Sharing photos helps other clients see the stylist’s work and decide if they’d like to book the service.
+                    </p>
+                    <?php echo do_shortcode('[gravityform id="7" title="false" description="false" ajax="true"]'); ?>
                 </div>
             </div>
         </div>
+
 
         <style>
             .fas.fa-star {
@@ -269,34 +290,35 @@ class GetUserPastBookings
 
         <script>
             jQuery(function ($) {
-                let reviewData = null;
                 $('.myBtn').on('click', function () {
-                    reviewData = $(this).data('info');
-                    $('.review-data').html(`
-                        <img src="${reviewData.productImgURL}" alt="${reviewData.productName}" style="max-width: 350px; height: 350px; display: block; margin-bottom: 10px;" />
-                        <div class="review-data-text">
-                            <strong>Service:</strong> ${reviewData.productName}<br>
-                            <strong>Type:</strong> ${reviewData.serviceType}<br>
-                            <strong>Date:</strong> ${reviewData.selectedDate}<br>
-                            <strong>Stylist:</strong> ${reviewData.partnerTitle}<br>
-                            <strong>Address:</strong> ${reviewData.partnerAddress}<br><br>
-                        </div>
-                    `);
+                    const data = $(this).data('info');
+
+                    $('#productName').text(data.productName);
+                    $('#serviceType .status_text').text(data.serviceType);
+                    $('#partnerTitle').text(data.partnerTitle);
+                    $('#selectedDate').text(data.selectedDate);
+                    $('#partnerAddress').text(data.partnerAddress);
+                    $('.review-product-img').attr('src', data.productImgURL);
+
                     $('#frohubReviewModal').fadeIn();
+
                     setTimeout(() => {
-                        $('#input_7_18').val(reviewData.orderId).attr('readonly', true);
-                        $('#input_7_19').val(reviewData.productId).attr('readonly', true);
+                        $('#input_7_18').val(data.orderId).attr('readonly', true);
+                        $('#input_7_19').val(data.productId).attr('readonly', true);
                     }, 200);
                 });
+
                 $('.frohub-close').on('click', function () {
                     $('#frohubReviewModal').fadeOut();
                 });
+
                 $(window).on('click', function (e) {
                     if ($(e.target).is('#frohubReviewModal')) {
                         $('#frohubReviewModal').fadeOut();
                     }
                 });
             });
+
         </script>
         <?php
 
