@@ -137,19 +137,51 @@ export default function MobileService({ partnerId }) {
         fetchData(
             "frohub/get_mobile_location_data",
             (response) => {
-                console.log(response)
+                console.log("Partner location response:", response);
+
                 if (response.success) {
-                    setPartnerLocation({
-                        latitude: parseFloat(response.data.data.latitude),
-                        longitude: parseFloat(response.data.data.longitude),
-                        radiusFees: response.data.data.radius_fees.map((fee) => ({
-                            radius: parseFloat(fee.radius),
-                            price: parseFloat(fee.price),
-                        })),
-                    });
+                    // Check different possible data structures
+                    let locationData;
+                    let radiusFees = [];
+
+                    // Handle different response structures
+                    if (response.data && response.data.data) {
+                        locationData = response.data.data;
+                    } else if (response.data) {
+                        locationData = response.data;
+                    } else {
+                        locationData = response;
+                    }
+
+                    // Handle different radius fees structures
+                    if (locationData.radius_fees) {
+                        radiusFees = locationData.radius_fees;
+                    } else if (locationData.radiusFees) {
+                        radiusFees = locationData.radiusFees;
+                    } else if (response.radius_fees) {
+                        radiusFees = response.radius_fees;
+                    }
+
+                    // Make sure we have valid latitude and longitude
+                    const latitude = parseFloat(locationData.latitude || locationData.lat || 0);
+                    const longitude = parseFloat(locationData.longitude || locationData.lng || 0);
+
+                    if (latitude && longitude && radiusFees && radiusFees.length > 0) {
+                        setPartnerLocation({
+                            latitude: latitude,
+                            longitude: longitude,
+                            radiusFees: radiusFees.map((fee) => ({
+                                radius: parseFloat(fee.radius || fee.distance || 0),
+                                price: parseFloat(fee.price || fee.fee || 0),
+                            })),
+                        });
+                    } else {
+                        console.error("Invalid location data structure:", locationData);
+                        setError("Failed to parse partner location data.");
+                    }
                 } else {
                     setError("Failed to fetch partner location.");
-                    console.error("Error fetching location:", response.message);
+                    console.error("Error fetching location:", response.message || "Unknown error");
                 }
                 setLoadingPartner(false);
             },
@@ -188,7 +220,7 @@ export default function MobileService({ partnerId }) {
         setLoading(true);
 
         if (!partnerLocation) {
-            setError("partner location not loaded.");
+            setError("Partner location not loaded.");
             setLoading(false);
             return;
         }
@@ -199,6 +231,9 @@ export default function MobileService({ partnerId }) {
             staticLocation.latitude,
             staticLocation.longitude
         );
+
+        console.log("Distance calculated:", distance, "miles");
+        console.log("Partner radius fees:", partnerLocation.radiusFees);
 
         // Find the applicable price based on radius
         let applicablePrice = null;
@@ -213,7 +248,7 @@ export default function MobileService({ partnerId }) {
             setIsValid(true);
             setTravelFee(applicablePrice);
             setMobileTravelFee(applicablePrice);
-            frohubStore.setState((state) => ({ readyForMobile: true }));
+            frohubStore.setState({ readyForMobile: true });
         } else {
             setIsValid(false);
             if (totalService < 1) {
@@ -223,7 +258,7 @@ export default function MobileService({ partnerId }) {
                 setError("Oops! Mobile's not available in your area, but you can still book at their home or salon");
             }
             setMobileTravelFee(0);
-            frohubStore.setState((state) => ({ readyForMobile: false }));
+            frohubStore.setState({ readyForMobile: false });
         }
 
         setLoading(false);
@@ -239,8 +274,10 @@ export default function MobileService({ partnerId }) {
         setLoading(true);
 
         if (!partnerLocation) {
-            setError("partner location not loaded.");
-            setErrorMessage("partner location not loaded.");
+            setError("Partner location not loaded.");
+            if (setErrorMessage) {
+                setErrorMessage("Partner location not loaded.");
+            }
             setLoading(false);
             return;
         }
@@ -251,6 +288,9 @@ export default function MobileService({ partnerId }) {
             locationData.latitude,
             locationData.longitude
         );
+
+        console.log("Distance calculated:", distance, "miles");
+        console.log("Partner radius fees:", partnerLocation.radiusFees);
 
         // Find the applicable price based on radius
         let applicablePrice = null;
@@ -265,19 +305,23 @@ export default function MobileService({ partnerId }) {
             setIsValid(true);
             setTravelFee(applicablePrice);
             setMobileTravelFee(applicablePrice);
-            frohubStore.setState((state) => ({ readyForMobile: true }));
+            frohubStore.setState({ readyForMobile: true });
         } else {
             setIsValid(false);
             if (totalService < 1) {
                 setError("Oops! They don't cover your area. Try another stylist nearby.");
-                setErrorMessage("Oops! They don't cover your area. Try another stylist nearby.");
+                if (setErrorMessage) {
+                    setErrorMessage("Oops! They don't cover your area. Try another stylist nearby.");
+                }
             }
             else {
                 setError("Oops! Mobile's not available in your area, but you can still book at their home or salon");
-                setErrorMessage("Oops! Mobile's not available in your area, but you can still book at their home or salon");
+                if (setErrorMessage) {
+                    setErrorMessage("Oops! Mobile's not available in your area, but you can still book at their home or salon");
+                }
             }
             setMobileTravelFee(0);
-            frohubStore.setState((state) => ({ readyForMobile: false }));
+            frohubStore.setState({ readyForMobile: false });
         }
 
         setLoading(false);
