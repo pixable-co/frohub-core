@@ -21,6 +21,8 @@ export default function MobileService({ partnerId }) {
     const autocompleteInputRef = useRef(null);
     // Reference to store the Google Places Autocomplete instance
     const autocompleteRef = useRef(null);
+    // Store selected place data
+    const [selectedPlace, setSelectedPlace] = useState(null);
 
     useEffect(() => {
         // Get static location data from cookie using the imported function
@@ -42,52 +44,11 @@ export default function MobileService({ partnerId }) {
         if (partnerId) {
             fetchPartnerLocation();
         }
-
-        // Initialize Google Places Autocomplete
-        if (window.google && window.google.maps && window.google.maps.places && autocompleteInputRef.current && !autocompleteRef.current) {
-            const options = {
-                componentRestrictions: { country: "uk" },
-                types: ["geocode"]
-            };
-
-            autocompleteRef.current = new window.google.maps.places.Autocomplete(
-                autocompleteInputRef.current,
-                options
-            );
-
-            // Add listener for place selection
-            autocompleteRef.current.addListener("place_changed", () => {
-                const place = autocompleteRef.current.getPlace();
-
-                if (!place.geometry) {
-                    console.error("No geometry for this place");
-                    return;
-                }
-
-                setPostcode(place.formatted_address);
-
-                const locationData = {
-                    latitude: place.geometry.location.lat(),
-                    longitude: place.geometry.location.lng(),
-                    address: place.formatted_address
-                };
-
-                handleCheckLocation(locationData);
-            });
-        }
-
-        return () => {
-            // Clean up the autocomplete when component unmounts
-            if (autocompleteRef.current) {
-                window.google.maps.event.clearInstanceListeners(autocompleteRef.current);
-                autocompleteRef.current = null;
-            }
-        };
     }, [partnerId]);
 
-    // Re-initialize autocomplete if Google Maps loads after component mount
     useEffect(() => {
-        const checkAndInitAutocomplete = () => {
+        // Initialize Google Places Autocomplete
+        const initializeAutocomplete = () => {
             if (window.google && window.google.maps && window.google.maps.places &&
                 autocompleteInputRef.current && !autocompleteRef.current) {
                 const options = {
@@ -100,6 +61,7 @@ export default function MobileService({ partnerId }) {
                     options
                 );
 
+                // Add listener for place selection
                 autocompleteRef.current.addListener("place_changed", () => {
                     const place = autocompleteRef.current.getPlace();
 
@@ -116,18 +78,36 @@ export default function MobileService({ partnerId }) {
                         address: place.formatted_address
                     };
 
-                    handleCheckLocation(locationData);
+                    setSelectedPlace(locationData);
                 });
             }
         };
 
+        initializeAutocomplete();
+
         // Check every 500ms if Google Maps has loaded
-        const interval = setInterval(checkAndInitAutocomplete, 500);
+        const interval = setInterval(() => {
+            if (!autocompleteRef.current) {
+                initializeAutocomplete();
+            }
+        }, 500);
 
         return () => {
             clearInterval(interval);
+            // Clean up the autocomplete when component unmounts
+            if (autocompleteRef.current) {
+                window.google.maps.event.clearInstanceListeners(autocompleteRef.current);
+                autocompleteRef.current = null;
+            }
         };
     }, []);
+
+    // Process selected place when both place and partner location are available
+    useEffect(() => {
+        if (selectedPlace && partnerLocation) {
+            handleCheckLocation(selectedPlace);
+        }
+    }, [selectedPlace, partnerLocation]);
 
     // Fetch the partner's location and radius pricing
     const fetchPartnerLocation = () => {
@@ -167,14 +147,17 @@ export default function MobileService({ partnerId }) {
                     const longitude = parseFloat(locationData.longitude || locationData.lng || 0);
 
                     if (latitude && longitude && radiusFees && radiusFees.length > 0) {
-                        setPartnerLocation({
+                        const partnerLocationData = {
                             latitude: latitude,
                             longitude: longitude,
                             radiusFees: radiusFees.map((fee) => ({
                                 radius: parseFloat(fee.radius || fee.distance || 0),
                                 price: parseFloat(fee.price || fee.fee || 0),
                             })),
-                        });
+                        };
+
+                        console.log("Setting partner location:", partnerLocationData);
+                        setPartnerLocation(partnerLocationData);
                     } else {
                         console.error("Invalid location data structure:", locationData);
                         setError("Failed to parse partner location data.");
@@ -265,8 +248,9 @@ export default function MobileService({ partnerId }) {
     };
 
     // Handle location validation and price calculation
-    const handleCheckLocation = async (locationData) => {
-        const { setErrorMessage } = frohubStore.getState();
+    const handleCheckLocation = (locationData) => {
+        console.log("Checking location:", locationData);
+        console.log("Partner location available:", partnerLocation);
 
         setTravelFee(null);
         setIsValid(false);
@@ -274,10 +258,8 @@ export default function MobileService({ partnerId }) {
         setLoading(true);
 
         if (!partnerLocation) {
-            setError("Partner location not loaded.");
-            if (setErrorMessage) {
-                setErrorMessage("Partner location not loaded.");
-            }
+            console.error("Partner location not loaded when checking location");
+            setError("Partner location not loaded. Please try again.");
             setLoading(false);
             return;
         }
@@ -310,15 +292,9 @@ export default function MobileService({ partnerId }) {
             setIsValid(false);
             if (totalService < 1) {
                 setError("Oops! They don't cover your area. Try another stylist nearby.");
-                if (setErrorMessage) {
-                    setErrorMessage("Oops! They don't cover your area. Try another stylist nearby.");
-                }
             }
             else {
                 setError("Oops! Mobile's not available in your area, but you can still book at their home or salon");
-                if (setErrorMessage) {
-                    setErrorMessage("Oops! Mobile's not available in your area, but you can still book at their home or salon");
-                }
             }
             setMobileTravelFee(0);
             frohubStore.setState({ readyForMobile: false });
