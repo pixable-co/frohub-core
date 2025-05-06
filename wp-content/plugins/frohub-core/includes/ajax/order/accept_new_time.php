@@ -94,7 +94,7 @@ class AcceptNewTime {
 
         $webhook_partner = 'https://flow.zoho.eu/20103370577/flow/webhook/incoming?zapikey=1001.65e0e4740df7fca9b365732f476c2f0e.5dfae26de7e36dc015ff1c4819f8188e&isdebug=false';
 
-        wp_remote_post($webhook_partner, [
+        wp_remote_post($webhook_customer, [
             'method'  => 'POST',
             'headers' => ['Content-Type' => 'application/json'],
             'body'    => sendPayloadToZohoFlowPayload($order_id),
