@@ -84,8 +84,8 @@ class AcceptNewTime {
         $order->update_status('processing', 'Appointment time confirmed by customer.');
         $order->save();
 
-        $webhook_customer = 'https://flow.zoho.eu/20103370577/flow/webhook/incoming?zapikey=1001.e9a2d77f2205d933fefdfa16e52cdd5f.a6502b087ab6174b0c59f7c3f1c586bd&isdebug=false';
-
+        //$webhook_customer = 'https://flow.zoho.eu/20103370577/flow/webhook/incoming?zapikey=1001.e9a2d77f2205d933fefdfa16e52cdd5f.a6502b087ab6174b0c59f7c3f1c586bd&isdebug=false';
+        $webhook_customer = 'https://webhook.site/46259b7b-17ea-4186-a9a8-1c976d72379c';
         wp_remote_post($webhook_customer, [
             'method'  => 'POST',
             'headers' => ['Content-Type' => 'application/json'],
