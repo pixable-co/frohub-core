@@ -26,8 +26,6 @@ class AcceptNewTime {
             wp_send_json_error(['message' => 'Error: Order not found!']);
         }
 
-        $customer_shipping_address = $order->get_formatted_shipping_address();
-
         $proposed_start_time = null;
         $duration_text = null;
 
