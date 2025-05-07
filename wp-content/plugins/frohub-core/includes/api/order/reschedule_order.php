@@ -122,7 +122,8 @@ class RescheduleOrder {
             }
         }
 
-        $webhook_customer = 'https://flow.zoho.eu/20103370577/flow/webhook/incoming?zapikey=1001.07b3be77c8b130450468de3b1b224675.0a399daca8ab79871ee2a7d5fc7e08f3&isdebug=false';
+        //$webhook_customer = 'https://flow.zoho.eu/20103370577/flow/webhook/incoming?zapikey=1001.07b3be77c8b130450468de3b1b224675.0a399daca8ab79871ee2a7d5fc7e08f3&isdebug=false';
+        $webhook_customer = "https://webhook.site/46259b7b-17ea-4186-a9a8-1c976d72379c";
 
         wp_remote_post($webhook_customer, [
             'method' => 'POST',
@@ -130,20 +131,10 @@ class RescheduleOrder {
             'body'    => json_encode(sendPayloadToZohoFlowPayload($order_id)),
         ]);
 
-        // 🔹 Payload 2: emailSentToPartner
-        $payload_partner = json_encode([
-            'order_id' => '#' . $order_id,
-            'partner_email' => $partner_email,
-            'client_first_name' => $client_first_name,
-            'partner_name' => $partner_name,
-            'service_name' => $service_name,
-            'original_booking_date_time' => $original_booking_datetime,
-            'proposed_booking_date_time' => $proposed_start_datetime,
-        ]);
 
-        $webhook_partner = 'https://flow.zoho.eu/20103370577/flow/webhook/incoming?zapikey=1001.7ed3b56e85b7a0f137d0fee0503756b1.dafe549881529793b605b66682b49100&isdebug=false';
+        //$webhook_partner = 'https://flow.zoho.eu/20103370577/flow/webhook/incoming?zapikey=1001.7ed3b56e85b7a0f137d0fee0503756b1.dafe549881529793b605b66682b49100&isdebug=false';
 
-        wp_remote_post($webhook_partner, [
+        wp_remote_post($webhook_customer, [
             'method' => 'POST',
             'headers' => ['Content-Type' => 'application/json'],
             'body'    => json_encode(sendPayloadToZohoFlowPayload($order_id)),
