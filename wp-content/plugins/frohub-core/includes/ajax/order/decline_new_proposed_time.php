@@ -65,38 +65,21 @@ class DeclineNewProposedTime {
             break;
         }
 
-        // 🔹 Payload 1: emailSentToCustomer
-        $payload_customer = json_encode([
-            'order_id' => $order_id,
-            'client_email' => $client_email,
-            'client_first_name' => $client_first_name,
-            'partner_name' => $partner_name,
-        ]);
-
         $webhook_customer = 'https://flow.zoho.eu/20103370577/flow/webhook/incoming?zapikey=1001.e14c3511f867358f97a4ffc2340ef099.302bd10e4c7fa5fe9841309126bcb1dc&isdebug=false';
 
         wp_remote_post($webhook_customer, [
             'method'  => 'POST',
             'headers' => ['Content-Type' => 'application/json'],
-            'body'    => $payload_customer,
+            'body'    => json_encode(sendPayloadToZohoFlowPayload($order_id)),
         ]);
 
-        // 🔹 Payload 2: emailSentToPartner
-        $payload_partner = json_encode([
-            'order_id' => '#' . $order_id,
-            'partner_email' => $partner_email,
-            'client_first_name' => $client_first_name,
-            'partner_name' => $partner_name,
-            'service_name' => $service_name,
-            'booking_date_time' => $booking_date_time,
-        ]);
 
         $webhook_partner = 'https://flow.zoho.eu/20103370577/flow/webhook/incoming?zapikey=1001.e834dd56f30691cb23c33225e8711d1e.93f350c42e6622f53ee3a390064d6ca1&isdebug=false';
 
         wp_remote_post($webhook_partner, [
             'method'  => 'POST',
             'headers' => ['Content-Type' => 'application/json'],
-            'body'    => $payload_partner,
+            'body'    => json_encode(sendPayloadToZohoFlowPayload($order_id)),
         ]);
 
         wp_send_json_success(['message' => 'Order has been cancelled.']);
