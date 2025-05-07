@@ -118,47 +118,23 @@ class LateCancelOrder {
             ? $customer_shipping_address
             : $partner_address;
 
-        // 🔹 Payload 1: Email to customer
-        $payload_customer = json_encode([
-            'client_email' => $client_email,
-            'client_first_name' => $client_first_name,
-            'partner_name' => $partner_name,
-            'service_name' => $service_name,
-            'booking_date_time' => $selected_date_time,
-        ]);
+
 
         $webhook_customer = 'https://flow.zoho.eu/20103370577/flow/webhook/incoming?zapikey=1001.701f1885176381453a6604fbea45ecbf.4f5f6b8dbcf659a0ed51e76e6ab66598&isdebug=false';
 
         wp_remote_post($webhook_customer, [
             'method'  => 'POST',
             'headers' => ['Content-Type' => 'application/json'],
-            'body'    => $payload_customer,
+            'body'    => json_encode(sendPayloadToZohoFlowPayload($order_id)),
         ]);
 
-        // 🔹 Payload 2: Email to partner
-        $payload_partner = json_encode([
-            'order_id' => '#' . $order_id,
-            'partner_email' => $partner_email,
-            'client_first_name' => $client_first_name,
-            'partner_name' => $partner_name,
-            'service_name' => $service_name,
-            'addons' => implode(', ', $addons),
-            'service_type' => $service_type ?: 'Mobile',
-            'booking_date_time' => $formatted_date_time,
-            'total_service_fee' => '£' . number_format($total_service_fee, 2),
-            'deposit' => '£' . number_format($deposit, 2),
-            'balance' => '£' . number_format($total_service_fee - $deposit, 2),
-            'frohub_booking_fee' => '£' . number_format($frohub_booking_fee, 2),
-            'service_address' => $final_service_address,
-            'client_notes' => $client_notes,
-        ]);
 
         $webhook_partner = 'https://flow.zoho.eu/20103370577/flow/webhook/incoming?zapikey=1001.6dc353d22eac8800be330a092c5863f7.bfb2c94f7e462e288f2b18f6b164f200&isdebug=false';
 
         wp_remote_post($webhook_partner, [
             'method'  => 'POST',
             'headers' => ['Content-Type' => 'application/json'],
-            'body'    => $payload_partner,
+            'body'    => json_encode(sendPayloadToZohoFlowPayload($order_id)),
         ]);
 
         wp_send_json_success([
