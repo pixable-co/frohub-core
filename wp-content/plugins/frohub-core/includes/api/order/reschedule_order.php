@@ -128,7 +128,7 @@ class RescheduleOrder {
         wp_remote_post($webhook_customer, [
             'method' => 'POST',
             'headers' => ['Content-Type' => 'application/json'],
-            'body'    => json_encode(sendPayloadToZohoFlowPayload($order_id)),
+            'body'    => json_encode(handlePayloadTriggers($order_id)),
         ]);
 
 
@@ -137,7 +137,7 @@ class RescheduleOrder {
         wp_remote_post($webhook_partner, [
             'method' => 'POST',
             'headers' => ['Content-Type' => 'application/json'],
-            'body'    => json_encode(sendPayloadToZohoFlowPayload($order_id)),
+            'body'    => json_encode(handlePayloadTriggers($order_id)),
         ]);
 
         return new \WP_REST_Response([
