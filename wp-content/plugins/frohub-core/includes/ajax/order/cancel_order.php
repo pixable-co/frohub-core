@@ -108,8 +108,8 @@ class CancelOrder {
         $partner_webhook_url = 'https://flow.zoho.eu/20103370577/flow/webhook/incoming?zapikey=1001.9dc9d8e2982ee05fb07c6c2558b9811c.42d319bfe73b89e2f314888d692ea277&isdebug=false';
 
         // 🔁 Send both
-        $this->send_webhook($customer_webhook_url, $payload_customer, 'Customer');
-        $this->send_webhook($partner_webhook_url, $payload_partner, 'Partner');
+        $this->send_webhook($customer_webhook_url, sendPayloadToZohoFlowPayload($order_id), 'Customer');
+        $this->send_webhook($partner_webhook_url, sendPayloadToZohoFlowPayload($order_id), 'Partner');
 
         // 🧹 Clean up proposed time meta fields
         foreach ($order->get_items() as $item_id => $item) {
