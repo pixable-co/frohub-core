@@ -54,7 +54,7 @@ class SendOrderToEndpoint {
             return;
         }
 
-        $payload = sendPayloadToZohoFlowPayload($order_id);
+        $payload = handlePayloadTriggers($order_id);
 
         if (!$payload) {
             error_log("Order #$order_id payload was skipped (likely due to reschedule).");
