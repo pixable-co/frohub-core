@@ -122,22 +122,12 @@ class RescheduleOrder {
             }
         }
 
-        // 🔹 Payload 1: emailSentToCustomer
-        $payload_customer = json_encode([
-            'client_email' => $client_email,
-            'client_first_name' => $client_first_name,
-            'partner_name' => $partner_name,
-            'service_name' => $service_name,
-            'proposed_date_time' => $proposed_start_datetime,
-            'order_id' => '#' . $order_id
-        ]);
-
         $webhook_customer = 'https://flow.zoho.eu/20103370577/flow/webhook/incoming?zapikey=1001.07b3be77c8b130450468de3b1b224675.0a399daca8ab79871ee2a7d5fc7e08f3&isdebug=false';
 
         wp_remote_post($webhook_customer, [
             'method' => 'POST',
             'headers' => ['Content-Type' => 'application/json'],
-            'body'    => $payload_customer,
+            'body'    => json_encode(sendPayloadToZohoFlowPayload($order_id)),
         ]);
 
         // 🔹 Payload 2: emailSentToPartner
@@ -156,7 +146,7 @@ class RescheduleOrder {
         wp_remote_post($webhook_partner, [
             'method' => 'POST',
             'headers' => ['Content-Type' => 'application/json'],
-            'body'    => $payload_partner,
+            'body'    => json_encode(sendPayloadToZohoFlowPayload($order_id)),
         ]);
 
         return new \WP_REST_Response([
