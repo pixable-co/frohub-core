@@ -105,7 +105,7 @@ class CancelOrder {
 
         // 🔗 Webhook endpoints
         $customer_webhook_url = 'https://flow.zoho.eu/20103370577/flow/webhook/incoming?zapikey=1001.f5f517804c4f3cad824e08e73a3d1de5.1b6c2804310ae465930ef15631808e89&isdebug=false';
-        $partner_webhook_url = 'https://flow.zoho.eu/20103370577/flow/webhook/incoming?zapikey=1001.9dc9d8e2982ee05fb07c6c2558b9811c.42d319bfe73b89e2f314888d692ea277&isdebug=false';
+        $partner_webhook_url = 'https://flow.zoho.eu/20103370577/flow/webhook/incoming?zapikey=1001.ef09b11e558626992d3af708d009f596.1d26d9de84833086fbe23bcd1a7c1008&isdebug=false';
 
         // 🔁 Send both
         $this->send_webhook($customer_webhook_url, sendPayloadToZohoFlowPayload($order_id), 'Customer');
