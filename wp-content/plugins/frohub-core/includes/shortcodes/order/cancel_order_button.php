@@ -104,7 +104,7 @@ class CancelOrderButton
                         if (response.success) {
                             let title = "Booking Request Cancelled ";
                             let message = "Your booking request has been successfully cancelled. You haven’t been charged.";
-";
+
                             if (action === "early_cancel_order") {
                                 title = "Booking Cancelled – Deposit Refund on Its Way!";
                                 message = "Your deposit refund is being processed and will be returned to your original payment method shortly.";
