@@ -94,10 +94,7 @@ class GetOrderPrices
                             <div class="price">£' . number_format($addon['price'], 2) . '</div>
                           </div>';
                 }
-                echo '<div class="add-ons-total line-item">
-                        <div class="label">' . esc_html('Add-Ons Total') . '</div>
-                        <div class="price">£' . number_format($addons_total, 2) . '</div>
-                      </div>';
+
                 echo '<div class="receipt-separator"></div>';
                 echo '</div>';
             }
