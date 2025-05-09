@@ -102,11 +102,12 @@ class CancelOrderButton
                     }, function(response) {
                         hideSpinner(button);
                         if (response.success) {
-                            let title = "Booking Cancelled";
-                            let message = "Your booking has been successfully cancelled.";
+                            let title = "Booking Request Cancelled ";
+                            let message = "Your booking request has been successfully cancelled. You haven’t been charged.";
+";
                             if (action === "early_cancel_order") {
                                 title = "Booking Cancelled – Deposit Refund on Its Way!";
-                                message = "Your deposit refund is being processed.";
+                                message = "Your deposit refund is being processed and will be returned to your original payment method shortly.";
                             } else if (action === "late_cancel_order") {
                                 message = "Your booking has been cancelled. Please note the deposit and booking fee are non-refundable.";
                             }
