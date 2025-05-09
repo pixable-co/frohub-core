@@ -79,7 +79,12 @@ class GetOrderPrices
             echo '<div class="payment-summary">';
 
             echo '<h6>Payment Summary</h6>';
-            
+            if ($base_service_price > 0) {
+                echo '<div class="base-service line-item">
+            <div class="label">' . esc_html('Base Service Price') . '</div>
+            <div class="price">£' . number_format($base_service_price, 2) . '</div>
+          </div>';
+            }
             if (!empty($addon_items)) {
                 echo '<div class="add-on-line-items">';
                 echo '<div class="section-label">Selected Add-Ons</div>';
@@ -96,47 +101,47 @@ class GetOrderPrices
                 echo '<div class="receipt-separator"></div>';
                 echo '</div>';
             }
-            
+
             if ($extra_charge > 0) {
                 echo '<div class="extra-charges line-item">
                         <div class="label">' . esc_html('Extra Charges') . '</div>
                         <div class="price">£' . number_format($extra_charge, 2) . '</div>
                       </div>';
             }
-            
+
             if ($mobile_fee > 0) {
                 echo '<div class="mobile-travel-fee line-item">
                         <div class="label">' . esc_html('Mobile Travel Fee') . '</div>
                         <div class="price">£' . number_format($mobile_fee, 2) . '</div>
                       </div>';
             }
-            
+
             echo '<br>';
-            
+
             echo '<div class="total-service-fee line-item">
                     <div class="label">' . esc_html('Total Service Fee') . '</div>
                     <div class="price"><strong>£' . number_format($total_service_fee, 2) . '</strong></div>
                   </div><br>';
-            
+
             echo '<div class="deposit-paid line-item">
                     <div class="label">' . esc_html('Deposit Paid *') . '</div>
                     <div class="price">£' . number_format($deposit_paid, 2) . '</div>
                   </div>';
-            
+
             echo '<div class="due-on-the-day line-item">
                     <div class="label">' . esc_html('Due on the Day') . '</div>
                     <div class="price">£' . number_format($due_on_the_day, 2) . '</div>
                   </div><br>';
-            
+
             echo '<div class="booking-fee-note">* Exclusive of £' . number_format($booking_fee, 2) . ' Booking fee. Total paid on FroHub: £' . number_format($order->get_total(), 2) . '
                   </div><br>';
-            
+
             if ($order_date = $order->get_date_created()) {
                 echo '<div class="order-date">Order date: ' . esc_html($order_date->date('d M Y')) . '</div>';
             }
-            
+
             echo '</div>';
-            
+
 
         }
 
