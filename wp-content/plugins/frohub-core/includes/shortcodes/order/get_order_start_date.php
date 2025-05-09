@@ -265,8 +265,8 @@ class GetOrderStartDate
                     // Success modal (shared with dynamic content)
                     echo '<div id="cancelSuccessModal" class="status-modal" style="display:none;">
                         <div class="modal-content">
-                            <div class="modal-header"><h5 id="cancel-success-title">Booking Cancelled</h5></div>
-                            <div class="modal-body"><p id="cancel-success-message">Your booking has been successfully cancelled.</p></div>
+                            <div class="modal-header"><h5 id="cancel-success-title">Booking Request Cancelled</h5></div>
+                            <div class="modal-body"><p id="cancel-success-message">Your booking request has been successfully cancelled. You haven’t been charged.</p></div>
                             <div class="modal-footer"><a href="/my-account/bookings/" class="w-btn us-btn-style_6 w-btn-underlined">Back to My Bookings</a></div>
                       </div></div>';
                 }
