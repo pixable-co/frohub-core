@@ -109,6 +109,7 @@ class CancelOrderButton
                                 title = "Booking Cancelled – Deposit Refund on Its Way!";
                                 message = "Your deposit refund is being processed and will be returned to your original payment method shortly.";
                             } else if (action === "late_cancel_order") {
+                                let title = "Booking Cancelled ";
                                 message = "Your booking has been cancelled. Please note the deposit and booking fee are non-refundable.";
                             }
                             $("#cancel-success-title").text(title);
