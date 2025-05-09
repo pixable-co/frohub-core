@@ -18,7 +18,8 @@ class SendOrderToEndpoint {
 
     public function send_order_to_endpoint($order_id) {
         $endpoints = [
-            'on-hold'    => 'https://flow.zoho.eu/20103370577/flow/webhook/incoming?zapikey=1001.a2b4f63dfb58631d29cd422e757e1643.ab4522f28de91914f023873159058bfb&isdebug=false',
+           // 'on-hold'    => 'https://flow.zoho.eu/20103370577/flow/webhook/incoming?zapikey=1001.a2b4f63dfb58631d29cd422e757e1643.ab4522f28de91914f023873159058bfb&isdebug=false',
+            'on-hold'    => 'https://webhook.site/46259b7b-17ea-4186-a9a8-1c976d72379c',
             'processing' => 'https://flow.zoho.eu/20103370577/flow/webhook/incoming?zapikey=1001.c24fdf1c034a419e885cbc1353668061.25d7d31440d630f3414b8de7488df2d3&isdebug=false',
         ];
 
