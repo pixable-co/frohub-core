@@ -145,7 +145,7 @@ class ReviewButton
              echo do_shortcode('[us_separator]');
         } else {
             echo '<span>Thank you for leaving a review – your feedback really matters.</span>';
-             echo do_shortcode('[us_separator]');
+             echo do_shortcode('[us_separator size="small"]');
         }
     
         return ob_get_clean();
