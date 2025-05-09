@@ -17,10 +17,14 @@ class FrohubGetPolicies {
         $sections = [];
 
         // always include the hard‑coded Refund Policy
-        $sections[] = [
-            'title'   => 'Refund Policy',
-            'content' => '<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus. Suspendisse lectus tortor, dignissim sit amet, adipiscing nec, ultricies sed, dolor.</p>',
-        ];
+        $deposit_refund = get_field( 'deposit_refund_policy', 'option' );
+        if ( $deposit_refund ) {
+            $sections[] = [
+                'title'   => 'Deposit Refund Policy',
+                'content' => apply_filters( 'the_content', $deposit_refund )
+            ];
+        }
+
 
         // then pull in each ACF field if it exists
         $fields = [
