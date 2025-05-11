@@ -95,7 +95,7 @@ class GetUserPastBookings
             };
 
             $can_review = ($order_status === 'completed') ||
-                in_array(get_field('cancellation_status', $order_id), ['Cancelled by Stylist', 'Declined by Stylist']);
+                in_array(get_field('cancellation_status', $order_id), ['Cancelled by Stylist']);
 
             $review_data = [
                 'productImgURL' => get_the_post_thumbnail_url($product_id, 'thumbnail'),
