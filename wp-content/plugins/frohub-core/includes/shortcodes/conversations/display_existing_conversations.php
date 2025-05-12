@@ -36,50 +36,65 @@ class DisplayExistingConversations
                 )
             );
 
-            $query = new \WP_Query($args);
+            $conversations = get_posts($args);
+
+            // Enrich each conversation with latest comment time
+            $conversations_with_comments = [];
+
+            foreach ($conversations as $post) {
+                $latest_comment = get_comments(array(
+                    'post_id' => $post->ID,
+                    'number'  => 1,
+                    'orderby' => 'comment_date',
+                    'order'   => 'DESC',
+                    'status'  => 'approve',
+                ));
+
+                $latest_comment_time = !empty($latest_comment)
+                    ? strtotime($latest_comment[0]->comment_date)
+                    : 0;
+
+                $conversations_with_comments[] = [
+                    'post' => $post,
+                    'latest_comment_time' => $latest_comment_time,
+                    'latest_comment_date_formatted' => !empty($latest_comment)
+                        ? (new \DateTime($latest_comment[0]->comment_date))->format('d M Y, H:i')
+                        : '',
+                ];
+            }
+
+            // Sort descending by latest comment time
+            usort($conversations_with_comments, function ($a, $b) {
+                return $b['latest_comment_time'] <=> $a['latest_comment_time'];
+            });
 
             echo '<div class="messages-root-container">';
             echo '<div class="ongoing-conversations-list">';
 
-            if ($query->have_posts()) {
-                while ($query->have_posts()) {
-                    $query->the_post();
-                    $conversation_id = get_the_ID();
+            if (!empty($conversations_with_comments)) {
+                foreach ($conversations_with_comments as $entry) {
+                    $post = $entry['post'];
+                    $conversation_id = $post->ID;
+                    $latest_comment_time = $entry['latest_comment_date_formatted'];
                     $read_by_customer = get_field('read_by_customer', $conversation_id);
-                    $partner = get_field('partner', $conversation_id); // This is a post object
+                    $partner = get_field('partner', $conversation_id); // Post object
                     $highlight_class = ($conversation_id == $current_post_id) ? 'highlight' : '';
-
-                    // Fetch latest comment for this conversation post
-                    $latest_comment = get_comments(array(
-                        'post_id' => $conversation_id,
-                        'number'  => 1,
-                        'orderby' => 'comment_date',
-                        'order'   => 'DESC',
-                        'status'  => 'approve',
-                    ));
-
-                    $latest_comment_time = '';
-                    if (!empty($latest_comment)) {
-                        $comment_date_str = $latest_comment[0]->comment_date; // e.g., '2025-04-22 12:41:50'
-                        $datetime = new \DateTime($comment_date_str);
-                        $latest_comment_time = $datetime->format('d M Y, H:i'); // e.g., '22 Apr 2025, 12:41'
-                    }
 
                     echo '<a href="https://frohubecomm.mystagingwebsite.com/my-account/messages/?c_id=' . $conversation_id . '" class="ongoing-conversation ' . $highlight_class . '">';
                     echo '<div class="conversation-content">';
                     if ($latest_comment_time) {
                         echo '<p class="latest-comment-time">' . esc_html($latest_comment_time) . '</p>';
                     }
-                    echo '<img class="partner-img" src="' . esc_url(get_the_post_thumbnail_url($partner->ID)) . '" alt="' . esc_attr(get_the_title($partner)) . '">';
-                    echo '<p class="conversation-title">' . get_the_title($partner);
-                    echo '</p>';
+                    if ($partner) {
+                        echo '<img class="partner-img" src="' . esc_url(get_the_post_thumbnail_url($partner->ID)) . '" alt="' . esc_attr(get_the_title($partner)) . '">';
+                        echo '<p class="conversation-title">' . esc_html(get_the_title($partner)) . '</p>';
+                    }
                     if (!$read_by_customer) {
                         echo ' <span class="red-dot"></span>';
                     }
                     echo '</div>';
                     echo '</a>';
                 }
-                wp_reset_postdata();
             } else {
                 echo '<p>No conversations found.</p>';
             }
@@ -105,7 +120,7 @@ class DisplayExistingConversations
                 </div>';
             }
 
-            echo '</div>'; // Close .chat-container
+            echo '</div>'; // Close .messages-root-container
 
         } else {
             echo '<p>You must be logged in to view your conversations.</p>';
