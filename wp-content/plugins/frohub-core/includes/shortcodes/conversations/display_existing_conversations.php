@@ -78,7 +78,7 @@ class DisplayExistingConversations
                     $latest_comment_time = $entry['latest_comment_date_formatted'];
                     $read_by_customer = get_field('read_by_customer', $conversation_id);
                     $partner = get_field('partner', $conversation_id); // Post object
-                    $highlight_class = ($conversation_id == $current_post_id) ? 'highlight' : '';
+                    $highlight_class = ($conversation_id == $requested_cid) ? 'active-conversation' : '';
 
                     echo '<a href="https://frohubecomm.mystagingwebsite.com/my-account/messages/?c_id=' . $conversation_id . '" class="ongoing-conversation ' . $highlight_class . '">';
                     echo '<div class="conversation-content">';
