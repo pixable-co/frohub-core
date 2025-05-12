@@ -30,7 +30,7 @@ class SubmitCommentForm
             <i class="fas fa-camera"></i>
             </label>
             <input type="file" id="image-upload" accept="image/png, image/jpeg, image/jpg, image/gif, image/webp" style="display: none;" />
-            <img id="image-preview" src="" alt="Image Preview" style="display: none; width:75px; height:75px; object-fit:cover;cursor:pointer;" />
+            <img id="image-preview" src="" alt="Image Preview" style="display: none; width:75px; height:75px; object-fit:cover;cursor:pointer; margin-right:1rem;" />
 
 
                     <input type="text" id="message" placeholder="Type a message..." />
