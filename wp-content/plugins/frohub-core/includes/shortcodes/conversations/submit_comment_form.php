@@ -30,6 +30,8 @@ class SubmitCommentForm
                         <i class="fas fa-camera"></i>
                     </label>
                     <input type="file" id="image-upload" accept="image/png, image/jpeg, image/jpg, image/gif, image/webp" style="display: none;" />
+                    <img id="image-preview" src="" alt="Image Preview" style="display: none; max-width: 100px; margin-top: 10px;" />
+
                     <input type="text" id="message" placeholder="Type a message..." />
                 </div>
                 <button id="send-button" class="w-btn us-btn-style_1" data-post-id="<?php echo $post_id; ?>">
@@ -119,6 +121,31 @@ class SubmitCommentForm
                     });
                 });
             });
+
+            imageInput.on('change', function () {
+    const file = this.files[0];
+    const preview = $('#image-preview');
+
+    if (file) {
+        const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'image/webp'];
+
+        if (!allowedTypes.includes(file.type)) {
+            alert("Invalid file type. Please select a JPG, PNG, GIF, or WebP image.");
+            this.value = '';
+            preview.hide().attr('src', '');
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            preview.attr('src', e.target.result).show();
+        };
+        reader.readAsDataURL(file);
+    } else {
+        preview.hide().attr('src', '');
+    }
+});
+
         </script>
 
 <?php
