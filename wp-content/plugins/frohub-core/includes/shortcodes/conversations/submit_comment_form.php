@@ -25,12 +25,13 @@ class SubmitCommentForm
         <div class="submit-comment-form">
             <p class="deposit-warning"><i class="fas fa-exclamation-triangle"></i> Only deposits paid through FroHub are protected. <a href="/">Learn more</a></p>
             <div class="chat-input-wrapper-custom">
-                <div class="chat-input-box">
-                    <label for="image-upload" class="camera-icon">
-                        <i class="fas fa-camera"></i>
-                    </label>
-                    <input type="file" id="image-upload" accept="image/png, image/jpeg, image/jpg, image/gif, image/webp" style="display: none;" />
-                    <img id="image-preview" src="" alt="Image Preview" style="display: none; max-width: 100px; margin-top: 10px;" />
+            <div class="chat-input-box">
+                <label for="image-upload" class="camera-icon" id="camera-icon-label" style="cursor: pointer;">
+            <i class="fas fa-camera"></i>
+            </label>
+            <input type="file" id="image-upload" accept="image/png, image/jpeg, image/jpg, image/gif, image/webp" style="display: none;" />
+            <img id="image-preview" src="" alt="Image Preview" style="display: none; max-width: 100px; margin-top: 10px; cursor: pointer;" />
+
 
                     <input type="text" id="message" placeholder="Type a message..." />
                 </div>
@@ -53,9 +54,10 @@ class SubmitCommentForm
                 const messageInput = $('#message');
                 const imageInput = $('#image-upload');
 
-                            imageInput.on('change', function () {
+imageInput.on('change', function () {
     const file = this.files[0];
     const preview = $('#image-preview');
+    const cameraIcon = $('#camera-icon-label');
 
     if (file) {
         const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'image/webp'];
@@ -64,17 +66,25 @@ class SubmitCommentForm
             alert("Invalid file type. Please select a JPG, PNG, GIF, or WebP image.");
             this.value = '';
             preview.hide().attr('src', '');
+            cameraIcon.show();
             return;
         }
 
         const reader = new FileReader();
         reader.onload = function (e) {
             preview.attr('src', e.target.result).show();
+            cameraIcon.hide(); // Hide the camera icon when image is uploaded
         };
         reader.readAsDataURL(file);
     } else {
         preview.hide().attr('src', '');
+        cameraIcon.show(); // Show the icon again if input cleared
     }
+});
+
+// Clicking the image opens file selector again
+$('#image-preview').on('click', function () {
+    $('#image-upload').click();
 });
 
                 sendButton.on('click', function() {
