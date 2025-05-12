@@ -45,7 +45,7 @@ class SubmitCommentForm
             <div class="modal-overlay"></div>
             <div class="modal-content">
                 <p id="modal-message"></p>
-                <button id="modal-close">Close</button>
+                <button id="modal-close">x</button>
             </div>
         </div>
 
@@ -73,7 +73,7 @@ class SubmitCommentForm
                 padding: 20px;
                 max-width: 400px;
                 margin: 100px auto;
-                border-radius: 8px;
+                border-radius: 0.3rem;
                 z-index: 10000;
                 position: relative;
                 text-align: center;
@@ -179,7 +179,7 @@ class SubmitCommentForm
                         contentType: false,
                         success: function(data) {
                             if (data.success) {
-                                showModal('Comment submitted successfully!');
+                                showModal('Comment submitted successfully! Refreshing the page...');
                                 setTimeout(function () {
                                     location.reload();
                                 }, 1500);
