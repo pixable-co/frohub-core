@@ -53,6 +53,30 @@ class SubmitCommentForm
                 const messageInput = $('#message');
                 const imageInput = $('#image-upload');
 
+                            imageInput.on('change', function () {
+    const file = this.files[0];
+    const preview = $('#image-preview');
+
+    if (file) {
+        const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'image/webp'];
+
+        if (!allowedTypes.includes(file.type)) {
+            alert("Invalid file type. Please select a JPG, PNG, GIF, or WebP image.");
+            this.value = '';
+            preview.hide().attr('src', '');
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            preview.attr('src', e.target.result).show();
+        };
+        reader.readAsDataURL(file);
+    } else {
+        preview.hide().attr('src', '');
+    }
+});
+
                 sendButton.on('click', function() {
                     const message = messageInput.val().trim();
                     const file = imageInput[0].files[0];
@@ -122,29 +146,7 @@ class SubmitCommentForm
                 });
             });
 
-            imageInput.on('change', function () {
-    const file = this.files[0];
-    const preview = $('#image-preview');
 
-    if (file) {
-        const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'image/webp'];
-
-        if (!allowedTypes.includes(file.type)) {
-            alert("Invalid file type. Please select a JPG, PNG, GIF, or WebP image.");
-            this.value = '';
-            preview.hide().attr('src', '');
-            return;
-        }
-
-        const reader = new FileReader();
-        reader.onload = function (e) {
-            preview.attr('src', e.target.result).show();
-        };
-        reader.readAsDataURL(file);
-    } else {
-        preview.hide().attr('src', '');
-    }
-});
 
         </script>
 
