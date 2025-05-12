@@ -38,7 +38,6 @@ class SubmitCommentForm
                 <button id="send-button" class="w-btn us-btn-style_1" data-post-id="<?php echo $post_id; ?>">
                     <span class="btn-label">Send Message</span>
                     <span class="spinner" style="display: none; margin-left: 8px;">
-                        <i class="fas fa-spinner fa-spin"></i>
                     </span>
                 </button>
 
