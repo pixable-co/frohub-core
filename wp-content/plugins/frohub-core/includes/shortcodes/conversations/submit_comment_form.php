@@ -45,6 +45,42 @@ class SubmitCommentForm
             <p class="chat-respectful-message">Please be respectful: Keep your messages kind and considerate. Treat others as you would like to be treated.</p>
         </div>
 
+        <!-- Modal Structure -->
+<div id="comment-modal" style="display: none;">
+    <div class="modal-overlay"></div>
+    <div class="modal-content">
+        <p id="modal-message"></p>
+        <button id="modal-close">Close</button>
+    </div>
+</div>
+
+<style>
+#comment-modal {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 9999;
+}
+.modal-overlay {
+    background: rgba(0, 0, 0, 0.6);
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+}
+.modal-content {
+    background: white;
+    padding: 20px;
+    max-width: 400px;
+    margin: 100px auto;
+    border-radius: 8px;
+    z-index: 10000;
+    position: relative;
+    text-align: center;
+}
+#modal-close {
+    margin-top: 10px;
+}
+</style>
 
 
         <script>
@@ -94,7 +130,7 @@ $('#image-preview').on('click', function () {
                     const label = sendButton.find('.btn-label');
 
                     if (!message && !file) {
-                        alert("Please enter a message or select an image to upload.");
+                        showModal("Please enter a message or select an image to upload.");
                         return;
                     }
 
@@ -135,7 +171,8 @@ $('#image-preview').on('click', function () {
                         contentType: false,
                         success: function(data) {
                             if (data.success) {
-                                alert('Comment submitted successfully!');
+                                showModal('Comment submitted successfully!');
+
                                 location.reload();
                             } else {
                                 alert("Error: " + data.data);
@@ -155,6 +192,14 @@ $('#image-preview').on('click', function () {
                 });
             });
 
+function showModal(message) {
+    $('#modal-message').text(message);
+    $('#comment-modal').fadeIn();
+}
+
+$('#modal-close, .modal-overlay').on('click', function() {
+    $('#comment-modal').fadeOut();
+});
 
 
         </script>
