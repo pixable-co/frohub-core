@@ -71,16 +71,25 @@ class SubmitCommentForm
             .modal-content {
                 background: white;
                 padding: 20px;
-                max-width: 400px;
-                margin: 100px auto;
+                max-width: 600px;
+                margin: auto;
                 border-radius: 0.3rem;
                 z-index: 10000;
-                position: relative;
+                position: absolute;
                 text-align: center;
+                top: 0;
+                bottom: 0;
+                height: max-content;
+                left: 0;
+                right: 0;
             }
 
             #modal-close {
-                margin-top: 10px;
+                    position: absolute;
+                top: 0.5rem;
+                right: 0.7rem;
+                font-size: 1.2rem;
+                line-height: 1;
             }
         </style>
 
