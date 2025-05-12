@@ -7,6 +7,55 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class Helper {
 
+    public static function get_orders_by_product_id_and_date_range($product_id, $start_date, $end_date) {
+        global $wpdb;
+
+        if (!$product_id || !$start_date || !$end_date) {
+            return [];
+        }
+
+        $query = $wpdb->prepare("
+            SELECT
+                p.ID as order_id,
+                p.post_status,
+                p.post_date,
+                im1.meta_value as start_date_time,
+                im2.meta_value as end_date_time
+            FROM {$wpdb->posts} AS p
+            INNER JOIN {$wpdb->prefix}woocommerce_order_items AS oi ON p.ID = oi.order_id
+            INNER JOIN {$wpdb->prefix}woocommerce_order_itemmeta AS im1 ON oi.order_item_id = im1.order_item_id
+            INNER JOIN {$wpdb->prefix}woocommerce_order_itemmeta AS im2 ON oi.order_item_id = im2.order_item_id
+            INNER JOIN {$wpdb->prefix}woocommerce_order_itemmeta AS product_meta ON oi.order_item_id = product_meta.order_item_id
+            WHERE p.post_type = 'shop_order'
+            AND p.post_status IN ('wc-rescheduling', 'wc-processing', 'wc-on-hold')
+            AND im1.meta_key = 'Start Date Time'
+            AND im2.meta_key = 'End Date Time'
+            AND product_meta.meta_key = '_product_id'
+            AND product_meta.meta_value = %d
+            AND STR_TO_DATE(im1.meta_value, '%%H:%%i, %%d %%b %%Y') BETWEEN %s AND %s
+        ", $product_id, $start_date, $end_date);
+
+        $results = $wpdb->get_results($query);
+
+        if (empty($results)) {
+            return [];
+        }
+
+        $orders = [];
+
+        foreach ($results as $result) {
+            $selected_time = self::convert_to_selected_time($result->start_date_time, $result->end_date_time);
+
+            $orders[] = [
+                'order_id'        => $result->order_id,
+                'selected_time'   => $selected_time,
+                'start_date_time' => $result->start_date_time
+            ];
+        }
+
+        return $orders;
+    }
+
         public static function get_orders_by_product_id_and_date($product_id, $date) {
             global $wpdb;
 
@@ -56,7 +105,8 @@ class Helper {
                         'order_total'     => $order->get_total(),
                         'order_date'      => $order->get_date_created()->format('Y-m-d H:i:s'),
                         'customer_email'  => $order->get_billing_email(),
-                        'selected_time'   => $selected_time
+                        'selected_time'   => $selected_time,
+                        'start_date_time' => $result->start_date_time
                     ];
                 }
             }

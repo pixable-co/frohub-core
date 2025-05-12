@@ -39,17 +39,14 @@ class GetAvailibility {
             wp_send_json_error(['message' => 'No availability data found.']);
         }
 
-        // ✅ Fetch buffer period from ACF
         $buffer_hours = get_field('buffer_period_hours', $partner_id);
         $buffer_minutes = get_field('buffer_period_minutes', $partner_id);
-        $buffer_total_minutes = (intval($buffer_hours) * 60) + intval($buffer_minutes); // ✅ Convert to minutes
+        $buffer_total_minutes = (intval($buffer_hours) * 60) + intval($buffer_minutes);
 
-        // Fetch product duration from ACF and convert to minutes
         $duration_hours = get_field('duration_hours', $product_id);
         $duration_minutes = get_field('duration_minutes', $product_id);
         $product_duration_minutes = ($duration_hours * 60) + $duration_minutes;
 
-        // Handle multiple addons_id passed as array
         $addons_ids = isset($_POST['addons_id']) ? $_POST['addons_id'] : [];
         if (!is_array($addons_ids)) {
             $addons_ids = [$addons_ids];
@@ -67,132 +64,178 @@ class GetAvailibility {
 
         $total_duration_minutes = $product_duration_minutes + $addon_duration_minutes;
 
-        // Get booked slots from WooCommerce orders
-        $orders = Helper::get_orders_by_product_id_and_date($product_id, $date);
+        // ✅ Fix: use date range for single date retrieval
+        $orders = Helper::get_orders_by_product_id_and_date_range($product_id, $date, $date);
         $booked_slots = [];
+        $booked_days = [];
 
         foreach ($orders as $order) {
             if (!empty($order['selected_time'])) {
                 $booked_slots[] = $order['selected_time'];
             }
+
+            if (!empty($order['start_date_time'])) {
+                $order_date = date('Y-m-d', strtotime($order['start_date_time']));
+                $booked_days[] = $order_date;
+            }
         }
 
-        // Include Google Calendar Bookings
+        $booked_days = array_unique($booked_days);
+        sort($booked_days);
+
         $google_calendar_booked_slots = $this->get_google_calendar_bookings($partner_id, $date);
         $booked_slots = array_merge($booked_slots, $google_calendar_booked_slots);
 
-        // Convert booked slots to timestamps
         $booked_slots_timestamps = $this->convert_slots_to_timestamps($booked_slots);
 
-        $final_slots = [];
-        $available_dates = [];
-
-        // ✅ Generate slots with buffer period
-        foreach ($availability as $slot) {
-            $day = $slot['day'];
-            $extra_charge = !empty($slot['extra_charge']) ? $slot['extra_charge'] : 0;
-            $start_time = strtotime($slot['from']);
-            $end_time = strtotime($slot['to']);
-
-            while (($start_time + ($total_duration_minutes * 60) + ($buffer_total_minutes * 60)) <= $end_time) {
-                $slot_from = date('H:i', $start_time);
-                $slot_to = date('H:i', $start_time + ($total_duration_minutes * 60));
-                $time_range = "$slot_from - $slot_to";
-
-                // ✅ Add timeslot with buffer period
-                $final_slots[] = [
-                    'day'                     => $day,
-                    'from'                    => $slot_from,
-                    'to'                      => $slot_to,
-                    'time_range'              => $time_range,
-                    'product_duration_minutes'=> $product_duration_minutes,
-                    'addon_duration_minutes'  => $addon_duration_minutes,
-                    'total_duration_minutes'  => $total_duration_minutes,
-                    'extra_charge'            => $extra_charge,
-                    'is_booked'               => false
-                ];
-
-                // Collect available dates
-                $date_available = date('Y-m-d', strtotime("next $day"));
-                if (!in_array($date_available, $available_dates)) {
-                    $available_dates[] = $date_available;
-                }
-
-                // ✅ Move to next available slot with buffer period
-                $start_time += ($total_duration_minutes * 60) + ($buffer_total_minutes * 60);
-            }
-        }
-
-        // Now filter out slots that overlap with booked slots
-        $available_slots = array_filter($final_slots, function ($slot) use ($booked_slots_timestamps) {
-            $slot_start = strtotime($slot['from']);
-            $slot_end = strtotime($slot['to']);
-
-            foreach ($booked_slots_timestamps as $booked_slot) {
-                if ($slot_start < $booked_slot['end'] && $slot_end > $booked_slot['start']) {
-                    return false;  // Overlap detected, remove this slot
-                }
-            }
-
-            return true;  // No overlap, keep the slot
-        });
-
-        // Get booking scope from ACF
         $booking_scope = get_field('booking_scope', $partner_id);
-        $booking_scope = is_numeric($booking_scope) ? intval($booking_scope) : 30; // Default to 30 if not set
+        $booking_scope = is_numeric($booking_scope) ? intval($booking_scope) : 30;
 
-        // Filter available dates based on booking scope
         $current_date = date('Y-m-d');
         $max_date = date('Y-m-d', strtotime($current_date . ' + ' . $booking_scope . ' days'));
 
-        $available_dates = array_filter($available_dates, function($date) use ($current_date, $max_date) {
-            return $date >= $current_date && $date <= $max_date;
-        });
-
-        sort($available_dates);
-        $booking_notice = get_field('booking_notice', $product_id);
-        $booking_notice_days = is_numeric($booking_notice) ? intval($booking_notice) : 0;
-//         $next_available_date = count($available_dates) > 0 ? $available_dates[0] : null;
-
-        $today = new \DateTime();
-        $notice_cutoff_date = $today->modify("+{$booking_notice_days} days")->format('Y-m-d');
-
-        // Filter out dates that fall within the notice period
-        $next_available_date = null;
-        foreach ($available_dates as $date) {
-            if ($date > $notice_cutoff_date) {
-                $next_available_date = $date;
-                break;
-            }
-        }
-
-        // Fetch unavailable dates from ACF repeater field
+        // ✅ Fix: unavailable_dates fetched before use
         $unavailable_dates = get_field('unavailable_dates', $partner_id);
         $formatted_unavailable_dates = [];
 
         if (!empty($unavailable_dates) && is_array($unavailable_dates)) {
-              foreach ($unavailable_dates as $date) {
-                    if (!empty($date['start_date']) && !empty($date['end_date'])) {
-                         $formatted_unavailable_dates[] = [
-                           'start_date' => $date['start_date'],
-                            'end_date'   => $date['end_date']
-                         ];
-                   }
-             }
+            foreach ($unavailable_dates as $date_entry) {
+                if (!empty($date_entry['start_date']) && !empty($date_entry['end_date'])) {
+                    $formatted_unavailable_dates[] = [
+                        'start_date' => $date_entry['start_date'],
+                        'end_date' => $date_entry['end_date']
+                    ];
+                }
+            }
         }
+
+        // ✅ Generate all dates in booking scope
+        $all_dates_in_scope = [];
+        $current_date_obj = new \DateTime($current_date);
+        $end_date_obj = new \DateTime($max_date);
+
+        $interval = new \DateInterval('P1D');
+        $date_period = new \DatePeriod($current_date_obj, $interval, $end_date_obj->modify('+1 day'));
+
+        foreach ($date_period as $date_obj) {
+            $weekday = $date_obj->format('l'); // "Monday"
+            $date_str = $date_obj->format('Y-m-d');
+            $all_dates_in_scope[$weekday][] = $date_str;
+        }
+
+        $final_slots = [];
+
+        foreach ($availability as $slot) {
+            $day = $slot['day'];
+            $extra_charge = !empty($slot['extra_charge']) ? $slot['extra_charge'] : 0;
+
+            if (empty($all_dates_in_scope[$day])) continue;
+
+            foreach ($all_dates_in_scope[$day] as $date_str) {
+                $start_time = strtotime($slot['from']);
+                $end_time = strtotime($slot['to']);
+
+                while (($start_time + ($total_duration_minutes * 60) + ($buffer_total_minutes * 60)) <= $end_time) {
+                    $slot_from = date('H:i', $start_time);
+                    $slot_to = date('H:i', $start_time + ($total_duration_minutes * 60));
+                    $time_range = "$slot_from - $slot_to";
+
+                    $final_slots[] = [
+                        'date' => $date_str,
+                        'day'  => $day,
+                        'from' => $slot_from,
+                        'to'   => $slot_to,
+                        'time_range' => $time_range,
+                        'product_duration_minutes' => $product_duration_minutes,
+                        'addon_duration_minutes'   => $addon_duration_minutes,
+                        'total_duration_minutes'   => $total_duration_minutes,
+                        'extra_charge' => $extra_charge,
+                        'is_booked'    => false
+                    ];
+
+                    $start_time += ($total_duration_minutes * 60) + ($buffer_total_minutes * 60);
+                }
+            }
+        }
+
+        // ✅ Fix: slot time matching with slot[date]
+        $available_slots = array_filter($final_slots, function ($slot) use ($booked_slots_timestamps) {
+            $slot_start = strtotime($slot['date'] . ' ' . $slot['from']);
+            $slot_end = strtotime($slot['date'] . ' ' . $slot['to']);
+
+            foreach ($booked_slots_timestamps as $booked_slot) {
+                if ($slot_start < $booked_slot['end'] && $slot_end > $booked_slot['start']) {
+                    return false;
+                }
+            }
+
+            return true;
+        });
+
+        $booking_notice = get_field('booking_notice', $product_id);
+        if (empty($booking_notice)) {
+              $booking_notice = get_field('booking_notice', $partner_id);
+        }
+        $booking_notice_days = is_numeric($booking_notice) ? intval($booking_notice) : 0;
+
+        $today = new \DateTime();
+        $notice_cutoff_date = $today->modify("+{$booking_notice_days} days")->format('Y-m-d');
+
+        $next_available_date = null;
+        foreach ($available_slots as $slot) {
+            if ($slot['date'] > $notice_cutoff_date) {
+                $next_available_date = $slot['date'];
+                break;
+            }
+        }
+
+        // ✅ All bookings in scope
+        $all_orders = Helper::get_orders_by_product_id_and_date_range($product_id, $current_date, $max_date);
+
+        $all_bookings = [];
+        $all_booked_days = [];
+
+        foreach ($all_orders as $order) {
+            if (!empty($order['start_date_time'])) {
+                $order_date = date('Y-m-d', strtotime($order['start_date_time']));
+                $all_bookings[$order_date][] = $order['selected_time'];
+                $all_booked_days[] = $order_date;
+            }
+        }
+
+        $all_booked_days = array_unique($all_booked_days);
+        sort($all_booked_days);
 
         wp_send_json_success([
             'availability' => array_values($available_slots),
             'booked_slots' => $booked_slots,
+            'booked_days' => $booked_days,
             'next_available_date' => $next_available_date,
             'service_duration' => $total_duration_minutes,
-            'booking_notice'   => $booking_notice_days,
+            'booking_notice' => $booking_notice_days,
             'google_calendar_booked_slots' => $google_calendar_booked_slots,
             'buffer_period_minutes' => $buffer_total_minutes,
             'booking_scope' => $booking_scope,
             'max_date' => $max_date,
-            'unavailable_dates' => $formatted_unavailable_dates
+            'unavailable_dates' => $formatted_unavailable_dates,
+            'all_booked_days' => $all_booked_days,
+            'all_bookings' => $all_bookings
         ]);
+    }
+
+    private function get_dates_for_day_within_scope($day, $startDate, $endDate) {
+        $dates = [];
+        $current = strtotime($startDate);
+        $end = strtotime($endDate);
+
+        while ($current <= $end) {
+            if (date('l', $current) === $day) {
+                $dates[] = date('Y-m-d', $current);
+            }
+            $current = strtotime('+1 day', $current);
+        }
+
+        return $dates;
     }
 
     private function convert_slots_to_timestamps($booked_slots) {

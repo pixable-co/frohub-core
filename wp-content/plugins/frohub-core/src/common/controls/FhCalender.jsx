@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from "react";
 import dayjs from "dayjs";
 import isBetween from "dayjs/plugin/isBetween";
-dayjs.extend(isBetween); // ✅ Extend dayjs with the plugin
+dayjs.extend(isBetween);
 import { Skeleton } from "antd";
 import frohubStore from "../../frohubStore.js";
 import './style.css';
 
-const FhCalender = ({ onDateChange, bookingNotice, initialServiceDuration, maxDate, unavailableDates, unavailableTimes, nextAvailableDate }) => {
+const FhCalender = ({ onDateChange, bookingNotice, initialServiceDuration, maxDate, unavailableDates, unavailableTimes, nextAvailableDate, allBookings }) => {
     const { availabilityData, loading } = frohubStore();
-    // const [selectedDate, setSelectedDate] = useState(dayjs());
-    const [selectedDate, setSelectedDate] = useState(() => (dayjs(nextAvailableDate)));
+    const [selectedDate, setSelectedDate] = useState(() => dayjs(nextAvailableDate));
     const [selectedTime, setSelectedTime] = useState(null);
     const [selectedPrice, setSelectedPrice] = useState(0);
     const [selectedDuration, setSelectedDuration] = useState(0);
@@ -21,61 +20,53 @@ const FhCalender = ({ onDateChange, bookingNotice, initialServiceDuration, maxDa
         }
     }, [nextAvailableDate]);
 
-
     useEffect(() => {
         const duration = parseInt(initialServiceDuration, 10) || 0;
-
-        if (duration > 0) {
-            const hours = Math.floor(duration / 60);
-            const minutes = duration % 60;
-            setSelectedDuration(`${hours}h ${minutes}m`);
-        } else {
-            setSelectedDuration("0h 0m");
-        }
+        const hours = Math.floor(duration / 60);
+        const minutes = duration % 60;
+        setSelectedDuration(`${hours}h ${minutes}m`);
     }, [initialServiceDuration]);
 
-    // Extract unique available days from availabilityData
-    const getAvailableDays = () => {
-        if (!Array.isArray(availabilityData)) return [];
-        return [...new Set(availabilityData.map((entry) => entry.day))];
-    };
-
     const isAvailableDate = (date) => {
-        const availableDays = getAvailableDays();
-        const today = dayjs();
-        const bookingNoticeDays = bookingNotice;
-        const noticeCutoffDate = today.add(bookingNoticeDays, "day");
+        const formattedDate = date.format("YYYY-MM-DD");
 
-        // ✅ Ensure within max booking range
-        const isWithinBookingScope = maxDate ? date.isBefore(dayjs(maxDate).add(1, "day")) : true;
+        const possibleSlots = availabilityData.filter(entry => entry.date === formattedDate);
+        if (possibleSlots.length === 0) return false;
 
-        // ✅ Check if at least one available slot remains
-        const hasAvailableSlots = availabilityData.some((entry) => {
-            const formattedDate = date.format("YYYY-MM-DD");
+        const bookedSlotsForDate = allBookings[formattedDate] || [];
 
-            // ✅ Check against all unavailable times
-            const isFullyBlocked = unavailableTimes.some(({ start, end }) => {
+        const freeSlots = possibleSlots.filter(entry => {
+            const slotTime = `${entry.from} - ${entry.to}`;
+
+            const isBooked = bookedSlotsForDate.includes(slotTime);
+            if (isBooked) return false;
+
+            const slotStart = dayjs(`${formattedDate} ${entry.from}`, "YYYY-MM-DD HH:mm");
+            const slotEnd = dayjs(`${formattedDate} ${entry.to}`, "YYYY-MM-DD HH:mm");
+
+            const isBlocked = unavailableTimes.some(({ start, end }) => {
                 if (!start || !end) return false;
-
-                const slotStart = dayjs(`${formattedDate} ${entry.from}`, "YYYY-MM-DD HH:mm");
-                const slotEnd = dayjs(`${formattedDate} ${entry.to}`, "YYYY-MM-DD HH:mm");
-
                 return (
-                    slotStart.isBetween(start, end, null, "[]") ||  // Slot starts within blocked range
-                    slotEnd.isBetween(start, end, null, "[]") ||    // Slot ends within blocked range
-                    (slotStart.isBefore(start) && slotEnd.isAfter(end)) // Slot fully overlaps blocked range
+                    slotStart.isBetween(start, end, null, "[]") ||
+                    slotEnd.isBetween(start, end, null, "[]") ||
+                    (slotStart.isBefore(start) && slotEnd.isAfter(end))
                 );
             });
 
-            return !isFullyBlocked;
+            return !isBlocked;
         });
 
-        return (
-            availableDays.includes(date.format("dddd")) &&
-            date.isAfter(noticeCutoffDate, "day") &&
-            isWithinBookingScope &&
-            hasAvailableSlots // ✅ Allow only if at least one slot is available
-        );
+        console.log(`📅 Date: ${formattedDate} - Possible Slots: ${possibleSlots.length}, Free Slots: ${freeSlots.length}`);
+
+        if (freeSlots.length === 0) return false;
+
+        const today = dayjs();
+        const noticeCutoffDate = today.add(bookingNotice, "day");
+        if (!date.isAfter(noticeCutoffDate, "day")) return false;
+
+        if (maxDate && !date.isBefore(dayjs(maxDate).add(1, "day"))) return false;
+
+        return true;
     };
 
     const getDaysInMonth = () => {
@@ -86,7 +77,6 @@ const FhCalender = ({ onDateChange, bookingNotice, initialServiceDuration, maxDa
 
         const calendarDays = [];
 
-        // Fill in days from the previous month
         for (let i = 0; i < startingDay; i++) {
             calendarDays.push({
                 date: firstDayOfMonth.subtract(startingDay - i, "day"),
@@ -94,7 +84,6 @@ const FhCalender = ({ onDateChange, bookingNotice, initialServiceDuration, maxDa
             });
         }
 
-        // Fill in current month's days
         for (let i = 1; i <= daysInMonth; i++) {
             calendarDays.push({
                 date: firstDayOfMonth.add(i - 1, "day"),
@@ -131,48 +120,36 @@ const FhCalender = ({ onDateChange, bookingNotice, initialServiceDuration, maxDa
 
     const availableTimeSlots = Array.isArray(availabilityData)
         ? availabilityData
-            .filter((entry) => {
+            .filter(entry => {
                 const formattedDate = selectedDate.format("YYYY-MM-DD");
+                if (entry.date !== formattedDate) return false;
 
-                // ✅ Ensure filtering for selected day
-                const isCorrectDay = entry.day === selectedDate.format("dddd");
-                if (!isCorrectDay) {
-                    console.log(`❌ Slot filtered out: Not the correct day (${entry.day} !== ${selectedDate.format("dddd")})`);
-                    return false;
-                }
+                const slotTime = `${entry.from} - ${entry.to}`;
+                const bookedSlotsForDate = allBookings[formattedDate] || [];
+                if (bookedSlotsForDate.includes(slotTime)) return false;
 
-                // ✅ Check if this specific time slot falls in **any** unavailable range
-                const isTimeBlocked = unavailableTimes.some(({ start, end }) => {
+                const slotStart = dayjs(`${formattedDate} ${entry.from}`, "YYYY-MM-DD HH:mm");
+                const slotEnd = dayjs(`${formattedDate} ${entry.to}`, "YYYY-MM-DD HH:mm");
+
+                const isBlocked = unavailableTimes.some(({ start, end }) => {
                     if (!start || !end) return false;
-
-                    // ✅ Convert slot time
-                    const slotStart = dayjs(`${formattedDate} ${entry.from}`, "YYYY-MM-DD HH:mm");
-                    const slotEnd = dayjs(`${formattedDate} ${entry.to}`, "YYYY-MM-DD HH:mm");
-
                     return (
-                        slotStart.isBetween(start, end, null, "[]") ||  // Slot starts within blocked range
-                        slotEnd.isBetween(start, end, null, "[]") ||    // Slot ends within blocked range
-                        (slotStart.isBefore(start) && slotEnd.isAfter(end)) // Slot fully covers blocked range
+                        slotStart.isBetween(start, end, null, "[]") ||
+                        slotEnd.isBetween(start, end, null, "[]") ||
+                        (slotStart.isBefore(start) && slotEnd.isAfter(end))
                     );
                 });
 
-                if (isTimeBlocked) {
-                    console.log(`❌ Slot filtered out: Blocked time (${entry.from} - ${entry.to})`);
-                } else {
-                    console.log(`🟢 Slot Allowed: ${entry.from} - ${entry.to}`);
-                }
-
-                return !isTimeBlocked; // ✅ Only show slots that are **not** blocked
+                return !isBlocked;
             })
-            .map((entry) => ({
+            .map(entry => ({
                 time: `${entry.from} - ${entry.to}`,
                 price: Number(entry.extra_charge) || 0,
                 duration: entry.total_duration_minutes || 0,
             }))
         : [];
 
-    console.log("Available Time Slots:", availableTimeSlots);
-
+    console.log(`🟢 Selected Date: ${selectedDate.format("YYYY-MM-DD")} - Available Time Slots:`, availableTimeSlots);
 
     const isToday = (date) => dayjs().format("YYYY-MM-DD") === date.format("YYYY-MM-DD");
     const isSelected = (date) => selectedDate.format("YYYY-MM-DD") === date.format("YYYY-MM-DD");
@@ -188,7 +165,7 @@ const FhCalender = ({ onDateChange, bookingNotice, initialServiceDuration, maxDa
                 </div>
 
                 <div className="grid grid-cols-7 mb-2">
-                    {["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"].map((day) => (
+                    {["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"].map(day => (
                         <div key={day} className="text-xs text-gray-500 text-center py-2">{day}</div>
                     ))}
                 </div>
@@ -221,7 +198,6 @@ const FhCalender = ({ onDateChange, bookingNotice, initialServiceDuration, maxDa
             </div>
 
             <div className="timeslots-section">
-
                 {loading ? (
                     <>
                         <h3 className="selected-date">
