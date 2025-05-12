@@ -23,7 +23,7 @@ class SubmitCommentForm
 
         <!-- Message Input and File Upload -->
         <div class="submit-comment-form">
-            <p class="deposit-warning"><i class="fas fa-exclamation-triangle"></i> Only deposits paid through FroHub are protected. <a href="/">Learn more</a></p>
+            <p class="deposit-warning"><i class="fas fa-exclamation-triangle"></i> Only deposits paid through FroHub are protected. <a href="/help-centre/">Learn more</a></p>
             <div class="chat-input-wrapper-custom">
             <div class="chat-input-box">
                 <label for="image-upload" class="camera-icon" id="camera-icon-label" style="cursor: pointer;">
