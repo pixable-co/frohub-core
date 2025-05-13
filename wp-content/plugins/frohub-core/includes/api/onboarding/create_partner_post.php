@@ -83,6 +83,7 @@ class CreatePartnerPost {
     $serviceName = $data['13'] ?? null;
     $duration = $data['32'] ?? null;  // New Duration Field
     $price = $data['15'] ?? null;
+    $serviceCategoryId = $data['37'] ?? null;
     $bufferTime = $data['31'] ?? null; // New Buffer Time Field
 
     $partner_post_id = wp_insert_post([
@@ -155,6 +156,7 @@ class CreatePartnerPost {
         'Service_Name'   => $serviceName,
         'Duration'       => $duration, // New Duration Field
         'Price'          => $price,
+        'Service_Category_ID' => $serviceCategoryId,
         'Partner_ID'     => $partner_post_id,
         'Partner_Name'   => $businessName,
     ];
