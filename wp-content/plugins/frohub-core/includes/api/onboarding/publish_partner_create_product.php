@@ -75,6 +75,12 @@ class PublishPartnerCreateProduct {
         update_field('duration_minutes', $draft_service_data['Duration_Minutes'] ?? '', $product_id);
         update_field('partner_name', $draft_service_data['Partner_ID'] ?? '', $product_id);
 
+        // ✅ Assign product category from Service_Category_ID
+        if (!empty($draft_service_data['Service_Category_ID'])) {
+            $category_id = intval($draft_service_data['Service_Category_ID']);
+            wp_set_object_terms($product_id, [$category_id], 'product_cat');
+        }
+
         // Update the partner post status to 'publish'
         $update_post = [
             'ID'          => $partner_post_id,
