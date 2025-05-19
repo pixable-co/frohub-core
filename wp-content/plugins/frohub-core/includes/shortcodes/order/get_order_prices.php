@@ -101,7 +101,7 @@ class GetOrderPrices
 
             if ($extra_charge > 0) {
                 echo '<div class="extra-charges line-item">
-                        <div class="label">' . esc_html('Extra Charges') . '</div>
+                        <div class="label">' . esc_html('Premium Time Fee') . '</div>
                         <div class="price">£' . number_format($extra_charge, 2) . '</div>
                       </div>';
             }
