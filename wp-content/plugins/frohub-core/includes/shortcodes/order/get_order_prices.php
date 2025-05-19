@@ -81,7 +81,7 @@ class GetOrderPrices
             echo '<h6>Payment Summary</h6>';
             if ($base_service_price > 0) {
                 echo '<div class="base-service line-item">
-            <div class="label">' . esc_html('Base Service Price') . '</div>
+            <div class="label">' . esc_html('Service Price') . ' </div>
             <div class="price">£' . number_format($base_service_price, 2) . '</div>
           </div>';
             }
