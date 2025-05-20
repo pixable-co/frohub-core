@@ -235,15 +235,16 @@ class CancelOrderButton
         <!-- Cancel Reason Modal -->
         <div id="cancelReasonModal_<?php echo esc_attr($order_id); ?>" class="status-modal cancel-reason-modal">
             <div class="modal-content">
-                <div class="modal-header"><h5>Help us improve: why are you cancelling?</h5><span class="close-modal">×</span></div>
+                <div class="modal-header"><h5> Help us improve — why are you cancelling?</h5><span class="close-modal">×</span></div>
                 <div class="modal-body">
-                    <p>Your feedback helps us improve the booking experience.</p>
+                    <p>We’d love to know why you cancelled. Your feedback helps us improve the booking experience.</p>
                     <p id="cancel-reason-error-<?php echo esc_attr($order_id); ?>" class="cancel-error-msg" style="color:#c00; display:none;"></p>
                     <form id="cancel-reason-form-<?php echo esc_attr($order_id); ?>">
                         <label><input type="radio" name="reason" value="scheduling"> I had a scheduling conflict</label><br>
                         <label><input type="radio" name="reason" value="changed-mind"> I changed my mind</label><br>
                         <label><input type="radio" name="reason" value="no-response"> The stylist didn’t respond</label><br>
                         <label><input type="radio" name="reason" value="stylist-cancel"> The stylist asked me to cancel</label><br>
+                        <label><input type="radio" name="reason" value="stylist-cancel"> The rescheduled time didn’t work for me</label><br>
                         <label><input type="radio" name="reason" value="other"> Other</label>
                         <div class="other-reason-wrapper" style="display:none; margin-top:10px;"><textarea name="other_reason" placeholder="Enter your reason here..."></textarea></div>
                     </form>
@@ -268,7 +269,7 @@ class CancelOrderButton
                 <div class="modal-header"><h5 id="cancel-success-title">Booking Cancelled</h5></div>
                 <div class="modal-body"><p id="cancel-success-message">Your booking has been successfully cancelled.</p></div>
                 <div class="modal-footer">
-                    <a href="/my-account/bookings/" class="w-btn us-btn-style_6 w-btn-underlined">Back to My Bookings</a>
+                    <a href="/my-account/orders/" class="w-btn us-btn-style_6 w-btn-underlined">Back to My Bookings</a>
                 </div>
             </div>
         </div>
