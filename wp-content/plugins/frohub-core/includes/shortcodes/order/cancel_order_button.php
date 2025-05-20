@@ -240,11 +240,11 @@ class CancelOrderButton
                     <p>We’d love to know why you cancelled. Your feedback helps us improve the booking experience.</p>
                     <p id="cancel-reason-error-<?php echo esc_attr($order_id); ?>" class="cancel-error-msg" style="color:#c00; display:none;"></p>
                     <form id="cancel-reason-form-<?php echo esc_attr($order_id); ?>">
-                        <label><input type="radio" name="reason" value="Scheduling-conflict"> I had a scheduling conflict</label><br>
-                        <label><input type="radio" name="reason" value="I-changed-my-mind"> I changed my mind</label><br>
-                        <label><input type="radio" name="reason" value="Stylist-did-not-response"> The stylist didn’t respond</label><br>
-                        <label><input type="radio" name="reason" value="Stylist-asked-me-to-cancel"> The stylist asked me to cancel</label><br>
-                        <label><input type="radio" name="reason" value="Reschedule-time-did-not-work-for-me"> The rescheduled time didn’t work for me</label><br>
+                        <label><input type="radio" name="reason" value="I had a scheduling conflict"> I had a scheduling conflict</label><br>
+                        <label><input type="radio" name="reason" value="I changed my mind"> I changed my mind</label><br>
+                        <label><input type="radio" name="reason" value="The stylist didn’t respond"> The stylist didn’t respond</label><br>
+                        <label><input type="radio" name="reason" value="The stylist asked me to cancel"> The stylist asked me to cancel</label><br>
+                        <label><input type="radio" name="reason" value="The rescheduled time didn’t work for me"> The rescheduled time didn’t work for me</label><br>
                         <label><input type="radio" name="reason" value="Other"> Other</label>
                         <div class="other-reason-wrapper" style="display:none; margin-top:10px;"><textarea name="other_reason" placeholder="Enter your reason here..."></textarea></div>
                     </form>
