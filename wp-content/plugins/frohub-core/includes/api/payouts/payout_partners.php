@@ -19,8 +19,10 @@ class PayoutPartners {
         register_rest_route('frohub/v1', '/payout-partners', array(
             'methods'             => 'POST',
             'callback'            => array($this, 'handle_payout_partners_endpoint'),
-            'permission_callback' => '__return_true',
-        ));
+            'permission_callback' => function () {
+                return is_user_logged_in(); // Requires authentication
+            },  
+             ));
     }
 
     /**
