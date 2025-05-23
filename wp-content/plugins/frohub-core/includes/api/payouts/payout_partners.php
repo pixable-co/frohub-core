@@ -34,7 +34,7 @@ class PayoutPartners {
         // Get today's date in Ymd format
         $today = date('Ymd');
 
-        // 🚀 Query 'payout' posts where:
+        // Query 'payout' posts where:
         // - 'payout_status' is 'Queued'
         // - 'scheduled_date' is today
         $query_args = array(
@@ -67,23 +67,30 @@ class PayoutPartners {
                 $payout_amount = get_field('payout_amount', $post_id);
                 $partner_post = get_field('partner_name', $post_id); // ACF post object field
 
-                // Ensure payout amount is retrieved, multiplied by 100, and cast to an integer
                 $payout_amount = intval((float) $payout_amount * 100);
-
-                // Prepend "FroHub - " to order reference
                 $description = "FroHub - " . $order_title;
 
-                // Default stripe account ID to null
                 $destination = null;
+                $stripe_connect = false;
 
-                // Fetch stripe_account_id from related partner post
                 if ($partner_post && is_object($partner_post)) {
                     $partner_id = $partner_post->ID;
-                    $destination = get_field('stripe_account_id', $partner_id);
+
+                    $stripe_account_id = get_field('stripe_account_id', $partner_id);
+                    $access_token      = get_field('access_token', $partner_id);
+                    $publishable_key   = get_field('publishable_key', $partner_id);
+                    $refresh_token     = get_field('refresh_token', $partner_id);
+
+                    $destination = $stripe_account_id;
+
+                    if ($stripe_account_id && $access_token && $publishable_key && $refresh_token) {
+                        $stripe_connect = true;
+                    }
                 }
 
                 $payout_data[] = [
                     'post_id' => $post_id,
+                    'stripe_connect' => $stripe_connect,
                     'stripe_connect_payload' => [
                         'description' => $description,
                         'amount'      => $payout_amount,
@@ -95,11 +102,9 @@ class PayoutPartners {
         }
 
         return new \WP_REST_Response([
-            'success'   => true,
-            'message'   => 'Authenticated request successful!',
-            'payouts'   => $payout_data
+            'success' => true,
+            'message' => 'Authenticated request successful!',
+            'payouts' => $payout_data
         ], 200);
     }
 }
-
-
