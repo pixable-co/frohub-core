@@ -19,9 +19,7 @@ class PayoutPartners {
         register_rest_route('frohub/v1', '/payout-partners', array(
             'methods'             => 'POST',
             'callback'            => array($this, 'handle_payout_partners_endpoint'),
-            'permission_callback' => function () {
-                return is_user_logged_in(); // Requires authentication
-            }
+            'permission_callback' => '__return_true',
         ));
     }
 
@@ -32,14 +30,6 @@ class PayoutPartners {
      * @return \WP_REST_Response
      */
     public function handle_payout_partners_endpoint(\WP_REST_Request $request) {
-        $user_id = get_current_user_id();
-
-        if (!$user_id) {
-            return new \WP_REST_Response([
-                'success' => false,
-                'message' => 'Authentication failed.'
-            ], 401);
-        }
 
         // Get today's date in Ymd format
         $today = date('Ymd');
@@ -107,7 +97,6 @@ class PayoutPartners {
         return new \WP_REST_Response([
             'success'   => true,
             'message'   => 'Authenticated request successful!',
-            'user_id'   => $user_id,
             'payouts'   => $payout_data
         ], 200);
     }
