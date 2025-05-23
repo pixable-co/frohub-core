@@ -39,23 +39,13 @@ class SetStripeFailedPayout {
             ], 400);
         }
 
-        // Get the related partner post from ACF field 'partner_name'
-        $partner_post = get_field('partner_name', $payout_post_id);
-
-        if (!$partner_post || !is_object($partner_post)) {
-            return new \WP_REST_Response([
-                'success' => false,
-                'message' => 'No valid partner found for this payout post.'
-            ], 404);
-        }
-
         // Update the partner's payout_status ACF field
-        update_field('payout_status', 'Stripe Not Connected', $partner_post->ID);
+        update_field('payout_status', 'Stripe Not Connected', $payout_post_id);
 
         return new \WP_REST_Response([
             'success' => true,
             'message' => 'Partner payout_status updated to "Stripe Not Connected".',
-            'partner_post_id' => $partner_post->ID
+            'partner_post_id' => $payout_post_id
         ], 200);
     }
 }
