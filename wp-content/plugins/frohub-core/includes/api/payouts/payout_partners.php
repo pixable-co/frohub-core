@@ -33,7 +33,7 @@ class PayoutPartners {
     public function handle_payout_partners_endpoint(\WP_REST_Request $request) {
 
          // Get today's date in Ymd format
-		$today = date('Y-m-d');
+		$today = date('Ymd');
 
         // Query 'payout' posts where:
         // - 'payout_status' is 'Queued'
@@ -51,7 +51,7 @@ class PayoutPartners {
                 ),
 				array(
 					'key'     => 'scheduled_date',
-					'value'   => $today, // formatted as Y-m-d
+					'value'   => $today, // formatted as Ymd
 					'compare' => '='
 				)
             )
