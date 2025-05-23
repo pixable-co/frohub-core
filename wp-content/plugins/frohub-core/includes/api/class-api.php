@@ -67,6 +67,7 @@ use FECore\PayoutPartners;
 use FECore\PartnerAddOns;
 use FECore\PartnerFaqs;
 use FECore\UpdateProfileAutoMessage;
+use FECore\SetStripeFailedPayout;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -129,5 +130,6 @@ class API {
 		PartnersMyPendingOrdersCount::init();
 		PartnerFaqs::init();
 		UpdateProfileAutoMessage::init();
+		SetStripeFailedPayout::init();
 	}
 }
