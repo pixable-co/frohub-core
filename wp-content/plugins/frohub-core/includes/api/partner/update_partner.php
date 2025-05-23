@@ -56,6 +56,8 @@ class UpdatePartner {
         $acf_fields = [
             'booking_notice'       => intval($data['bookingNotice']),
             'booking_scope'        => intval($data['bookingScope']),
+            'bufferPeriodMin'      => intval($data['bufferPeriodMin']),
+            'bufferPeriodHour'     => intval($data['bufferPeriodHour']),
             'partner_email'        => sanitize_email($data['email']),
             'service_types'        => $data['serviceTypes'],
             'street_address'       => sanitize_text_field($data['addressLine1']),
@@ -76,10 +78,12 @@ class UpdatePartner {
         }
 
         // Update buffer period
-        if (!empty($data['bufferPeriod'])) {
-            list($bufferHour, $bufferMin) = explode(":", $data['bufferPeriod']);
-            update_field('buffer_period_hours', intval($bufferHour), $partnerPostId);
-            update_field('buffer_period_minutes', intval($bufferMin), $partnerPostId);
+        if (!empty($data['bufferPeriodMin'])) {
+            update_field('buffer_period_minutes', intval($data['bufferPeriodMin']), $partnerPostId);
+        }
+
+        if (!empty($data['bufferPeriodHour'])) {
+           update_field('buffer_period_hours', intval($data['bufferPeriodHour']), $partnerPostId);
         }
 
         // Update availability (Repeater field)
