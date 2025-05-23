@@ -31,8 +31,8 @@ class PayoutPartners {
      */
     public function handle_payout_partners_endpoint(\WP_REST_Request $request) {
 
-        // Get today's date in Ymd format
-        $today = date('Ymd');
+         // Get today's date in Ymd format
+		$today = date('Y-m-d');
 
         // Query 'payout' posts where:
         // - 'payout_status' is 'Queued'
@@ -48,11 +48,11 @@ class PayoutPartners {
                     'value'   => 'Queued',
                     'compare' => '='
                 ),
-                array(
-                    'key'     => 'scheduled_date',
-                    'value'   => $today,
-                    'compare' => '='
-                )
+				array(
+					'key'     => 'scheduled_date',
+					'value'   => $today, // formatted as Y-m-d
+					'compare' => '='
+				)
             )
         );
 
@@ -84,7 +84,10 @@ class PayoutPartners {
                     $destination = $stripe_account_id;
 
                     if ($stripe_account_id && $access_token && $publishable_key && $refresh_token) {
-                        $stripe_connect = true;
+                        $stripe_connect = "Yes";
+                    }
+                    else {
+                        $stripe_connect = "No";
                     }
                 }
 
