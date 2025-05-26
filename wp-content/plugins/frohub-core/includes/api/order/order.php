@@ -104,6 +104,7 @@ class Order {
         return new \WP_REST_Response([
         'order_id'      => $order_id,
         'status'     => $order->get_status(),
+        'cancellation_status' => get_field('cancellation_status', $order_id) ?? 'N/A',
         'created'       => $order_data['date_created']->date('Y-m-d H:i:s'),
         'total'         => $order_data['total'],
         'currency'      => $order_data['currency'],
