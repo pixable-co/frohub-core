@@ -84,6 +84,7 @@ class ReturnOrderDetails {
             $order_data = [
                 'id'         => $order->get_id(),
                 'status'     => $order->get_status(),
+                'cancellation_status' => get_field('cancellation_status', $order->get_id()),
                 'total'      => $order->get_total(),
                 'currency'   => $order->get_currency(),
                 'created_at' => $order->get_date_created() ? $order->get_date_created()->date('Y-m-d H:i:s') : '',
