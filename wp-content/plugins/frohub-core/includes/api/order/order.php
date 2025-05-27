@@ -157,6 +157,7 @@ class Order {
                     'deposit'               => get_field('deposit'),
                     'commission'            => get_field('frohub_commission'),
                     'payout_amount'         => get_field('payout_amount'),
+                    'stripe_fee'        => get_field('stripe_fee'),
                     'scheduled_date'        => get_field('scheduled_date'),
                     'payout_date'           => get_field('payout_date'),
                     'payout_status'         => get_field('payout_status'),
