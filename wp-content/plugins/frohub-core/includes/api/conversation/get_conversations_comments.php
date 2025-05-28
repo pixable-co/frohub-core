@@ -52,19 +52,27 @@ class GetConversationsComments {
             ], 404);
         }
 
-        // Fetch comments for the post
+        // 🧠 Get Customer Profile Pic (once)
+        $customer = get_field('customer', $post_id);
+        if (!$customer || !is_a($customer, 'WP_User')) {
+            return new WP_Error('customer_not_found', 'No valid customer linked to this conversation.', ['status' => 404]);
+        }
+
+        $user_id = $customer->ID;
+        $avatar_attachment_id = get_user_meta($user_id, 'yith-wcmap-avatar', true);
+        $profile_picture = $avatar_attachment_id
+            ? wp_get_attachment_url($avatar_attachment_id)
+            : get_avatar_url($user_id, ['size' => 96]);
+
+        // 🗨️ Fetch comments
         $comments = get_comments([
             'post_id' => $post_id,
             'status'  => 'approve',
         ]);
 
-        // Format the comments with all metadata
         $formatted_comments = array_map(function ($comment) {
-            // Fetch all comment metadata
             $meta_data = get_comment_meta($comment->comment_ID);
-
-            // Fetch the ACF field "partner" associated with the comment
-            $partner = get_field('partner', 'comment_' . $comment->comment_ID);
+            $partner   = get_field('partner', 'comment_' . $comment->comment_ID);
             $partner_id = is_object($partner) && isset($partner->ID) ? $partner->ID : null;
 
             return [
@@ -73,10 +81,15 @@ class GetConversationsComments {
                 'content'      => $comment->comment_content,
                 'date'         => $comment->comment_date,
                 'author_email' => $comment->comment_author_email,
-                'meta_data'    => $meta_data,   // Include all comment meta
+                'meta_data'    => $meta_data,
             ];
         }, $comments);
 
-        return rest_ensure_response($formatted_comments);
+        // 📦 Return with one profile_picture and all comments
+        return rest_ensure_response([
+            'profile_picture' => $profile_picture,
+            'comments'        => $formatted_comments,
+        ]);
     }
+
 }
