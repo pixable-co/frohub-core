@@ -85,7 +85,7 @@ class GetConversationsComments {
             ];
         }, $comments);
 
-        // 📦 Return with one profile_picture and all comments
+        // 📦 Return with one profile_picture and all comments test
         return rest_ensure_response([
             'profile_picture' => $profile_picture,
             'comments'        => $formatted_comments,
