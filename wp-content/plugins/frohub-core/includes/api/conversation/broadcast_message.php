@@ -52,10 +52,10 @@ class BroadcastMessage {
         $conversations   = $request->get_param('conversations'); // Array of post IDs
         $message         = sanitize_textarea_field($request->get_param('message')); // Message content
         $partner_post_id = sanitize_text_field($request->get_param('partner_post_id')); // Partner post ID
-        $user_email      = sanitize_email($request->get_param('user_email')); // User email
+        $partner_email      = sanitize_email($request->get_param('partner_email')); // User email
 
         // Validate input
-        if (empty($conversations) || !is_array($conversations) || empty($message) || empty($user_email) || empty($partner_post_id)) {
+        if (empty($conversations) || !is_array($conversations) || empty($message) || empty($partner_email) || empty($partner_post_id)) {
             return new \WP_REST_Response(['success' => false, 'message' => 'Invalid input'], 400);
         }
 
@@ -76,7 +76,7 @@ class BroadcastMessage {
             $comment_data = [
                 'comment_post_ID'      => $conversation_id,
                 'comment_content'      => $message,
-                'comment_author_email' => $user_email,
+                'comment_author_email' => $partner_email,
                 'comment_author'       => $author_name, // Use Partner Post Title as author name
                 'comment_approved'     => 1, // Auto-approve comment
             ];
