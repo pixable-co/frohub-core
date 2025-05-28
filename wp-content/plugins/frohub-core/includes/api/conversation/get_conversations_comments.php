@@ -41,59 +41,42 @@ class GetConversationsComments {
      * @return \WP_REST_Response|\WP_Error
      */
     public function get_conversation_comments(\WP_REST_Request $request) {
-    $post_id = $request->get_param('conversation_post_id');
+        $post_id = $request->get_param('conversation_post_id');
 
-    // Validate the conversation post
-    $post = get_post($post_id);
-    if (!$post || $post->post_type !== 'conversation') {
-        return rest_ensure_response([
-            'error'   => true,
-            'message' => __('Invalid conversation post ID.', 'textdomain')
-        ], 404);
-    }
+        // Validate the conversation post
+        $post = get_post($post_id);
+        if (!$post || $post->post_type !== 'conversation') {
+            return rest_ensure_response([
+                'error'   => true,
+                'message' => __('Invalid conversation post ID.', 'textdomain')
+            ], 404);
+        }
 
-    // Fetch the latest approved comment
-    $comments = get_comments([
-        'post_id' => $post_id,
-        'status'  => 'approve',
-        'number'  => 1,
-        'orderby' => 'comment_date',
-        'order'   => 'DESC',
-    ]);
-
-    if (empty($comments)) {
-        return rest_ensure_response([
-            'message' => 'No comments found.',
-            'profile_picture' => null,
+        // Fetch comments for the post
+        $comments = get_comments([
+            'post_id' => $post_id,
+            'status'  => 'approve',
         ]);
+
+        // Format the comments with all metadata
+        $formatted_comments = array_map(function ($comment) {
+            // Fetch all comment metadata
+            $meta_data = get_comment_meta($comment->comment_ID);
+
+            // Fetch the ACF field "partner" associated with the comment
+            $partner = get_field('partner', 'comment_' . $comment->comment_ID);
+            $partner_id = is_object($partner) && isset($partner->ID) ? $partner->ID : null;
+
+            return [
+                'comment_id'   => $comment->comment_ID,
+                'author'       => $comment->comment_author,
+                'content'      => $comment->comment_content,
+                'date'         => $comment->comment_date,
+                'author_email' => $comment->comment_author_email,
+                'meta_data'    => $meta_data,   // Include all comment meta
+            ];
+        }, $comments);
+
+        return rest_ensure_response($formatted_comments);
     }
-
-    $comment = $comments[0];
-
-    // 🧠 Try fetching custom avatar for registered users
-    $avatar_url = '';
-    if ($comment->user_id) {
-        // Registered user: check YITH or fallback to Gravatar
-        $yith_avatar_id = get_user_meta($comment->user_id, 'yith-wcmap-avatar', true);
-        if ($yith_avatar_id) {
-            $avatar_url = wp_get_attachment_url($yith_avatar_id);
-        }
-        if (!$avatar_url) {
-            $avatar_url = get_avatar_url($comment->user_id, ['size' => 96]);
-        }
-    } else {
-        // Guest comment: fallback to Gravatar via email
-        $avatar_url = get_avatar_url($comment->comment_author_email, ['size' => 96]);
-    }
-
-    return rest_ensure_response([
-        'comment_id'      => $comment->comment_ID,
-        'author'          => $comment->comment_author,
-        'content'         => $comment->comment_content,
-        'date'            => $comment->comment_date,
-        'author_email'    => $comment->comment_author_email,
-        'profile_picture' => $avatar_url,
-    ]);
-    }
-
 }
