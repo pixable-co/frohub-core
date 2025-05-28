@@ -84,6 +84,8 @@ class BroadcastMessage {
             // Insert comment into the conversation post
             $comment_id = wp_insert_comment($comment_data);
 
+            update_field('partner', $partner_post_id, 'comment_' . $comment_id);
+
             if ($comment_id) {
                 $comments_created[] = $comment_id;
             }
