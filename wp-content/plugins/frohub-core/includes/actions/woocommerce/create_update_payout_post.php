@@ -118,6 +118,9 @@ class CreateUpdatePayoutPost {
             if ($scheduled_date) {
                 update_field($acf_scheduled_date_field, $scheduled_date, $payout_id);
             }
+
+            // Update Order Meta
+            update_field('payout_post', $payout_id, $order_id);
         }
     }
 }
