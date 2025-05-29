@@ -119,7 +119,43 @@ class CreateUpdatePayoutPost {
                 update_field($acf_scheduled_date_field, $scheduled_date, $payout_id);
             }
 
-            acf_save_post($payout_id);
+            // --- Send payout payload to internal booking REST endpoint ---
+            $partner = is_object($partner_name) ? [
+                'ID'    => $partner_name->ID,
+                'title' => get_the_title($partner_name->ID),
+            ] : null;
+
+            $payload = [
+                'payout_id'         => $payout_id,
+                'payout_title'      => get_the_title($payout_id),
+                'payout_status'     => 'Draft',
+                'payout_date'       => get_field('payout_date', $payout_id),
+                'scheduled_date'    => $scheduled_date,
+                'appointment'       => $appointment_datetime,
+                'payout_amount'     => $payout_amount,
+                'deposit'           => $deposit_total,
+                'frohub_commission' => $frohub_commission,
+                'stripe_fee'        => $stripe_fee,
+                'stripe_payment_id' => get_field('stripe_payment_id', $payout_id),
+                'partner'           => $partner,
+                'order_id'          => $order_id,
+            ];
+
+            $response = wp_remote_post(rest_url('frohub/v1/update-booking-payout-data'), [
+                'method'  => 'POST',
+                'headers' => ['Content-Type' => 'application/json'],
+                'body'    => wp_json_encode([
+                    'order_id' => $order_id,
+                    'payout'   => $payload,
+                ]),
+            ]);
+
+            if (is_wp_error($response)) {
+                error_log("❌ Failed to send payout #{$payout_id} to /update-booking-payout-data: " . $response->get_error_message());
+            } else {
+                error_log("✅ Payout #{$payout_id} sent successfully to booking endpoint for order #{$order_id}.");
+            }
+
 
         }
     }
