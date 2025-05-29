@@ -1,13 +1,16 @@
 <?php
+
 namespace FECore;
 
-if ( ! defined( 'ABSPATH' ) ) {
+if (! defined('ABSPATH')) {
     exit;
 }
 
-class Helper {
+class Helper
+{
 
-    public static function get_orders_by_product_id_and_date_range($product_id, $start_date, $end_date) {
+    public static function get_orders_by_product_id_and_date_range($product_id, $start_date, $end_date)
+    {
         global $wpdb;
 
         if (!$product_id || !$start_date || !$end_date) {
@@ -56,16 +59,17 @@ class Helper {
         return $orders;
     }
 
-        public static function get_orders_by_product_id_and_date($product_id, $date) {
-            global $wpdb;
+    public static function get_orders_by_product_id_and_date($product_id, $date)
+    {
+        global $wpdb;
 
-            if (!$product_id || !$date) {
-                return [];
-            }
+        if (!$product_id || !$date) {
+            return [];
+        }
 
-            $formatted_date = date('d M Y', strtotime($date));
+        $formatted_date = date('d M Y', strtotime($date));
 
-            $query = $wpdb->prepare("
+        $query = $wpdb->prepare("
                 SELECT
                     p.ID as order_id,
                     p.post_status,
@@ -86,51 +90,52 @@ class Helper {
                 AND product_meta.meta_value = %d
             ", "%$formatted_date%", $product_id); // ✅ This now correctly matches the stored date
 
-            $results = $wpdb->get_results($query);
+        $results = $wpdb->get_results($query);
 
-            if (empty($results)) {
-                return [];
-            }
-
-            $orders = [];
-
-            foreach ($results as $result) {
-                $order = wc_get_order($result->order_id);
-
-                if ($order) {
-                    $selected_time = self::convert_to_selected_time($result->start_date_time, $result->end_date_time);
-                    $orders[] = [
-                        'order_id'        => $result->order_id,
-                        'order_status'    => $order->get_status(),
-                        'order_total'     => $order->get_total(),
-                        'order_date'      => $order->get_date_created()->format('Y-m-d H:i:s'),
-                        'customer_email'  => $order->get_billing_email(),
-                        'selected_time'   => $selected_time,
-                        'start_date_time' => $result->start_date_time
-                    ];
-                }
-            }
-
-            return $orders;
+        if (empty($results)) {
+            return [];
         }
 
-        public static function get_next_upcoming_order_by_partner($partner_id) {
-            global $wpdb;
+        $orders = [];
 
-            // If partner_id is not provided directly, try to get it from ACF
-            if (!$partner_id) {
-                $partner_id = get_field('partner_id'); // Get partner ID from ACF
+        foreach ($results as $result) {
+            $order = wc_get_order($result->order_id);
 
-                // If still no partner ID, return null
-                if (!$partner_id) {
-                    return null;
-                }
+            if ($order) {
+                $selected_time = self::convert_to_selected_time($result->start_date_time, $result->end_date_time);
+                $orders[] = [
+                    'order_id'        => $result->order_id,
+                    'order_status'    => $order->get_status(),
+                    'order_total'     => $order->get_total(),
+                    'order_date'      => $order->get_date_created()->format('Y-m-d H:i:s'),
+                    'customer_email'  => $order->get_billing_email(),
+                    'selected_time'   => $selected_time,
+                    'start_date_time' => $result->start_date_time
+                ];
             }
+        }
 
-            // Get the current date and time in a matching format
-            $current_datetime = date('Y-m-d H:i:s');
+        return $orders;
+    }
 
-            $query = $wpdb->prepare("
+    public static function get_next_upcoming_order_by_partner($partner_id)
+    {
+        global $wpdb;
+
+        // If partner_id is not provided directly, try to get it from ACF
+        if (!$partner_id) {
+            $partner_id = get_field('partner_id'); // Get partner ID from ACF
+
+            // If still no partner ID, return null
+            if (!$partner_id) {
+                return null;
+            }
+        }
+
+        // Get the current date and time in a matching format
+        $current_datetime = date('Y-m-d H:i:s');
+
+        $query = $wpdb->prepare("
                 SELECT
                     p.ID as order_id,
                     p.post_status,
@@ -154,47 +159,114 @@ class Helper {
                 LIMIT 1
             ", $partner_id, $current_datetime);
 
-            $result = $wpdb->get_row($query);
+        $result = $wpdb->get_row($query);
 
-            if (!$result) {
-                return null;
-            }
-
-            $order = wc_get_order($result->order_id);
-
-            if (!$order) {
-                return null;
-            }
-
-            $conversationId = get_field('conversation', $result->order_id);
-            $partnerPlatformClientId = get_field('partner_client_post_id',$conversationId);
-
-            // Parse the start date time to get separate date and time
-            $start_datetime_parts = explode(', ', $result->start_date_time);
-            $start_time = $start_datetime_parts[0] ?? '';
-            $start_date = $start_datetime_parts[1] ?? '';
-
-            return [
-                'order_id'        => $result->order_id,
-                'start_date'      => $start_date,
-                'start_time'      => $start_time,
-                'service_name'    => $result->service_name,
-                'client_name'     => $order->get_billing_first_name() . ' ' . $order->get_billing_last_name(),
-                'client_phone'    => $order->get_billing_phone(),
-                'client_email'    => $order->get_billing_email(),
-                'partner_platform_client_id' => $partnerPlatformClientId,
-            ];
+        if (!$result) {
+            return null;
         }
 
-        private static function convert_to_selected_time($start_date_time, $end_date_time) {
-            if (!$start_date_time || !$end_date_time) {
-                return null;
-            }
+        $order = wc_get_order($result->order_id);
 
-            // Convert "12:00, 07 Mar 2025" → "12:00"
-            $start_time = date('H:i', strtotime($start_date_time));
-            $end_time = date('H:i', strtotime($end_date_time));
-
-            return "$start_time - $end_time";
+        if (!$order) {
+            return null;
         }
+
+        $conversationId = get_field('conversation', $result->order_id);
+        $partnerPlatformClientId = get_field('partner_client_post_id', $conversationId);
+
+        // Parse the start date time to get separate date and time
+        $start_datetime_parts = explode(', ', $result->start_date_time);
+        $start_time = $start_datetime_parts[0] ?? '';
+        $start_date = $start_datetime_parts[1] ?? '';
+
+        return [
+            'order_id'        => $result->order_id,
+            'start_date'      => $start_date,
+            'start_time'      => $start_time,
+            'service_name'    => $result->service_name,
+            'client_name'     => $order->get_billing_first_name() . ' ' . $order->get_billing_last_name(),
+            'client_phone'    => $order->get_billing_phone(),
+            'client_email'    => $order->get_billing_email(),
+            'partner_platform_client_id' => $partnerPlatformClientId,
+        ];
+    }
+
+    private static function convert_to_selected_time($start_date_time, $end_date_time)
+    {
+        if (!$start_date_time || !$end_date_time) {
+            return null;
+        }
+
+        // Convert "12:00, 07 Mar 2025" → "12:00"
+        $start_time = date('H:i', strtotime($start_date_time));
+        $end_time = date('H:i', strtotime($end_date_time));
+
+        return "$start_time - $end_time";
+    }
+
+    public static function send_payout_to_booking_endpoint($payout_id)
+    {
+        if (get_post_type($payout_id) !== 'payout') {
+            error_log("❌ Provided post ID $payout_id is not a payout.");
+            return;
+        }
+
+        // Load ACF fields
+        $partner     = get_field('partner_name', $payout_id);
+        $order       = get_field('order', $payout_id);
+        $appointment = get_field('appointment_date_time', $payout_id);
+        $deposit     = get_field('deposit', $payout_id);
+        $commission  = get_field('frohub_commission', $payout_id);
+        $stripe_fee  = get_field('stripe_fee', $payout_id);
+        $payout_amt  = get_field('payout_amount', $payout_id);
+        $scheduled   = get_field('scheduled_date', $payout_id);
+        $payout_date = get_field('payout_date', $payout_id);
+        $status      = get_field('payout_status', $payout_id);
+        $stripe_pid  = get_field('stripe_payment_id', $payout_id);
+
+        $order_id = $order && is_object($order) ? $order->ID : null;
+
+        if (!$order_id) {
+            error_log("❌ Payout #$payout_id missing or invalid linked order.");
+            return;
+        }
+
+        $partner_data = $partner && is_object($partner) ? [
+            'ID'    => $partner->ID,
+            'title' => get_the_title($partner->ID),
+        ] : null;
+
+        // Build payload
+        $payout_payload = [
+            'payout_id'         => $payout_id,
+            'payout_title'      => get_the_title($payout_id),
+            'payout_status'     => $status,
+            'payout_date'       => $payout_date,
+            'scheduled_date'    => $scheduled,
+            'appointment'       => $appointment,
+            'payout_amount'     => $payout_amt,
+            'deposit'           => $deposit,
+            'frohub_commission' => $commission,
+            'stripe_fee'        => $stripe_fee,
+            'stripe_payment_id' => $stripe_pid,
+            'partner'           => $partner_data,
+            'order_id'          => $order_id,
+        ];
+
+        // Send to internal endpoint
+        $response = wp_remote_post(rest_url('frohub/v1/update-booking-payout-data'), [
+            'method'  => 'POST',
+            'headers' => ['Content-Type' => 'application/json'],
+            'body'    => wp_json_encode([
+                'order_id' => $order_id,
+                'payout'   => $payout_payload,
+            ]),
+        ]);
+
+        if (is_wp_error($response)) {
+            error_log("❌ Failed to send payout #{$payout_id} to booking sync endpoint: " . $response->get_error_message());
+        } else {
+            error_log("✅ Sent payout #{$payout_id} to booking sync endpoint for order #{$order_id}.");
+        }
+    }
 }
