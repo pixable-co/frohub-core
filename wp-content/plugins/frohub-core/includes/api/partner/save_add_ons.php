@@ -82,9 +82,9 @@ class SaveAddOns {
         }
 
         // Ensure valid updates
-        if (empty($updated_add_ons)) {
-            return new \WP_REST_Response(['message' => 'No valid add-ons to update.', 'success' => false], 400);
-        }
+//         if (empty($updated_add_ons)) {
+//             return new \WP_REST_Response(['message' => 'No valid add-ons to update.', 'success' => false], 400);
+//         }
 
         // Update ACF field
         update_field('add_ons', $updated_add_ons, $partner_id);
