@@ -80,6 +80,10 @@ class ReturnOrderDetails {
             if (!$order) {
                 continue;
             }
+
+            // Get Conversation Post
+            $conversation_post = get_field('conversation', $order->get_id());
+            $partner_conversation_id =  get_field("partner_client_post_id",$conversation_post->ID);
     
             $order_data = [
                 'id'         => $order->get_id(),
@@ -92,6 +96,7 @@ class ReturnOrderDetails {
                 'billing'    => $order->get_address('billing'),
                 'shipping'   => $order->get_address('shipping'),
                 'line_items' => [],
+                'partner_conversation_id' => $partner_conversation_id,
             ];
     
             // Loop through order items and retrieve stored meta
