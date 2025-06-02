@@ -61,8 +61,9 @@ class GetMyProducts {
         $product_data = [];
 
         // Loop through the posts and get product details
-        foreach ($query->posts as $post_id) {
-            // Fetch ACF and other product details
+        foreach ($query->posts as $post) {
+            $post_id = $post->ID;
+
             $product_data[] = [
                 'ID' => $post_id,
                 'Sizes' => get_field('sizes', $post_id),
