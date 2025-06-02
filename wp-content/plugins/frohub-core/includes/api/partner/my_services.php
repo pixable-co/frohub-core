@@ -60,7 +60,7 @@ public function handle_my_services(\WP_REST_Request $request) {
     // Query WooCommerce variable products linked to this partner
     $query_args = [
         'post_type'      => 'product',
-        'post_status'    => 'publish',
+        'post_status'    => ['publish', 'draft'],
         'posts_per_page' => -1,
         'meta_query'     => [
             [

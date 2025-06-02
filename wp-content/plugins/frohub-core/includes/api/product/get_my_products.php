@@ -19,9 +19,7 @@ class GetMyProducts {
         register_rest_route('frohub/v1', '/get-my-products', array(
             'methods'             => 'POST',
             'callback'            => array($this, 'fetch_product_data'),
-            'permission_callback' => function() {
-                return current_user_can('edit_posts');
-            },
+            'permission_callback' => '__return_true',
             'args' => [
                 'partner_id' => [
                     'required' => true,
@@ -53,8 +51,7 @@ class GetMyProducts {
                 [
                     'key'     => 'partner_id',
                     'value'   => $partner_id_requested,
-                    'compare' => '=',
-                    'type'    => 'NUMERIC'  // <---- ADD THIS LINE
+                    'compare' => '='
                 ]
             ]
         ];
@@ -64,9 +61,8 @@ class GetMyProducts {
         $product_data = [];
 
         // Loop through the posts and get product details
-        foreach ($query->posts as $post) {
-            $post_id = $post->ID;
-
+        foreach ($query->posts as $post_id) {
+            // Fetch ACF and other product details
             $product_data[] = [
                 'ID' => $post_id,
                 'Sizes' => get_field('sizes', $post_id),
