@@ -39,9 +39,9 @@ class PartnerConversations {
                     'posts_per_page' => -1,
                     'meta_query'     => array(
                         array(
-                            'key'     => 'partner_client_post_id',
-                            'value'   => $partner_id,
-                            'compare' => '='
+                        'key'     => 'partner', // Query the Post Object field
+                        'value'   => $partner_id, // The partner post ID you're passing
+                        'compare' => '='
                         )
                     ),
                     'post_status'    => 'publish'
