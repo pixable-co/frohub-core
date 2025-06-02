@@ -31,11 +31,13 @@ class MyServices {
         ]);
     }
 
- * Handles retrieving services linked to a partner.
- *
- * @param \WP_REST_Request $request
- * @return \WP_REST_Response
- */
+
+    /**
+     * Handles retrieving services linked to a partner.
+     *
+     * @param \WP_REST_Request $request
+     * @return \WP_REST_Response
+     */
 public function handle_my_services(\WP_REST_Request $request) {
     $user_id = get_current_user_id();
 
@@ -50,13 +52,13 @@ public function handle_my_services(\WP_REST_Request $request) {
     $partner_id = intval($request->get_param('partner_id'));
 
     // Query WooCommerce variable products linked to this partner
-    $query_args = [
+        $query_args = [
         'post_type'      => 'product',
         'post_status'    => ['publish', 'draft'],
         'posts_per_page' => -1,
         'meta_query'     => [
             [
-                'key'     => 'partner_name', // ACF field storing the post object
+                'key'     => 'partner_name',
                 'value'   => $partner_id,
                 'compare' => '='
             ]
@@ -65,10 +67,12 @@ public function handle_my_services(\WP_REST_Request $request) {
             [
                 'taxonomy' => 'product_type',
                 'field'    => 'slug',
-                'terms'    => 'variable' // Ensure only variable products are returned
+                'terms'    => 'variable'
             ]
-        ]
+        ],
+        'suppress_filters' => true // 💥 Important to allow drafts to be queried
     ];
+
 
     $products_query = new \WP_Query($query_args);
     $products_data = [];
@@ -77,7 +81,8 @@ public function handle_my_services(\WP_REST_Request $request) {
         while ($products_query->have_posts()) {
             $products_query->the_post();
             $product_id = get_the_ID();
-            $product = wc_get_product($product_id);
+            $product = new \WC_Product_Variable($product_id);
+
 
             // Product Name
             $product_name = get_the_title();
