@@ -53,7 +53,8 @@ class GetMyProducts {
                 [
                     'key'     => 'partner_id',
                     'value'   => $partner_id_requested,
-                    'compare' => '='
+                    'compare' => '=',
+                    'type'    => 'NUMERIC'  // <---- ADD THIS LINE
                 ]
             ]
         ];
