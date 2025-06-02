@@ -19,7 +19,9 @@ class GetMyProducts {
         register_rest_route('frohub/v1', '/get-my-products', array(
             'methods'             => 'POST',
             'callback'            => array($this, 'fetch_product_data'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => function() {
+                return current_user_can('edit_posts');
+            },
             'args' => [
                 'partner_id' => [
                     'required' => true,
