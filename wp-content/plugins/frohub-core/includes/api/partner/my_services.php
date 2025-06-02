@@ -31,14 +31,6 @@ class MyServices {
         ]);
     }
 
-
-    /**
-     * Handles retrieving services linked to a partner.
-     *
-     * @param \WP_REST_Request $request
-     * @return \WP_REST_Response
-     */
-    /**
  * Handles retrieving services linked to a partner.
  *
  * @param \WP_REST_Request $request
