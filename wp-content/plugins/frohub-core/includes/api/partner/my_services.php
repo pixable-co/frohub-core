@@ -116,39 +116,47 @@ public function handle_my_services(\WP_REST_Request $request) {
 
             // Retrieve variations (Only return if variation is published)
             $variations = [];
-            if ($product->is_type('variable')) {
-                $variation_ids = $product->get_children();
 
-                foreach ($variation_ids as $variation_id) {
-                    $variation = wc_get_product($variation_id);
-                    if ($variation && $variation->get_status() === 'publish') { // Only return published variations
-                        // Get attributes including label values
-                        $attributes = $variation->get_attributes();
-                        $service_type_label = '';
+            $product = new \WC_Product_Variable($product_id);
 
-                        if (isset($attributes['pa_service-type'])) {
-                            $service_type_slug = $attributes['pa_service-type'];
+            if ($product && $product->get_status() === 'draft' || $product->get_status() === 'publish') {
+                // Now you're guaranteed the product is correct
+                if ($product->is_type('variable')) {
+                    $variation_ids = $product->get_children();
 
-                            // Convert slug to human-readable label
-                            $service_type_label = wc_attribute_label('pa_service-type');
-                            $service_type_terms = get_terms([
-                                'taxonomy'   => 'pa_service-type',
-                                'slug'       => $service_type_slug,
-                                'hide_empty' => false,
-                            ]);
+                    foreach ($variation_ids as $variation_id) {
+                        $variation = wc_get_product($variation_id);
+                        if ($variation && $variation->get_status() === 'publish') { // Only return published variations
+                            // Get attributes including label values
+                            $attributes = $variation->get_attributes();
+                            $service_type_label = '';
 
-                            if (!is_wp_error($service_type_terms) && !empty($service_type_terms)) {
-                                $service_type_label = $service_type_terms[0]->name;
+                            if (isset($attributes['pa_service-type'])) {
+                                $service_type_slug = $attributes['pa_service-type'];
+
+                                // Convert slug to human-readable label
+                                $service_type_label = wc_attribute_label('pa_service-type');
+                                $service_type_terms = get_terms([
+                                    'taxonomy'   => 'pa_service-type',
+                                    'slug'       => $service_type_slug,
+                                    'hide_empty' => false,
+                                ]);
+
+                                if (!is_wp_error($service_type_terms) && !empty($service_type_terms)) {
+                                    $service_type_label = $service_type_terms[0]->name;
+                                }
                             }
-                        }
 
-                        $variations[] = [
-                            'variation_id'      => $variation_id,
-                            'variation_option'  => $service_type_label
-                        ];
+                            $variations[] = [
+                                'variation_id'      => $variation_id,
+                                'variation_option'  => $service_type_label
+                            ];
+                        }
                     }
                 }
             }
+
+
 
             $products_data[] = [
                 'product_id'              => $product_id,
