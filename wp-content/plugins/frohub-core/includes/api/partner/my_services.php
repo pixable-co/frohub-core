@@ -20,12 +20,9 @@ class MyServices {
             'methods'  => 'POST',
             'callback' => [$this, 'handle_my_services'],
             'permission_callback' => '__return_true', // ⚠️ Be careful, this makes it public!
-            'args'     => [
+                        'args'     => [
                 'partner_id' => [
-                    'required' => true,
-                    'validate_callback' => function ($param) {
-                        return is_numeric($param) && intval($param) > 0;
-                    }
+                    'required' => false // Make it optional so route always matches!
                 ],
             ],
         ]);
@@ -38,24 +35,19 @@ class MyServices {
      * @param \WP_REST_Request $request
      * @return \WP_REST_Response
      */
-    /**
- * Handles retrieving services linked to a partner.
- *
- * @param \WP_REST_Request $request
- * @return \WP_REST_Response
- */
 public function handle_my_services(\WP_REST_Request $request) {
     $user_id = get_current_user_id();
 
-    // if (!$user_id) {
-    //     return new \WP_REST_Response([
-    //         'success' => false,
-    //         'message' => 'Authentication failed.'
-    //     ], 401);
-    // }
-
     // Retrieve partner_id from request
     $partner_id = intval($request->get_param('partner_id'));
+
+    if (!$partner_id) {
+        return new \WP_REST_Response([
+            'success' => false,
+            'message' => 'Missing or invalid partner_id.'
+        ], 400);
+    }
+
 
     // Query WooCommerce variable products linked to this partner
     $query_args = [
