@@ -1,6 +1,8 @@
 <?php
 namespace FECore;
 
+use FECore\PartnerConversations;
+
 use FECore\PartnersMyPendingOrdersCount;
 
 use FECore\DeleteProduct;
@@ -131,5 +133,6 @@ class API {
 		PartnerFaqs::init();
 		UpdateProfileAutoMessage::init();
 		SetStripeFailedPayout::init();
+		PartnerConversations::init();
 	}
 }

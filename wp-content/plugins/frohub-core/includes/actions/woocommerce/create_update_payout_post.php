@@ -118,6 +118,8 @@ class CreateUpdatePayoutPost {
             if ($scheduled_date) {
                 update_field($acf_scheduled_date_field, $scheduled_date, $payout_id);
             }
+
+            send_payout_to_booking_endpoint($payout_id);
         }
     }
 }

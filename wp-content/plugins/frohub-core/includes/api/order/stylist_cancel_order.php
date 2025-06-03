@@ -64,7 +64,7 @@ class StylistCancelOrder {
     
         // Cancel order and update ACF field
         $order->update_status('cancelled', 'Order declined via API by Stylist.');
-        update_field('cancellation_status', 'Declined by Stylist', $order_id);
+        update_field('cancellation_status', 'Cancelled by Stylist', $order_id);
         $order->save();
     
         // Initialize variables

@@ -80,10 +80,15 @@ class ReturnOrderDetails {
             if (!$order) {
                 continue;
             }
+
+            // Get Conversation Post
+            $conversation_post = get_field('conversation', $order->get_id());
+            $partner_conversation_id =  get_field("partner_client_post_id",$conversation_post->ID);
     
             $order_data = [
                 'id'         => $order->get_id(),
                 'status'     => $order->get_status(),
+                'cancellation_status' => get_field('cancellation_status', $order->get_id()),
                 'total'      => $order->get_total(),
                 'currency'   => $order->get_currency(),
                 'created_at' => $order->get_date_created() ? $order->get_date_created()->date('Y-m-d H:i:s') : '',
@@ -91,6 +96,7 @@ class ReturnOrderDetails {
                 'billing'    => $order->get_address('billing'),
                 'shipping'   => $order->get_address('shipping'),
                 'line_items' => [],
+                'partner_conversation_id' => $partner_conversation_id,
             ];
     
             // Loop through order items and retrieve stored meta

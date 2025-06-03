@@ -8,7 +8,6 @@ if (! defined('ABSPATH')) {
 
 class CreateReviewPost
 {
-
     public static function init()
     {
         $self = new self();
@@ -31,7 +30,7 @@ class CreateReviewPost
         $partner_id = get_field('partner_id', $product_id);
 
         if ($post_id) {
-            update_field('user',get_current_user_id(), $post_id);
+            update_field('user', get_current_user_id(), $post_id);
             update_field('overall_rating', rgar($entry, '7'), $post_id);
             update_field('reliability', rgar($entry, '14'), $post_id);
             update_field('skill', rgar($entry, '15'), $post_id);
@@ -40,8 +39,7 @@ class CreateReviewPost
             update_field('partner', $partner_id, $post_id);
             update_field('order', $order_id, $post_id);
 
-            // Update order with review post
-            update_field('review', $post_id, $order_id);
+            update_field('review', $post_id, $order_id); // Link review to order
 
             $uploaded_files = json_decode(rgar($entry, '21'), true);
             $attachment_ids = [];
@@ -51,9 +49,7 @@ class CreateReviewPost
                     $upload_dir = wp_upload_dir();
                     $file_path = str_replace($upload_dir['baseurl'], $upload_dir['basedir'], $file_url);
 
-                    // Check if file exists
                     if (file_exists($file_path)) {
-                        // Prepare file for attachment
                         $file_type = wp_check_filetype(basename($file_path), null);
                         $attachment = [
                             'post_mime_type' => $file_type['type'],
@@ -62,10 +58,8 @@ class CreateReviewPost
                             'post_status'    => 'inherit'
                         ];
 
-                        // Insert attachment
                         $attach_id = wp_insert_attachment($attachment, $file_path, $post_id);
 
-                        // Generate attachment metadata
                         require_once(ABSPATH . 'wp-admin/includes/image.php');
                         $attach_data = wp_generate_attachment_metadata($attach_id, $file_path);
                         wp_update_attachment_metadata($attach_id, $attach_data);
@@ -75,10 +69,12 @@ class CreateReviewPost
                 }
             }
 
-            // Update ACF gallery field
             if (!empty($attachment_ids)) {
                 update_field('review_gallery', $attachment_ids, $post_id);
             }
+
+            // ✅ Send review to webhook.site
+            send_review_to_webhook($post_id);
         }
     }
 }

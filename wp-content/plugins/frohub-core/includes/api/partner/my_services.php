@@ -50,13 +50,13 @@ public function handle_my_services(\WP_REST_Request $request) {
 
 
     // Query WooCommerce variable products linked to this partner
-    $query_args = [
+        $query_args = [
         'post_type'      => 'product',
-        'post_status'    => 'publish',
+        'post_status'    => ['publish', 'draft'],
         'posts_per_page' => -1,
         'meta_query'     => [
             [
-                'key'     => 'partner_name', // ACF field storing the post object
+                'key'     => 'partner_name',
                 'value'   => $partner_id,
                 'compare' => '='
             ]
@@ -65,10 +65,12 @@ public function handle_my_services(\WP_REST_Request $request) {
             [
                 'taxonomy' => 'product_type',
                 'field'    => 'slug',
-                'terms'    => 'variable' // Ensure only variable products are returned
+                'terms'    => 'variable'
             ]
-        ]
+        ],
+        'suppress_filters' => true // 💥 Important to allow drafts to be queried
     ];
+
 
     $products_query = new \WP_Query($query_args);
     $products_data = [];
@@ -77,7 +79,8 @@ public function handle_my_services(\WP_REST_Request $request) {
         while ($products_query->have_posts()) {
             $products_query->the_post();
             $product_id = get_the_ID();
-            $product = wc_get_product($product_id);
+            $product = new \WC_Product_Variable($product_id);
+
 
             // Product Name
             $product_name = get_the_title();
@@ -111,39 +114,47 @@ public function handle_my_services(\WP_REST_Request $request) {
 
             // Retrieve variations (Only return if variation is published)
             $variations = [];
-            if ($product->is_type('variable')) {
-                $variation_ids = $product->get_children();
 
-                foreach ($variation_ids as $variation_id) {
-                    $variation = wc_get_product($variation_id);
-                    if ($variation && $variation->get_status() === 'publish') { // Only return published variations
-                        // Get attributes including label values
-                        $attributes = $variation->get_attributes();
-                        $service_type_label = '';
+            $product = new \WC_Product_Variable($product_id);
 
-                        if (isset($attributes['pa_service-type'])) {
-                            $service_type_slug = $attributes['pa_service-type'];
+            if ($product && $product->get_status() === 'draft' || $product->get_status() === 'publish') {
+                // Now you're guaranteed the product is correct
+                if ($product->is_type('variable')) {
+                    $variation_ids = $product->get_children();
 
-                            // Convert slug to human-readable label
-                            $service_type_label = wc_attribute_label('pa_service-type');
-                            $service_type_terms = get_terms([
-                                'taxonomy'   => 'pa_service-type',
-                                'slug'       => $service_type_slug,
-                                'hide_empty' => false,
-                            ]);
+                    foreach ($variation_ids as $variation_id) {
+                        $variation = wc_get_product($variation_id);
+                        if ($variation && $variation->get_status() === 'publish') { // Only return published variations
+                            // Get attributes including label values
+                            $attributes = $variation->get_attributes();
+                            $service_type_label = '';
 
-                            if (!is_wp_error($service_type_terms) && !empty($service_type_terms)) {
-                                $service_type_label = $service_type_terms[0]->name;
+                            if (isset($attributes['pa_service-type'])) {
+                                $service_type_slug = $attributes['pa_service-type'];
+
+                                // Convert slug to human-readable label
+                                $service_type_label = wc_attribute_label('pa_service-type');
+                                $service_type_terms = get_terms([
+                                    'taxonomy'   => 'pa_service-type',
+                                    'slug'       => $service_type_slug,
+                                    'hide_empty' => false,
+                                ]);
+
+                                if (!is_wp_error($service_type_terms) && !empty($service_type_terms)) {
+                                    $service_type_label = $service_type_terms[0]->name;
+                                }
                             }
-                        }
 
-                        $variations[] = [
-                            'variation_id'      => $variation_id,
-                            'variation_option'  => $service_type_label
-                        ];
+                            $variations[] = [
+                                'variation_id'      => $variation_id,
+                                'variation_option'  => $service_type_label
+                            ];
+                        }
                     }
                 }
             }
+
+
 
             $products_data[] = [
                 'product_id'              => $product_id,
