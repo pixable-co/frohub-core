@@ -40,7 +40,7 @@ class CreateComment {
          $author_name = isset($parameters['author_name']) ? sanitize_text_field($parameters['author_name']) : '';
          $email       = isset($parameters['email']) ? sanitize_email($parameters['email']) : '';
          $image_url   = isset($parameters['image_url']) ? esc_url($parameters['image_url']) : '';
-         $meta_data   = isset($parameters['meta_data']) ? $parameters['meta_data'] : array();
+         $sent_from = isset($parameters['sent_from']) ? sanitize_text_field($parameters['sent_from']) : '';
 
          $user_id = get_current_user_id();
 
@@ -124,29 +124,6 @@ class CreateComment {
              update_comment_meta($comment_id, 'partner', $partner_id);
          }
 
-         // Store meta data as comment meta
-         if (!empty($meta_data) && is_array($meta_data)) {
-             foreach ($meta_data as $meta_key => $meta_value) {
-                 // Sanitize meta key
-                 $sanitized_key = sanitize_key($meta_key);
-
-                 // Handle different value types
-                 if (is_array($meta_value)) {
-                     // For arrays (like your partner array), store as-is
-                     $sanitized_value = array_map('sanitize_text_field', $meta_value);
-                 } else {
-                     // For single values, sanitize as text
-                     $sanitized_value = sanitize_text_field($meta_value);
-                 }
-
-                 // Store each meta data item
-                 update_comment_meta($comment_id, $sanitized_key, $sanitized_value);
-             }
-
-             // Store the entire meta data array as a single meta field for backup/reference
-             update_comment_meta($comment_id, 'comment_meta_data', $meta_data);
-         }
-
          // Set conversation as read by customer to false
          update_post_meta($post_id, 'read_by_customer', 0);
 
@@ -170,7 +147,7 @@ class CreateComment {
              'content'     => $comment_obj->comment_content,
              'date'        => $comment_obj->comment_date,
              'image_url'   => $image_url,
-             'meta_data'   => !empty($stored_meta_data) ? $stored_meta_data : [],
+             'sent_from'   => $sent_from,
              'partner_id'  => !empty($stored_partner_id) ? $stored_partner_id : ($partner_id ? $partner_id : null)
          ], 200);
      }
