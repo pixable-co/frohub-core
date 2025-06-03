@@ -32,50 +32,69 @@ class CreateComment {
         ));
     }
 
-    public function upload_comment_image() {
-        check_ajax_referer('fpserver_nonce');
-        if (!is_user_logged_in()) {
-            wp_send_json_error(['message' => 'User not logged in.']);
-        }
+    public function frohub_upload_comment_image(\WP_REST_Request $request) {
         if (empty($_FILES['file'])) {
-            wp_send_json_error(['message' => 'No file uploaded.']);
+            return new \WP_REST_Response(['error' => 'No file uploaded.'], 400);
         }
 
         $file = $_FILES['file'];
-        $basicAuth = get_field('frohub_ecommerce_basic_authentication', 'option');
+        require_once ABSPATH . 'wp-admin/includes/file.php';
+        require_once ABSPATH . 'wp-admin/includes/media.php';
+        require_once ABSPATH . 'wp-admin/includes/image.php';
 
-        $curl = curl_init();
-        $cfile = curl_file_create($file['tmp_name'], $file['type'], $file['name']);
-
-        $data = ['file' => $cfile];
-
-        curl_setopt_array($curl, [
-            CURLOPT_URL => 'https://frohubecomm.mystagingwebsite.com/wp-json/frohub/v1/upload-comment-image',
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_POST => true,
-            CURLOPT_POSTFIELDS => $data,
-            CURLOPT_HTTPHEADER => [
-                'Authorization: ' . $basicAuth
-            ],
-        ]);
-
-        $response = curl_exec($curl);
-        $error = curl_error($curl);
-        curl_close($curl);
-
-        if ($error) {
-            wp_send_json_error(['message' => 'cURL error: ' . $error]);
+        $attachment_id = media_handle_upload('file', 0);
+        if (is_wp_error($attachment_id)) {
+            return new \WP_REST_Response(['error' => $attachment_id->get_error_message()], 500);
         }
 
-        $response_body = json_decode($response, true);
-        if (!empty($response_body['success']) && !empty($response_body['url'])) {
-            wp_send_json_success(['url' => $response_body['url']]);
-        } else {
-            wp_send_json_error(['message' => $response_body['error'] ?? 'Unknown error']);
-        }
-
-        wp_die();
+        $url = wp_get_attachment_url($attachment_id);
+        return new \WP_REST_Response(['success' => true, 'url' => $url], 200);
     }
+
+//     public function upload_comment_image() {
+//         check_ajax_referer('fpserver_nonce');
+//         if (!is_user_logged_in()) {
+//             wp_send_json_error(['message' => 'User not logged in.']);
+//         }
+//         if (empty($_FILES['file'])) {
+//             wp_send_json_error(['message' => 'No file uploaded.']);
+//         }
+//
+//         $file = $_FILES['file'];
+//         $basicAuth = get_field('frohub_ecommerce_basic_authentication', 'option');
+//
+//         $curl = curl_init();
+//         $cfile = curl_file_create($file['tmp_name'], $file['type'], $file['name']);
+//
+//         $data = ['file' => $cfile];
+//
+//         curl_setopt_array($curl, [
+//             CURLOPT_URL => 'https://frohubecomm.mystagingwebsite.com/wp-json/frohub/v1/upload-comment-image',
+//             CURLOPT_RETURNTRANSFER => true,
+//             CURLOPT_POST => true,
+//             CURLOPT_POSTFIELDS => $data,
+//             CURLOPT_HTTPHEADER => [
+//                 'Authorization: ' . $basicAuth
+//             ],
+//         ]);
+//
+//         $response = curl_exec($curl);
+//         $error = curl_error($curl);
+//         curl_close($curl);
+//
+//         if ($error) {
+//             wp_send_json_error(['message' => 'cURL error: ' . $error]);
+//         }
+//
+//         $response_body = json_decode($response, true);
+//         if (!empty($response_body['success']) && !empty($response_body['url'])) {
+//             wp_send_json_success(['url' => $response_body['url']]);
+//         } else {
+//             wp_send_json_error(['message' => $response_body['error'] ?? 'Unknown error']);
+//         }
+//
+//         wp_die();
+//     }
 
     /**
      * Handles the creation of a comment for a conversation post.
