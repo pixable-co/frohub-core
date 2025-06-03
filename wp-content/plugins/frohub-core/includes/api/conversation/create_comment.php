@@ -125,7 +125,7 @@ class CreateComment {
              'content'     => $comment_obj->comment_content,
              'date'        => $comment_obj->comment_date,
              'image_url'   => $image_url,
-             'sent_from'   => !empty($stored_sent_from) ? $stored_sent_from : $sent_from,
+             'sent_from'   => $stored_sent_from ?: $sent_from,
              'partner_id'  => !empty($stored_partner_id) ? $stored_partner_id : ($partner_id ? $partner_id : null)
          ], 200);
      }
