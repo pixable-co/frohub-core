@@ -23,6 +23,32 @@ class CreateComment {
                 return current_user_can('edit_posts');
             },
         ));
+        register_rest_route('frohub/v1', '/upload-comment-image', array(
+            'methods'             => 'POST',
+            'callback'            => array($this, 'frohub_upload_comment_image'),
+            'permission_callback' => function () {
+                return current_user_can('edit_posts');
+            },
+        ));
+    }
+
+    public function frohub_upload_comment_image(\WP_REST_Request $request) {
+            if (empty($_FILES['file'])) {
+                return new WP_REST_Response(['error' => 'No file uploaded.'], 400);
+            }
+
+            $file = $_FILES['file'];
+            require_once ABSPATH . 'wp-admin/includes/file.php';
+            require_once ABSPATH . 'wp-admin/includes/media.php';
+            require_once ABSPATH . 'wp-admin/includes/image.php';
+
+            $attachment_id = media_handle_upload('file', 0);
+            if (is_wp_error($attachment_id)) {
+                return new WP_REST_Response(['error' => $attachment_id->get_error_message()], 500);
+            }
+
+            $url = wp_get_attachment_url($attachment_id);
+            return new WP_REST_Response(['success' => true, 'url' => $url], 200);
     }
 
     /**
