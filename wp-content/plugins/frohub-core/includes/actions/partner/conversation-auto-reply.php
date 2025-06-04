@@ -18,10 +18,8 @@ class ConversationAutoReply {
      * Handle new conversation comment and call internal REST API
      */
     public function handle_new_conversation($comment_id, $comment_approved, $commentdata) {
-        // Only proceed for 'conversation' type comments
-        if (get_comment_type($comment_id) !== 'conversation') {
-            return;
-        }
+        // Log to confirm the hook is firing
+        error_log('Auto-reply triggered for comment ID: ' . $comment_id);
 
         // Optional: Only proceed if comment is approved
         if ($comment_approved !== 1) {
@@ -46,7 +44,7 @@ class ConversationAutoReply {
         // Build the payload to send to your own REST API
         $payload = array(
             'post_id'     => $post_id,
-            'partner_id'  => get_post_meta($post_id, 'partner', true), // Example: assuming partner is stored in post meta
+            'partner_id'  => get_post_meta($post_id, 'partner', true), // assuming partner is stored in post meta
             'comment'     => $comment->comment_content,
             'author_name' => $comment->comment_author,
             'email'       => $comment->comment_email,
@@ -58,15 +56,13 @@ class ConversationAutoReply {
 
         // Make the internal REST API call
         $response = wp_remote_post($api_url, array(
-            'method'      => 'POST',
-            'timeout'     => 10,
-            'headers'     => array(
+            'method'    => 'POST',
+            'timeout'   => 10,
+            'headers'   => array(
                 'Content-Type' => 'application/json',
-                // Auth header if needed
-                // 'Authorization' => 'Bearer ' . maybe_get_token(),
             ),
-            'body'        => json_encode($payload),
-            'sslverify'   => false, // Set to true in production if SSL is available
+            'body'      => json_encode($payload),
+            'sslverify' => false, // Set to true in production if SSL is available
         ));
 
         // Log errors if any

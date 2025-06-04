@@ -32,6 +32,6 @@ class Actions {
 		CreateUpdatePayoutPost::init();
 		CustomOrderStatus::init();
 		CreateConversionProcessPopulate::init();
-// 		ConversationAutoReply::init();
+		ConversationAutoReply::init();
 	}
 }
