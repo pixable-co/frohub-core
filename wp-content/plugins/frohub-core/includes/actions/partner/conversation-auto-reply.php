@@ -2,45 +2,79 @@
 namespace FECore;
 
 if ( ! defined( 'ABSPATH' ) ) {
-    exit;
+    exit; // Exit if accessed directly
 }
 
 class ConversationAutoReply {
 
     public static function init() {
         $self = new self();
-        add_action('wp_insert_comment', [$self, 'maybe_add_auto_reply'], 20, 2);
+
+        // Hook into comment creation
+        add_action('comment_post', array($self, 'handle_new_conversation'), 10, 3);
     }
 
-    public function maybe_add_auto_reply($comment_id, $comment) {
+    /**
+     * Handle new conversation comment and call internal REST API
+     */
+    public function handle_new_conversation($comment_id, $comment_approved, $commentdata) {
+        // Only proceed for 'conversation' type comments
+        if (get_comment_type($comment_id) !== 'conversation') {
+            return;
+        }
+
+        // Optional: Only proceed if comment is approved
+        if ($comment_approved !== 1) {
+            return;
+        }
+
+        // Get full comment object
+        $comment = get_comment($comment_id);
+
+        // Get post ID from comment
         $post_id = $comment->comment_post_ID;
 
-        // Only for conversation post type
+        // Ensure this is a "conversation" post type
         if (get_post_type($post_id) !== 'conversation') {
             return;
         }
 
-        // Prevent auto-reply loop (don't reply to partner messages)
-        $sent_from = get_comment_meta($comment_id, 'sent_from', true);
-        if ($sent_from === 'partner') {
-            return;
-        }
+        // Get user info
+        $user_id = $comment->user_id;
+        $user = get_userdata($user_id);
 
-        // Insert auto-reply comment
-        $auto_reply_id = wp_insert_comment([
-            'comment_post_ID'       => $post_id,
-            'comment_author'        => 'AutoResponder',
-            'comment_author_email'  => 'noreply@example.com',
-            'comment_content'       => 'Thanks, we’ll get back to you shortly.',
-            'comment_approved'      => 1,
-            'comment_type'          => '',
-            'user_id'               => 0,
-            'comment_parent'        => 0,
-        ]);
+        // Build the payload to send to your own REST API
+        $payload = array(
+            'post_id'     => $post_id,
+            'partner_id'  => get_post_meta($post_id, 'partner', true), // Example: assuming partner is stored in post meta
+            'comment'     => $comment->comment_content,
+            'author_name' => $comment->comment_author,
+            'email'       => $comment->comment_email,
+            'sent_from'   => 'system:auto_reply',
+        );
 
-        // Mark it as partner-sent to avoid recursion
-        if ($auto_reply_id) {
-            add_comment_meta($auto_reply_id, 'sent_from', 'partner');
+        // URL to your own REST API endpoint
+        $api_url = rest_url('frohub/v1/create-comment');
+
+        // Make the internal REST API call
+        $response = wp_remote_post($api_url, array(
+            'method'      => 'POST',
+            'timeout'     => 10,
+            'headers'     => array(
+                'Content-Type' => 'application/json',
+                // Auth header if needed
+                // 'Authorization' => 'Bearer ' . maybe_get_token(),
+            ),
+            'body'        => json_encode($payload),
+            'sslverify'   => false, // Set to true in production if SSL is available
+        ));
+
+        // Log errors if any
+        if (is_wp_error($response)) {
+            error_log('Internal API call failed: ' . $response->get_error_message());
+        } else {
+            $body = wp_remote_retrieve_body($response);
+            error_log('API Response: ' . $body);
         }
     }
 }
