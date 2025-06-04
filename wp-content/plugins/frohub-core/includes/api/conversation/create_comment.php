@@ -19,9 +19,10 @@ class CreateComment {
         register_rest_route('frohub/v1', '/create-comment', array(
             'methods'             => 'POST',
             'callback'            => array($this, 'handle_conversation_comment'),
-            'permission_callback' => function () {
-                return current_user_can('edit_posts');
-            },
+            'permission_callback' => '__return_true',
+//             'permission_callback' => function () {
+//                 return current_user_can('edit_posts');
+//             },
         ));
         register_rest_route('frohub/v1', '/upload-comment-image', array(
             'methods'             => 'POST',
