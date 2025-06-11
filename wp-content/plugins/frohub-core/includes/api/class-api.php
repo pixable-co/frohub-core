@@ -1,6 +1,8 @@
 <?php
 namespace FECore;
 
+use FECore\SendAutoMessage;
+
 use FECore\PartnerConversations;
 
 use FECore\PartnersMyPendingOrdersCount;
@@ -134,5 +136,6 @@ class API {
 		UpdateProfileAutoMessage::init();
 		SetStripeFailedPayout::init();
 		PartnerConversations::init();
+		SendAutoMessage::init();
 	}
 }

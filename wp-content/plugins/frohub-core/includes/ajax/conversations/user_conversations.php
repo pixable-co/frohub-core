@@ -157,70 +157,162 @@ class UserConversations {
         wp_send_json_success(['comments' => $all_comments]);
     }
 
-    public function send_customer_message() {
-        check_ajax_referer('frohub_nonce');
+//     public function send_customer_message() {
+//         check_ajax_referer('frohub_nonce');
+//
+//         $user_id = get_current_user_id();
+//         if (!$user_id) {
+//             wp_send_json_error(['message' => 'User not logged in.'], 403);
+//         }
+//
+//         $post_id     = isset($_POST['post_id']) ? intval($_POST['post_id']) : 0;
+//         $partner_id  = isset($_POST['partner_id']) ? intval($_POST['partner_id']) : 0;
+//         $comment     = isset($_POST['comment']) ? wp_kses_post($_POST['comment']) : '';
+//         $image_url   = isset($_POST['image_url']) ? esc_url($_POST['image_url']) : '';
+//
+//         if (!$post_id || get_post_type($post_id) !== 'conversation') {
+//             wp_send_json_error(['message' => 'Invalid conversation post.']);
+//         }
+//
+//         if (empty($comment) && empty($image_url)) {
+//             wp_send_json_error(['message' => 'Message cannot be empty.']);
+//         }
+//
+//         $author = wp_get_current_user();
+//         $author_name = $author->display_name;
+//         $author_email = $author->user_email;
+//
+//         // Append image to message content
+//         if (!empty($image_url)) {
+//             $comment .= '<br><img src="' . esc_url($image_url) . '" alt="Uploaded Image" style="max-width: 100%; height: auto;">';
+//         }
+//
+//         $comment_data = [
+//             'comment_post_ID'      => $post_id,
+//             'comment_author'       => $author_name,
+//             'comment_author_email' => $author_email,
+//             'user_id'              => $user_id,
+//             'comment_content'      => $comment,
+//             'comment_approved'     => 1,
+//         ];
+//
+//         $comment_id = wp_insert_comment($comment_data);
+//
+//         if (!$comment_id) {
+//             wp_send_json_error(['message' => 'Failed to post comment.']);
+//         }
+//
+//         update_comment_meta($comment_id, 'sent_from', 'customer');
+//         if ($partner_id) {
+//             update_comment_meta($comment_id, 'partner', $partner_id);
+//         }
+//
+//         update_post_meta($post_id, 'read_by_partner', 0);
+//
+//         $comment_obj = get_comment($comment_id);
+//
+//         wp_send_json_success([
+//             'comment_id'   => $comment_obj->comment_ID,
+//             'author'       => $comment_obj->comment_author,
+//             'author_email' => $comment_obj->comment_author_email,
+//             'content'      => $comment_obj->comment_content,
+//             'date'         => $comment_obj->comment_date,
+//             'meta_data'    => [
+//                 'sent_from' => ['customer']
+//             ],
+//             'partner_id'   => $partner_id
+//         ]);
+//     }
 
-        $user_id = get_current_user_id();
-        if (!$user_id) {
-            wp_send_json_error(['message' => 'User not logged in.'], 403);
+        public function send_customer_message() {
+            check_ajax_referer('frohub_nonce');
+
+            $user_id = get_current_user_id();
+            if (!$user_id) {
+                wp_send_json_error(['message' => 'User not logged in.'], 403);
+            }
+
+            $post_id     = isset($_POST['post_id']) ? intval($_POST['post_id']) : 0;
+            $partner_id  = isset($_POST['partner_id']) ? intval($_POST['partner_id']) : 0;
+            $comment     = isset($_POST['comment']) ? wp_kses_post($_POST['comment']) : '';
+            $image_url   = isset($_POST['image_url']) ? esc_url($_POST['image_url']) : '';
+
+            if (!$post_id || get_post_type($post_id) !== 'conversation') {
+                wp_send_json_error(['message' => 'Invalid conversation post.']);
+            }
+
+            if (empty($comment) && empty($image_url)) {
+                wp_send_json_error(['message' => 'Message cannot be empty.']);
+            }
+
+            $author = wp_get_current_user();
+            $author_name = $author->display_name;
+            $author_email = $author->user_email;
+
+            if (!empty($image_url)) {
+                $comment .= '<br><img src="' . esc_url($image_url) . '" alt="Uploaded Image" style="max-width: 100%; height: auto;">';
+            }
+
+            $comment_data = [
+                'comment_post_ID'      => $post_id,
+                'comment_author'       => $author_name,
+                'comment_author_email' => $author_email,
+                'user_id'              => $user_id,
+                'comment_content'      => $comment,
+                'comment_approved'     => 1,
+            ];
+
+            $comment_id = wp_insert_comment($comment_data);
+
+            if (!$comment_id) {
+                wp_send_json_error(['message' => 'Failed to post comment.']);
+            }
+
+            update_comment_meta($comment_id, 'sent_from', 'customer');
+            if ($partner_id) {
+                update_comment_meta($comment_id, 'partner', $partner_id);
+            }
+
+            update_post_meta($post_id, 'read_by_partner', 0);
+
+            // ✅ AUTO MESSAGE HANDLING
+            $auto_enabled = get_field('auto_message', $partner_id);
+            if ($auto_enabled) {
+                $this->trigger_auto_reply($partner_id, $post_id); // internal REST call
+            }
+
+            $comment_obj = get_comment($comment_id);
+
+            wp_send_json_success([
+                'comment_id'   => $comment_obj->comment_ID,
+                'author'       => $comment_obj->comment_author,
+                'author_email' => $comment_obj->comment_author_email,
+                'content'      => $comment_obj->comment_content,
+                'date'         => $comment_obj->comment_date,
+                'meta_data'    => [
+                    'sent_from' => ['customer']
+                ],
+                'partner_id'   => $partner_id
+            ]);
         }
 
-        $post_id     = isset($_POST['post_id']) ? intval($_POST['post_id']) : 0;
-        $partner_id  = isset($_POST['partner_id']) ? intval($_POST['partner_id']) : 0;
-        $comment     = isset($_POST['comment']) ? wp_kses_post($_POST['comment']) : '';
-        $image_url   = isset($_POST['image_url']) ? esc_url($_POST['image_url']) : '';
+        private function trigger_auto_reply($partner_id, $conversation_id) {
+            $url = rest_url('frohub/v1/send-auto-message');
 
-        if (!$post_id || get_post_type($post_id) !== 'conversation') {
-            wp_send_json_error(['message' => 'Invalid conversation post.']);
+            $response = wp_remote_post($url, [
+                'timeout' => 10,
+                'headers' => [
+                    'Content-Type' => 'application/json',
+                ],
+                'body' => wp_json_encode([
+                    'partner_id'      => $partner_id,
+                    'conversation_id' => $conversation_id,
+                ]),
+            ]);
+
+            // Optional: Log error if needed
+            if (is_wp_error($response)) {
+                error_log('Auto message failed: ' . $response->get_error_message());
+            }
         }
-
-        if (empty($comment) && empty($image_url)) {
-            wp_send_json_error(['message' => 'Message cannot be empty.']);
-        }
-
-        $author = wp_get_current_user();
-        $author_name = $author->display_name;
-        $author_email = $author->user_email;
-
-        // Append image to message content
-        if (!empty($image_url)) {
-            $comment .= '<br><img src="' . esc_url($image_url) . '" alt="Uploaded Image" style="max-width: 100%; height: auto;">';
-        }
-
-        $comment_data = [
-            'comment_post_ID'      => $post_id,
-            'comment_author'       => $author_name,
-            'comment_author_email' => $author_email,
-            'user_id'              => $user_id,
-            'comment_content'      => $comment,
-            'comment_approved'     => 1,
-        ];
-
-        $comment_id = wp_insert_comment($comment_data);
-
-        if (!$comment_id) {
-            wp_send_json_error(['message' => 'Failed to post comment.']);
-        }
-
-        update_comment_meta($comment_id, 'sent_from', 'customer');
-        if ($partner_id) {
-            update_comment_meta($comment_id, 'partner', $partner_id);
-        }
-
-        update_post_meta($post_id, 'read_by_partner', 0);
-
-        $comment_obj = get_comment($comment_id);
-
-        wp_send_json_success([
-            'comment_id'   => $comment_obj->comment_ID,
-            'author'       => $comment_obj->comment_author,
-            'author_email' => $comment_obj->comment_author_email,
-            'content'      => $comment_obj->comment_content,
-            'date'         => $comment_obj->comment_date,
-            'meta_data'    => [
-                'sent_from' => ['customer']
-            ],
-            'partner_id'   => $partner_id
-        ]);
-    }
 }
