@@ -65,7 +65,7 @@ class UserConversations {
                 $comments = get_comments([
                     'post_id' => $conversation_id,
                     'status'  => 'approve',
-                    'order'   => 'DESC',
+                    'order'   => 'ASC',
                 ]);
 
                 $comment_data = array_map(function($comment) {
@@ -136,7 +136,7 @@ class UserConversations {
                 $comments = get_comments([
                     'post_id' => $conversation_id,
                     'status'  => 'approve',
-                    'order'   => 'DESC',
+                    'order'   => 'ASC',
                 ]);
 
                 foreach ($comments as $comment) {
