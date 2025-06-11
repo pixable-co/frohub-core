@@ -1,6 +1,8 @@
 <?php
 namespace FECore;
 
+use FECore\UserConversations;
+
 use FECore\SubmitComment;
 
 use FECore\SubmitLike;
@@ -56,5 +58,6 @@ class Ajax {
 		SubmitDislike::init();
 		SubmitLike::init();
 		SubmitComment::init();
+		UserConversations::init();
 	}
 }

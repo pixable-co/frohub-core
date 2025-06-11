@@ -1,3 +1,4 @@
+import CustomerMessage from './shortcodes/conversations/customer_message';
 import RequestBookButton from './shortcodes/Product/request_book_button';
 import FrohubCalender from './shortcodes/producttemplate/frohub_calender';
 import { StrictMode } from 'react';
@@ -33,5 +34,13 @@ requestBookButtonElements.forEach(element => {
     const key = element.getAttribute('data-key');
     createRoot(element).render(
         <RequestBookButton dataKey={key} />
+    );
+});
+
+const customerMessageElements = document.querySelectorAll('.customer_message');
+customerMessageElements.forEach(element => {
+    const key = element.getAttribute('data-key');
+    createRoot(element).render(
+        <CustomerMessage dataKey={key} />
     );
 });

@@ -1,6 +1,8 @@
 <?php
 namespace FECore;
 
+use FECore\CustomerMessage;
+
 use FECore\FhServicePrice;
 
 use FECore\DisplayPartnerName;
@@ -158,5 +160,6 @@ class Shortcodes {
 		FrohubGetPolicies::init();
 		FrohubReviewSummary::init();
 		CancelOrderButton::init();
+		CustomerMessage::init();
 	}
 }
