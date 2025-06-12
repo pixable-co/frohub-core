@@ -158,6 +158,7 @@ public function handle_my_services(\WP_REST_Request $request) {
 
             $products_data[] = [
                 'product_id'              => $product_id,
+                'portal_product_id'      => get_field('portal_product_id', $product_id),
                 'product_name'            => $product_name,
                 'categories'              => $categories,
                 'price'                   => $price,
