@@ -163,7 +163,7 @@ public function handle_my_services(\WP_REST_Request $request) {
                 'categories'              => $categories,
                 'price'                   => $price,
                 'status'                  => $status,
-                'marketplace_visibility'  => $is_private,
+                'is_private'  => $is_private,
                 'url'                     => $url,
                 'thumbnail'               => $thumbnail,
                 'variations'              => $variations // Only published variations included
