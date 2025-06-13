@@ -76,6 +76,7 @@ class PartnerConversations {
                             if ($user_info) {
                                 $first_name = $user_info->first_name;
                                 $last_name = $user_info->last_name;
+                                $billing_phone = get_user_meta($customer_id, 'billing_phone', true);
 
                                 if (!empty($first_name) && !empty($last_name)) {
                                     $customer_name = $first_name . ' ' . $last_name;
@@ -106,6 +107,7 @@ class PartnerConversations {
                         'customer_id' => $customer_id,
                         'customer_name' => $customer_name,
                         'customer_image' => $profile_image_url,
+                        'customer_phone' => $billing_phone,
                         'read_by_partner' => (bool)$read_by_partner,
                         'last_activity' => $last_activity ?: date('c'),
                         'permalink' => get_permalink($conversation_id),
@@ -113,61 +115,6 @@ class PartnerConversations {
                         'last_message' => '',
                     ];
                 }
-//                     while ($query->have_posts()) {
-//                         $query->the_post();
-//                         $conversation_id = get_the_ID();
-//
-//                         $customer = get_field('customer', $conversation_id);
-//                         $customer_name = 'Unknown Customer';
-//
-//                         if (!empty($customer)) {
-//                             $customer_id = null;
-//
-//                             // Get the customer ID
-//                             if (is_numeric($customer)) {
-//                                 $customer_id = $customer;
-//                             } elseif (is_object($customer) && isset($customer->ID)) {
-//                                 $customer_id = $customer->ID;
-//                             } elseif (is_array($customer) && isset($customer['ID'])) {
-//                                 $customer_id = $customer['ID'];
-//                             }
-//
-//                             // Get user data if we have a valid ID
-//                             if ($customer_id) {
-//                                 $user_info = get_userdata($customer_id);
-//                                 if ($user_info) {
-//                                     // Try to get full name in order of preference
-//                                     $first_name = $user_info->first_name;
-//                                     $last_name = $user_info->last_name;
-//
-//                                     if (!empty($first_name) && !empty($last_name)) {
-//                                         $customer_name = $first_name . ' ' . $last_name;
-//                                     } elseif (!empty($first_name)) {
-//                                         $customer_name = $first_name;
-//                                     } elseif (!empty($last_name)) {
-//                                         $customer_name = $last_name;
-//                                     } else {
-//                                         // Fallback to display name if first/last names are empty
-//                                         $customer_name = $user_info->display_name;
-//                                     }
-//                                 }
-//                             }
-//                         }
-//
-//
-//                         $read_by_partner = get_field('read_by_partner', $conversation_id);
-//                         $last_activity = get_the_modified_date('c', $conversation_id) ?: get_the_date('c', $conversation_id);
-//
-//                         $conversations[] = [
-//                             'conversation_id' => (int)$conversation_id,
-//                             'customer_name'=> $customer_name,
-//                             'read_by_partner' => (bool)$read_by_partner,
-//                             'last_activity' => $last_activity ?: date('c'),
-//                             'permalink' => get_permalink($conversation_id),
-//                             'status' => 'Active',
-//                             'last_message' => '',
-//                         ];
-//                     }
                     wp_reset_postdata();
                 }
 
