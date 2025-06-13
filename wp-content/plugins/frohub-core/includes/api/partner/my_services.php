@@ -104,7 +104,7 @@ public function handle_my_services(\WP_REST_Request $request) {
             $status = get_post_status($product_id);
 
             // Marketplace Visibility (ACF True/False field)
-            $marketplace_visibility = get_field('marketplace_visibility', $product_id) ? true : false;
+            $is_private = get_field('is_private', $product_id) ? true : false;
 
             // Public Product URL
             $url = get_permalink($product_id);
@@ -163,7 +163,7 @@ public function handle_my_services(\WP_REST_Request $request) {
                 'categories'              => $categories,
                 'price'                   => $price,
                 'status'                  => $status,
-                'marketplace_visibility'  => $marketplace_visibility,
+                'marketplace_visibility'  => $is_private,
                 'url'                     => $url,
                 'thumbnail'               => $thumbnail,
                 'variations'              => $variations // Only published variations included
