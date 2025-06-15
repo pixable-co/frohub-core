@@ -28,6 +28,9 @@ class UpdatePayoutStatus {
         if ($payout_id && !is_wp_error($payout_id)) {
             // Update the 'payout_status' field to "Queued"
             update_field($acf_payout_status, 'Queued', $payout_id);
+
+            // Update Payout on booking in Portal site
+            send_payout_to_booking_endpoint($payout_id);
         }
     }
 }
