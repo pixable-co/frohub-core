@@ -90,7 +90,7 @@ const ChatInput = ({ onSendMessage, isLoading = false, disabled = false }) => {
                 <button
                     onClick={handleSubmit}
                     disabled={(!message.trim() && !imageFile) || isLoading || disabled || isUploading}
-                    className="ml-2 bg-gray-200 text-gray-700 px-3 py-1 rounded-md text-sm"
+                    className="send-button bg-gray-200 text-gray-700 px-3 py-1 rounded-md text-sm"
                 >
                     Send Message
                 </button>

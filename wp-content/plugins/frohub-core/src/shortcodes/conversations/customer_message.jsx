@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { Skeleton } from "antd";
 import { fetchData } from '../../services/fetchData';
 import ContactItem from "./CustomerMessage/ContactItem.jsx";
 import ChatInput from './CustomerMessage/ChatInput';
@@ -234,7 +235,27 @@ const CustomerMessage = ({ dataKey, currentUserPartnerPostId }) => {
             <div className="message-conversations w-80">
                 <div className="overflow-y-auto">
                     {loading.conversations ? (
-                        <div className="p-4 text-gray-500">Loading conversations...</div>
+                        <div className="text-sm text-gray-500 mt-1 flex flex-col space-y-4">
+                            <div className="contact-list-avatar p-4 flex space-x-2 justify-around">
+                                <Skeleton.Avatar size={"large"} active />
+                                <Skeleton.Input  size={"large"} active />
+                            </div>
+
+                            <div className="contact-list-avatar p-4 flex space-x-2 justify-around">
+                                <Skeleton.Avatar size={"large"} active />
+                                <Skeleton.Input  size={"large"} active />
+                            </div>
+
+                            <div className="contact-list-avatar p-4 flex space-x-2 justify-around">
+                                <Skeleton.Avatar size={"large"} active />
+                                <Skeleton.Input  size={"large"} active />
+                            </div>
+
+                            <div className="contact-list-avatar p-4 flex space-x-2 justify-around">
+                                <Skeleton.Avatar size={"large"} active />
+                                <Skeleton.Input  size={"large"} active />
+                            </div>
+                        </div>
                     ) : (
                         conversations.map(conversation => (
                             <ContactItem
