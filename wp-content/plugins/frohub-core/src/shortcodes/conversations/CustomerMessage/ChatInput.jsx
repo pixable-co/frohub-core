@@ -67,19 +67,6 @@ const ChatInput = ({ onSendMessage, isLoading = false, disabled = false }) => {
                     onChange={handleFileChange}
                 />
 
-                <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center text-gray-500 mr-2">
-                    <span className="text-xs">R</span>
-                </div>
-
-                <input
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value)}
-                    onKeyPress={handleKeyPress}
-                    placeholder="Type your message..."
-                    className="flex-1 border border-gray-300 rounded-md px-3 py-2 text-sm"
-                    disabled={disabled || isUploading}
-                />
-
                 <button
                     onClick={triggerFileInput}
                     type="button"
@@ -90,6 +77,15 @@ const ChatInput = ({ onSendMessage, isLoading = false, disabled = false }) => {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path>
                     </svg>
                 </button>
+
+                <input
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    onKeyPress={handleKeyPress}
+                    placeholder="Type your message..."
+                    className="flex-1 border border-gray-300 rounded-md px-3 py-2 text-sm"
+                    disabled={disabled || isUploading}
+                />
 
                 <button
                     onClick={handleSubmit}
@@ -120,7 +116,7 @@ const ChatInput = ({ onSendMessage, isLoading = false, disabled = false }) => {
             )}
 
             <div className="text-xs text-gray-400 mt-1 ml-10">
-                Any content posted through Frohub are protected. Learn More
+                Please be respectful: Keep your messages kind and considerate. Treat others as you would like to be treated. Report any abusive messages here.
             </div>
 
             {isUploading && (

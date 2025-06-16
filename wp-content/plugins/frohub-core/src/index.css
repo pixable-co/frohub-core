@@ -45,3 +45,25 @@
         display: none;
     }
 }
+
+.message-conversations {
+    border: solid 1px #D9D9D9;
+}
+
+.contact-list-avatar {
+    border-bottom: solid 1px #D9D9D9;
+}
+
+.conversation-details {
+    border: solid 1px #D9D9D9;
+}
+
+.customer-message{
+    border: solid 1px #D9D9D9;
+}
+
+.partner-message {
+    background: #C4C4C4;
+    border: solid 1px #D9D9D9;
+    color: #3D3D3D;
+}

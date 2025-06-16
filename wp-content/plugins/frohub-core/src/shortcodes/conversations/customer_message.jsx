@@ -231,10 +231,7 @@ const CustomerMessage = ({ dataKey, currentUserPartnerPostId }) => {
 
     return (
         <div className="flex h-screen bg-white">
-            <div className="w-64 border-r border-gray-200">
-                <div className="p-4 border-b border-gray-200">
-                    <h2 className="text-lg font-semibold">Messages</h2>
-                </div>
+            <div className="message-conversations w-80">
                 <div className="overflow-y-auto">
                     {loading.conversations ? (
                         <div className="p-4 text-gray-500">Loading conversations...</div>
@@ -254,23 +251,10 @@ const CustomerMessage = ({ dataKey, currentUserPartnerPostId }) => {
                 </div>
             </div>
 
-            <div className="flex-1 flex flex-col">
+            <div className="conversation-details flex-1 flex flex-col">
                 {activeConversation ? (
                     <>
-                        <div className="p-4 border-b border-gray-200">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <div className="text-sm text-gray-500">New Booking Requested</div>
-                                    <div className="font-medium">23rd June 2024 at 15:00</div>
-                                    <div className="text-sm text-gray-500">Service Name</div>
-                                </div>
-                                <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
-                                    <span className="text-gray-500">+</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div id="chat-messages-container" className="flex-1 overflow-y-auto p-4 bg-gray-50">
+                        <div id="chat-messages-container" className="flex-1 overflow-y-auto p-4">
                             {loading.comments ? (
                                 <div className="flex justify-center items-center h-full text-gray-500">Loading messages...</div>
                             ) : (

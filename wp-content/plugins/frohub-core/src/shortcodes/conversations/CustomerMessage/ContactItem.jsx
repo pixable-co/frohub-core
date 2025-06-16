@@ -13,7 +13,7 @@ const ContactItem = ({ conversation, isActive, onClick, isLoading = false }) => 
 
     return (
         <div
-            className={`p-4 border-b border-gray-200 cursor-pointer ${
+            className={`contact-list-avatar p-4 border-b border-gray-200 cursor-pointer ${
                 isActive ? 'bg-blue-50' : 'hover:bg-gray-50'
             } ${isLoading ? 'opacity-50' : ''}`}
             onClick={handleClick}

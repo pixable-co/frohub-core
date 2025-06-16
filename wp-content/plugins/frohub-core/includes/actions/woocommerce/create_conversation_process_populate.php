@@ -205,6 +205,7 @@ class CreateConversionProcessPopulate {
         ]);
 
         if ($comment_id) {
+            update_comment_meta($comment_id, 'sent_from', 'partner');
             update_comment_meta($comment_id, 'partner', $partner_id);
             update_comment_meta($comment_id, 'has_been_read_by_customer', false);
             error_log('Comment created with ID: ' . $comment_id);
