@@ -30,7 +30,7 @@ class GetOrderNotes {
                 $conversation_post_id = get_field('conversation', $order_id);
 
                 if ($conversation_post_id) {
-                    $conversation_url = get_permalink($conversation_post_id);
+                    $conversation_url = '/my-account/messages/?conversation_id='. $conversation_post_id->ID .'';
                 } else {
                     $conversation_url = ''; // fallback if conversation field is missing
                 }
