@@ -250,7 +250,11 @@ class FrohubProductPartnerPage
                     'value'   => $partner_id,
                     'compare' => '=',
                 ],
-
+                [
+                    'key'     => 'is_private',
+                    'value'   => '0', // false is stored as string '0' in ACF/DB
+                    'compare' => '=',
+                ],
             ],
         ];
         if (! empty($tax_query)) {
