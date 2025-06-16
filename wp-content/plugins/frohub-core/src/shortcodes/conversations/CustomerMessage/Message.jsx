@@ -1,3 +1,4 @@
+// Changes to Message.jsx to match the screenshot design
 import React from 'react';
 import Avatar from './Avatar';
 
@@ -17,24 +18,18 @@ const Message = ({ comment }) => {
         <div className={`flex mb-4 ${isCustomerMessage ? 'justify-end' : 'justify-start'}`}>
             {!isCustomerMessage && <Avatar name={comment.author || 'Partner'} size="sm" />}
             <div className={`flex flex-col ${isCustomerMessage ? 'items-end' : 'items-start'} max-w-xs`}>
-                <div className={`p-3 rounded-lg break-words ${
-                    isCustomerMessage
-                        ? isPending
-                            ? 'bg-gray-400 text-white opacity-70'
-                            : isFailed
-                                ? 'bg-red-500 text-white'
-                                : 'bg-blue-500 text-white'
-                        : 'bg-gray-200 text-gray-900'
-                }`}>
-                    <div className="font-medium text-sm mb-1">
-                        {isCustomerMessage ? 'You' : (comment.author || 'Partner')}
-                        {isPending && <span className="ml-1 text-xs">(Sending...)</span>}
-                        {isFailed && <span className="ml-1 text-xs">(Failed)</span>}
+                <div className={`p-3 rounded-lg break-words bg-white shadow-sm`}>
+                    <div className="text-xs text-gray-500 mb-1">
+                        {formatTimestamp(comment.date)}
+                        {isPending && <span className="ml-1">(Sending...)</span>}
+                        {isFailed && <span className="ml-1">(Failed)</span>}
                     </div>
-                    <div dangerouslySetInnerHTML={createMarkup(comment.content)} className="prose prose-sm max-w-none" />
-                </div>
-                <div className={`text-xs text-gray-500 mt-1 ${isCustomerMessage ? 'text-right' : ''}`}>
-                    {isPending ? 'Sending...' : isFailed ? 'Failed to send' : formatTimestamp(comment.date)}
+                    <div dangerouslySetInnerHTML={createMarkup(comment.content)} className="text-sm" />
+                    {comment.image_url && (
+                        <div className="mt-2">
+                            <img src={comment.image_url} alt="Attached" className="max-w-full rounded" />
+                        </div>
+                    )}
                 </div>
             </div>
             {isCustomerMessage && <Avatar name="You" size="sm" />}
