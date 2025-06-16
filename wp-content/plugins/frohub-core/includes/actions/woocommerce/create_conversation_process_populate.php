@@ -162,17 +162,31 @@ class CreateConversionProcessPopulate {
         $partner_name = get_the_title($partner_id);
         $partner_email = get_field('partner_email', $partner_id);
 
+        $product_id = $item->get_product_id();
+        if ($product_id == 28990) {
+            error_log("Skipping product ID 28990 for item: " . $item->get_name());
+            return; // Skip this item
+        }
+
         $product_name = $item->get_name();
         $selected_add_ons = $item->get_meta('Selected Add-Ons');
         $service_type = $item->get_meta('Service Type');
-        $selected_date = $item->get_meta('Selected Date');
-        $selected_time = $item->get_meta('Selected Time');
-        $formatted_date = !empty($selected_date) ? date_i18n('jS F Y', strtotime($selected_date)) : 'N/A';
+        $start_date_time = $item->get_meta('Start Date Time');
+        $start_time = $formatted_date = 'N/A';
 
-        $content = "<h5 style='color: #0073aa;'>New Booking Requested</h5>";
-        $content .= "<p><strong>Order #:</strong> " . $order->get_order_number() . "</p>";
-        $content .= "<p><strong>Date:</strong> " . $formatted_date . " at " . (!empty($selected_time) ? $selected_time : 'N/A') . "</p>";
-        $content .= "<p><strong>Product Name:</strong> " . esc_html($product_name) . "</p>";
+        if (!empty($start_date_time)) {
+            // Example: "12:00, 23 Jun 2025"
+            [$time, $raw_date] = array_map('trim', explode(',', $start_date_time, 2));
+            $timestamp = strtotime($raw_date);
+            $formatted_date = $timestamp ? date_i18n('jS F Y', $timestamp) : 'N/A';
+            $start_time = $time;
+        }
+
+        $content = '<div class="booking-comment">';
+        $content .= "<p class='booking-title'>New Booking Requested</p>";
+        $content .= "<p class='booking-detail'><strong>Order #" . $order->get_order_number() . "</strong></p>";
+        $content .= "<p class='booking-datetime'><strong>Date:</strong> " . $formatted_date . " at " . $start_time . "</p>";
+        $content .= "<p class='booking-detail'>" . esc_html($product_name) . "</p>";
 
         if (!empty($selected_add_ons)) {
             $content .= "<p><strong>Product Add Ons:</strong> " . esc_html($selected_add_ons) . "</p>";
