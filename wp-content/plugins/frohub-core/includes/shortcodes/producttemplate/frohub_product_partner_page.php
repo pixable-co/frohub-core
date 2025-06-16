@@ -243,11 +243,19 @@ class FrohubProductPartnerPage
             'posts_per_page' => 8,
             'paged'          => $paged,
             'fields'         => 'ids',
-            'meta_query'     => [[
-                'key'     => 'partner_id',
-                'value'   => $partner_id,
-                'compare' => '=',
-            ]],
+            'meta_query'     => [
+                'relation' => 'AND',
+                [
+                    'key'     => 'partner_id',
+                    'value'   => $partner_id,
+                    'compare' => '=',
+                ],
+                [
+                    'key'     => 'is_private',
+                    'value'   => '0', // false is stored as string '0' in ACF/DB
+                    'compare' => '=',
+                ],
+            ],
         ];
         if (! empty($tax_query)) {
             $args['tax_query'] = $tax_query;
