@@ -72,6 +72,7 @@ class PublishPartnerCreateProduct {
         update_field('duration_hours', $draft_service_data['Duration_Hours'] ?? '', $product_id);
         update_field('duration_minutes', $draft_service_data['Duration_Minutes'] ?? '', $product_id);
         update_field('partner_name', $draft_service_data['Partner_ID'] ?? '', $product_id);
+        update_field('portal_product_post_id', $draft_service_data['Partner_portal_product_post_id'] ?? '', $product_id);
 
         // Step 4: Set Product Category
         if (!empty($draft_service_data['Service_Category_ID'])) {
