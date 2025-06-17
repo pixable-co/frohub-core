@@ -83,7 +83,7 @@ class CreatePartnerPost {
     $serviceName = $data['13'] ?? null;
     $duration = $data['32'] ?? null;  // New Duration Field
     $price = $data['15'] ?? null;
-    $serviceCategoryId = $data['37'] ?? null;
+    $partner_portal_product_id = $data['partner_portal_product_post_id'] ?? null;
     $bufferTime = $data['31'] ?? null; // New Buffer Time Field
     $email = $data['42'] ?? null;
     $phone = $data['41'] ?? null;
@@ -99,7 +99,7 @@ class CreatePartnerPost {
             'message' => 'Failed to create partner post.',
         ], 500);
     }
-    
+
     if (!empty($availability)) {
         $availability_rows = [];
 
@@ -161,13 +161,14 @@ class CreatePartnerPost {
     ];
 
     $service_data = [
+        'Partner_Post_ID' => $partner_post_id,
         'WordPress_ID'   => $wordpressUserId,
         'Service_Name'   => $serviceName,
         'Duration'       => $duration, // New Duration Field
         'Price'          => $price,
-        'Service_Category_ID' => $serviceCategoryId,
         'Partner_ID'     => $partner_post_id,
         'Partner_Name'   => $businessName,
+        'Partner_portal_product_id' => $partner_portal_product_id,
     ];
 
     update_field('draft_service', json_encode($service_data), $partner_post_id);
