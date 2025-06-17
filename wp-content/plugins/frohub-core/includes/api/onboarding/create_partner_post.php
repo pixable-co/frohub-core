@@ -85,6 +85,8 @@ class CreatePartnerPost {
     $price = $data['15'] ?? null;
     $serviceCategoryId = $data['37'] ?? null;
     $bufferTime = $data['31'] ?? null; // New Buffer Time Field
+    $email = $data['42'] ?? null;
+    $phone = $data['41'] ?? null;
 
     $partner_post_id = wp_insert_post([
         'post_title'  => $businessName,
@@ -97,7 +99,7 @@ class CreatePartnerPost {
             'message' => 'Failed to create partner post.',
         ], 500);
     }
-
+    
     if (!empty($availability)) {
         $availability_rows = [];
 
@@ -119,6 +121,13 @@ class CreatePartnerPost {
 
     if ($advanceBooking !== null) {
         update_field('booking_scope', $advanceBooking, $partner_post_id);
+    }
+
+    if(!empty($email)) {
+        update_field('partner_email', $email, $partner_post_id);
+    }
+    if(!empty($phone)) {
+        update_field('phone', $phone, $partner_post_id);
     }
 
     // Extract buffer time and split into hours and minutes
