@@ -54,7 +54,7 @@ class PublishPartnerCreateProduct {
         $product_data = [
             'post_title'   => $draft_service_data['Service_Name'] ?? 'Draft Product',
             'post_content' => '',
-            'post_status'  => 'publish',
+            'post_status'  => 'draft',
             'post_type'    => 'product',
         ];
 
