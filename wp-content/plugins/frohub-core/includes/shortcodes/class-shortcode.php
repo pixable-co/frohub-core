@@ -1,6 +1,8 @@
 <?php
 namespace FECore;
 
+use FECore\CustomerMessageMobile;
+
 use FECore\CustomerMessage;
 
 use FECore\FhServicePrice;
@@ -161,5 +163,6 @@ class Shortcodes {
 		FrohubReviewSummary::init();
 		CancelOrderButton::init();
 		CustomerMessage::init();
+		CustomerMessageMobile::init();
 	}
 }
