@@ -48,6 +48,14 @@ class Enqueue {
     		$post_type = sanitize_text_field($_GET['post_type']);
     	}
 
+        $post_type = 'product';
+        $product_ids = get_posts([
+            'post_type'      => 'product',
+            'posts_per_page' => -1,
+            'fields'         => 'ids',
+            'post_status'    => ['publish'], // or any status
+        ]);
+
     	wp_localize_script(
     		'frohub-admin-script',
     		'frohub_settings',
@@ -55,6 +63,7 @@ class Enqueue {
     			'ajax_url'   => admin_url('admin-ajax.php'),
     			'nonce'      => wp_create_nonce('frohub_nonce'),
     			'post_type'  => $post_type,
+    			'product_ids' => $product_ids,
     		)
     	);
 

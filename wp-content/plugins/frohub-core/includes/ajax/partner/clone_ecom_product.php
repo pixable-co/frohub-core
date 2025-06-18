@@ -68,7 +68,7 @@ class CloneEcomProduct {
     	$payload = [
     		'service_name'         => $product->get_name(),
     		'service_description'  => $product->get_description(),
-    		'service_price'        => $product->get_price(),
+    		'service_price'        => get_post_meta($product_id, 'service_price', true) ?: '0',
     		'service_status'       => $product->get_status(),
     		'booking_notice'       => get_post_meta($product_id, 'booking_notice', true) ?: '2',
     		'future_booking_scope' => get_post_meta($product_id, 'future_booking_scope', true) ?: '30',
@@ -96,7 +96,7 @@ class CloneEcomProduct {
     			'Content-Type' => 'application/json',
     		],
     		'body'    => wp_json_encode($payload),
-    		'timeout' => 15,
+    		'timeout' => 60,
     	]);
 
     	if (is_wp_error($response)) {

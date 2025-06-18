@@ -65,6 +65,7 @@ final class FrohubCore {
 	public function dispatch_hooks() {
 		FECore\Autoload::init();
 		FECore\Enqueue::init();
+		FECore\Admin::init();
 		FECore\Shortcodes::init();
 		FECore\API::init();
 		FECore\Ajax::init();
