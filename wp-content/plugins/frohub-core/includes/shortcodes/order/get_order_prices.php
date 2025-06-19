@@ -87,7 +87,7 @@ class GetOrderPrices
             }
             if (!empty($addon_items)) {
                 echo '<div class="add-on-line-items">';
-                echo '<div class="section-label">Selected Add-Ons</div>';
+                echo '<div class="section-label">Selected Add-Ons:</div>';
                 foreach ($addon_items as $addon) {
                     echo '<div class="line-item">
                             <div class="label">' . esc_html($addon['label']) . '</div>
