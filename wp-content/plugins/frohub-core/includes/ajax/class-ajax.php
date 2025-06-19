@@ -1,6 +1,8 @@
 <?php
 namespace FECore;
 
+use FECore\CloneEcomOrder;
+
 use FECore\CloneEcomProduct;
 
 use FECore\UserConversations;
@@ -62,5 +64,6 @@ class Ajax {
 		SubmitComment::init();
 		UserConversations::init();
 		CloneEcomProduct::init();
+		CloneEcomOrder::init();
 	}
 }
