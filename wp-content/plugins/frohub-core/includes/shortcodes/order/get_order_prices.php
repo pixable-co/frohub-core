@@ -116,7 +116,7 @@ class GetOrderPrices
             echo '<br>';
 
             echo '<div class="total-service-fee line-item">
-                    <div class="label">' . esc_html('Total Service Fee') . '</div>
+                    <div class="label">' . esc_html('Total Service Cost') . '</div>
                     <div class="price"><strong>£' . number_format($total_service_fee, 2) . '</strong></div>
                   </div><br>';
 
