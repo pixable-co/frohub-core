@@ -1,3 +1,4 @@
+import CustomerMessageMobile from './shortcodes/conversations/customer_message_mobile';
 import CustomerMessage from './shortcodes/conversations/customer_message';
 import RequestBookButton from './shortcodes/Product/request_book_button';
 import FrohubCalender from './shortcodes/producttemplate/frohub_calender';
@@ -42,5 +43,13 @@ customerMessageElements.forEach(element => {
     const key = element.getAttribute('data-key');
     createRoot(element).render(
         <CustomerMessage dataKey={key} />
+    );
+});
+
+const customerMessageMobileElements = document.querySelectorAll('.customer_message_mobile');
+customerMessageMobileElements.forEach(element => {
+    const key = element.getAttribute('data-key');
+    createRoot(element).render(
+        <CustomerMessageMobile dataKey={key} />
     );
 });
