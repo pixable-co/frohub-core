@@ -94,7 +94,7 @@ class CloneEcomOrder {
 
         foreach ($order->get_items() as $item) {
             $product = $item->get_product();
-            $items[] = [
+            $item_data = [
                 'product_id'   => $item->get_product_id(),
                 'variation_id' => $item->get_variation_id(),
                 'name'         => sanitize_text_field($item->get_name()),
@@ -102,8 +102,10 @@ class CloneEcomOrder {
                 'subtotal'     => $item->get_subtotal(),
                 'total'        => $item->get_total(),
                 'sku'          => $product ? $product->get_sku() : '',
-                'meta_data'    => $this->sanitize_item_meta_data_as_flat_array($item->get_meta_data()),
+                'meta_data'    => $this->sanitize_item_meta_data_as_flat_array($item->get_meta_data(), $item),
             ];
+
+            $items[] = $item_data;
         }
 
         return $items;
@@ -112,7 +114,7 @@ class CloneEcomOrder {
     /**
      * Convert line item meta data into flat associative array, alias known keys
      */
-    private function sanitize_item_meta_data_as_flat_array($meta_data_array) {
+    private function sanitize_item_meta_data_as_flat_array($meta_data_array, $item) {
         $sanitized = [];
 
         foreach ($meta_data_array as $meta) {
@@ -127,7 +129,99 @@ class CloneEcomOrder {
             $sanitized[$key] = $value;
         }
 
+        // Check if service type is uncategorized or empty, then look for enabled variation
+        if (empty($sanitized['Service Type']) ||
+            strtolower($sanitized['Service Type']) === 'uncategorized' ||
+            trim($sanitized['Service Type']) === '') {
+
+            $service_type_from_variation = $this->get_service_type_from_enabled_variation($item);
+            if (!empty($service_type_from_variation)) {
+                $sanitized['Service Type'] = $service_type_from_variation;
+            }
+        }
+
         return $sanitized;
+    }
+
+    /**
+     * Get service type from enabled product variation
+     */
+    private function get_service_type_from_enabled_variation($item) {
+        $product_id = $item->get_product_id();
+        $product = wc_get_product($product_id);
+
+        if (!$product || !$product->is_type('variable')) {
+            return '';
+        }
+
+        // Get all variations for this product
+        $variations = $product->get_available_variations();
+
+        foreach ($variations as $variation_data) {
+            $variation_id = $variation_data['variation_id'];
+            $variation = wc_get_product($variation_id);
+
+            if (!$variation) {
+                continue;
+            }
+
+            // Check if variation is enabled (published and in stock)
+            $is_enabled = ($variation->get_status() === 'publish' &&
+                          $variation->is_in_stock() &&
+                          $variation->variation_is_visible());
+
+            if ($is_enabled) {
+                // Get service type attribute from this variation
+                $service_type = $variation->get_attribute('pa_service-type');
+
+                if (!empty($service_type) &&
+                    strtolower($service_type) !== 'uncategorized') {
+                    return sanitize_text_field($service_type);
+                }
+            }
+        }
+
+        // If no enabled variation found with valid service type, try meta approach
+        return $this->get_service_type_from_variation_meta($product_id);
+    }
+
+    /**
+     * Alternative method to get service type from variation meta
+     */
+    private function get_service_type_from_variation_meta($product_id) {
+        // Get all variations using WordPress post query
+        $variations = get_posts([
+            'post_type'      => 'product_variation',
+            'post_parent'    => $product_id,
+            'posts_per_page' => -1,
+            'post_status'    => 'publish'
+        ]);
+
+        foreach ($variations as $variation_post) {
+            $variation = wc_get_product($variation_post->ID);
+
+            if (!$variation) {
+                continue;
+            }
+
+            // Check if variation is enabled
+            $is_enabled = ($variation->get_status() === 'publish' &&
+                          $variation->is_in_stock());
+
+            if ($is_enabled) {
+                // Try different ways to get service type
+                $service_type = $variation->get_attribute('service-type') ?:
+                               $variation->get_attribute('pa_service-type') ?:
+                               get_post_meta($variation_post->ID, 'attribute_pa_service-type', true);
+
+                if (!empty($service_type) &&
+                    strtolower($service_type) !== 'uncategorized') {
+                    return sanitize_text_field($service_type);
+                }
+            }
+        }
+
+        return '';
     }
 
     /**
