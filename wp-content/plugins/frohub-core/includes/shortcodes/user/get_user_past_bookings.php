@@ -91,6 +91,7 @@ class GetUserPastBookings
             $status_label = match ($order_status) {
                 'completed' => 'Completed',
                 'cancelled' => $this->get_cancellation_label(get_field('cancellation_status', $order_id)),
+                'on-hold' => 'Pending',
                 default => ucfirst($order_status),
             };
 
