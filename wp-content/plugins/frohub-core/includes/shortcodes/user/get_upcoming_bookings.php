@@ -179,7 +179,7 @@ class GetUpcomingBookings {
                     <p>Your new appointment time has been successfully booked! 🎉</p>
                 </div>
                 <div class="modal-footer">
-                    <a href="/my-account/bookings/" class="w-btn us-btn-style_6 w-btn-underlined">Back to My Bookings</a>
+                    <a href="/my-account/orders/" class="w-btn us-btn-style_6 w-btn-underlined">Back to My Bookings</a>
                 </div>
             </div>
         </div>';
@@ -195,7 +195,7 @@ class GetUpcomingBookings {
                     <p>Your booking request has been cancelled. No payment has been charged.</p>
                 </div>
                 <div class="modal-footer">
-                    <a href="/my-account/bookings/" class="w-btn us-btn-style_6 w-btn-underlined">Back to My Bookings</a>
+                    <a href="/my-account/orders/" class="w-btn us-btn-style_6 w-btn-underlined">Back to My Bookings</a>
                 </div>
             </div>
         </div>';
