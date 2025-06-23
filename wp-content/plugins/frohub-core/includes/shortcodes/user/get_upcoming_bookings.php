@@ -14,7 +14,7 @@ class GetUpcomingBookings {
 
     public function get_upcoming_bookings_shortcode() {
     $current_user_id = get_current_user_id();
-    $now = current_time('Y-m-d H:i');
+    $now = current_time('timestamp') - 60; // buffer of 1 minute earlier
     $orders = wc_get_orders(array(
         'posts_per_page' => -1,
         'customer'       => $current_user_id,
@@ -62,10 +62,9 @@ class GetUpcomingBookings {
             }
 
 
-            if (!$appointment_datetime || !$end_datetime || $end_datetime < strtotime($now)) {
-                continue; // Skip if appointment has ended
+            if (!$appointment_datetime || !$end_datetime || $end_datetime < $now) {
+                continue;
             }
-
 
             $upcoming_orders[] = array(
                 'order_id'            => $order_id,
