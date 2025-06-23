@@ -218,7 +218,7 @@ class GetUpcomingBookings {
                 const startTime = $(this).data("start");
                 const orderId = $(this).data("order-id");
 
-                $("#" + modalId).css("display", "block");
+                $("#" + modalId).fadeIn(200);
                 $("#" + modalId).find(".modal-start-time").text(startTime);
                 $("#" + modalId).find(".confirm-proposed-date, .decline-proposed-date")
                     .attr("data-order-id", orderId)
