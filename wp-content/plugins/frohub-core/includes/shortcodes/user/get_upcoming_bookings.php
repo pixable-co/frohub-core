@@ -127,12 +127,25 @@ class GetUpcomingBookings {
             echo '<td><span class="status_text">' . esc_html($status_label) . '</span></td>';
             echo '<td>';
             if ($booking['order_status'] === 'rescheduling') {
+                $item_id = $booking['order_id']; // If you're not already passing item_id, use a unique order ID fallback
+                $modal_accept = "acceptModal_" . $item_id;
+                $modal_decline = "declineModal_" . $item_id;
+
                 echo '<div class="table-action-buttons">';
-                echo '<a href="#" class="w-btn us-btn-style_7 w-btn-underlined accept-button" data-order-id="' . esc_attr($booking['order_id']) . '">Accept</a>';
+                echo '<button class="modal-trigger w-btn us-btn-style_7 w-btn-underlined accept-button" 
+                        data-modal="' . esc_attr($modal_accept) . '"
+                        data-order-id="' . esc_attr($booking['order_id']) . '"
+                        data-start="' . esc_attr($booking['appointment']) . '">
+                        Accept</button>';
                 echo '<span> / </span>';
-                echo '<a href="#" class="w-btn us-btn-style_7 w-btn-underlined decline-button" data-order-id="' . esc_attr($booking['order_id']) . '">Decline</a>';
+                echo '<button class="modal-trigger w-btn us-btn-style_7 w-btn-underlined decline-button" 
+                        data-modal="' . esc_attr($modal_decline) . '"
+                        data-order-id="' . esc_attr($booking['order_id']) . '"
+                        data-start="' . esc_attr($booking['appointment']) . '">
+                        Decline</button>';
                 echo '</div>';
-            } else {
+            }
+            else {
                 echo '<a href="' . home_url('/my-account/view-order/' . $booking['order_id']) . '" class="w-btn us-btn-style_7 w-btn-underlined view-button">View</a>';
             }
             echo '</td>';
@@ -155,9 +168,119 @@ class GetUpcomingBookings {
         }
 
         echo '</table>';
+        echo '<div id="' . esc_attr($modal_accept) . '" class="status-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5>Confirm New Appointment</h5>
+                    <span class="close-modal">×</span>
+                </div>
+                <div class="modal-body">
+                    <p>You’re about to confirm the new appointment time proposed by your stylist.</p>
+                    <p><strong>Proposed Time:</strong> <span class="modal-start-time"></span></p>
+                </div>
+                <div class="modal-footer">
+                    <button class="w-btn us-btn-style_6 w-btn-underlined confirm-proposed-date"
+                        data-order-id="' . esc_attr($booking['order_id']) . '"
+                        data-start="' . esc_attr($booking['appointment']) . '">
+                        <span class="spinner hidden"></span> Yes, Confirm Appointment</button>
+                    <button class="w-btn us-btn-style_6 w-btn-underlined close-modal-text">Go Back</button>
+                </div>
+            </div>
+        </div>';
+
+        echo '<div id="' . esc_attr($modal_decline) . '" class="status-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5>Decline Proposed Appointment</h5>
+                    <span class="close-modal">×</span>
+                </div>
+                <div class="modal-body">
+                    <p>If you decline this appointment, your booking will be cancelled.</p>
+                    <p><strong>Proposed Time:</strong> <span class="modal-start-time"></span></p>
+                </div>
+                <div class="modal-footer">
+                    <button class="w-btn us-btn-style_6 w-btn-underlined decline-proposed-date"
+                        data-order-id="' . esc_attr($booking['order_id']) . '">
+                        <span class="spinner hidden"></span> Yes, Decline Appointment</button>
+                    <button class="w-btn us-btn-style_6 w-btn-underlined close-modal-text">Keep Proposed Time</button>
+                </div>
+            </div>
+        </div>';
+
         echo $mobile_cards;
         echo '</div>'; // .frohub_table_wrapper
     }
+
+    echo '<script>
+        jQuery(document).ready(function($) {
+            $(".modal-trigger").click(function () {
+                const modalId = $(this).data("modal");
+                const startTime = $(this).data("start");
+                const orderId = $(this).data("order-id");
+
+                $("#" + modalId).css("display", "block");
+                $("#" + modalId).find(".modal-start-time").text(startTime);
+                $("#" + modalId).find(".confirm-proposed-date, .decline-proposed-date")
+                    .attr("data-order-id", orderId)
+                    .attr("data-start", startTime);
+            });
+
+            $(".close-modal, .close-modal-text").click(function () {
+                $(".status-modal").hide();
+            });
+
+            $(window).click(function (e) {
+                $(".status-modal").each(function () {
+                    if (e.target === this) {
+                        $(this).hide();
+                    }
+                });
+            });
+
+            function showSpinner(button) {
+                var footer = button.closest(".modal-footer");
+                footer.find("button").prop("disabled", true);
+                footer.find("button").not(button).hide();
+                button.find(".btn-text").hide();
+                button.find(".spinner").removeClass("hidden");
+            }
+
+            function hideSpinner(button) {
+                var footer = button.closest(".modal-footer");
+                footer.find("button").prop("disabled", false).show();
+                button.find(".btn-text").show();
+                button.find(".spinner").addClass("hidden");
+            }
+
+            $(".confirm-proposed-date").click(function () {
+                const button = $(this);
+                const orderId = button.data("order-id");
+                showSpinner(button);
+
+                $.post("' . admin_url('admin-ajax.php') . '", {
+                    action: "accept_new_time",
+                    security: "' . wp_create_nonce('ajax_nonce') . '",
+                    order_id: orderId
+                }, function (response) {
+                    hideSpinner(button);
+                    if (response.success) {
+                        $(".status-modal").hide();
+                        $("#acceptSuccessModal").fadeIn();
+                    } else {
+                        alert("Error: " + (response.data?.message || "Unknown"));
+                    }
+                });
+            });
+
+            $(".decline-proposed-date").click(function () {
+                const button = $(this);
+                const orderId = button.data("order-id");
+                $(".status-modal").hide();
+                $("#cancelReasonModal_" + orderId).show();
+            });
+        });
+        </script>';
+
 
     return ob_get_clean();
 }
