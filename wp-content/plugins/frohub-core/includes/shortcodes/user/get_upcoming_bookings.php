@@ -168,7 +168,7 @@ class GetUpcomingBookings {
         }
 
         echo '</table>';
-        echo '<div id="' . esc_attr($modal_accept) . '" class="status-modal">
+        echo '<div id="' . esc_attr($modal_accept) . '" class="status-modal"  style="display:none;">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5>Confirm New Appointment</h5>
@@ -188,7 +188,7 @@ class GetUpcomingBookings {
             </div>
         </div>';
 
-        echo '<div id="' . esc_attr($modal_decline) . '" class="status-modal">
+        echo '<div id="' . esc_attr($modal_decline) . '" class="status-modal" style="display:none;">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5>Decline Proposed Appointment</h5>
@@ -240,7 +240,6 @@ class GetUpcomingBookings {
                     }
                 });
             });
-
 
             function showSpinner(button) {
                 var footer = button.closest(".modal-footer");
