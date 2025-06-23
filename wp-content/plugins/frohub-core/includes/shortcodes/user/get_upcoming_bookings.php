@@ -218,7 +218,9 @@ class GetUpcomingBookings {
                 const startTime = $(this).data("start");
                 const orderId = $(this).data("order-id");
 
+                $("body").addClass("frohub-modal-open");
                 $("#" + modalId).fadeIn(200);
+
                 $("#" + modalId).find(".modal-start-time").text(startTime);
                 $("#" + modalId).find(".confirm-proposed-date, .decline-proposed-date")
                     .attr("data-order-id", orderId)
@@ -226,16 +228,19 @@ class GetUpcomingBookings {
             });
 
             $(".close-modal, .close-modal-text").click(function () {
-                $(".status-modal").hide();
+                $(".status-modal").fadeOut(200);
+                $("body").removeClass("frohub-modal-open");
             });
 
             $(window).click(function (e) {
                 $(".status-modal").each(function () {
                     if (e.target === this) {
-                        $(this).hide();
+                        $(this).fadeOut(200);
+                        $("body").removeClass("frohub-modal-open");
                     }
                 });
             });
+
 
             function showSpinner(button) {
                 var footer = button.closest(".modal-footer");
