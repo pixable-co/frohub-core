@@ -49,11 +49,19 @@ class Enqueue {
     	}
 
         $post_type = 'product';
+
         $product_ids = get_posts([
             'post_type'      => 'product',
             'posts_per_page' => -1,
             'fields'         => 'ids',
-            'post_status'    => ['publish'], // or any status
+            'post_status'    => ['publish'],
+        ]);
+
+        $order_ids = get_posts([
+            'post_type'      => 'shop_order',
+            'posts_per_page' => -1,
+            'fields'         => 'ids',
+            'post_status'    => ['wc-completed', 'wc-processing'], // adjust if needed
         ]);
 
     	wp_localize_script(
@@ -64,6 +72,7 @@ class Enqueue {
     			'nonce'      => wp_create_nonce('frohub_nonce'),
     			'post_type'  => $post_type,
     			'product_ids' => $product_ids,
+    			'order_ids'   => $order_ids,
     		)
     	);
 

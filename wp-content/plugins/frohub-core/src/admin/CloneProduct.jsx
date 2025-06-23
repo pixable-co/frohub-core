@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Modal, Progress, List, message } from 'antd';
+import { Button, Modal, Progress, List } from 'antd';
 import { fetchData } from '../services/fetchData.js';
 
 const CloneProduct = () => {
@@ -7,80 +7,93 @@ const CloneProduct = () => {
     const [cloningModalVisible, setCloningModalVisible] = useState(false);
     const [results, setResults] = useState([]);
     const [currentIndex, setCurrentIndex] = useState(0);
+    const [mode, setMode] = useState('products'); // 'products' or 'orders'
 
     const productIds = Array.isArray(frohub_settings?.product_ids) ? frohub_settings.product_ids : [];
+    const orderIds = Array.isArray(frohub_settings?.order_ids) ? frohub_settings.order_ids : [];
 
-    const handleBatchClone = () => {
-        if (!productIds.length) {
-            Modal.error({ title: 'No product IDs available.' });
+    const handleBatchClone = (type) => {
+        const ids = type === 'products' ? productIds : orderIds;
+
+        if (!ids.length) {
+            Modal.error({ title: `No ${type} IDs available.` });
             return;
         }
 
+        setMode(type);
         setLoading(true);
         setCloningModalVisible(true);
         setResults([]);
-        cloneNextProduct(0, []);
+        cloneNext(type, 0, []);
     };
 
-    const cloneNextProduct = (index, currentResults) => {
-        if (index >= productIds.length) {
+    const cloneNext = (type, index, currentResults) => {
+        const ids = type === 'products' ? productIds : orderIds;
+
+        if (index >= ids.length) {
             setLoading(false);
             setResults(currentResults);
 
-            // ✅ Show confirmation after all cloning is done
             Modal.success({
-                title: 'Cloning Complete',
-                content: `${currentResults.filter(r => r.status === 'success').length} of ${productIds.length} products cloned successfully.`,
+                title: `Cloning ${type} Complete`,
+                content: `${currentResults.filter(r => r.status === 'success').length} of ${ids.length} ${type} cloned successfully.`,
             });
-
             return;
         }
 
-        const productId = productIds[index];
+        const id = ids[index];
         setCurrentIndex(index);
 
+        const endpoint = type === 'products' ? 'frohub/clone_ecom_product' : 'frohub/clone_ecom_order';
+        const payloadKey = type === 'products' ? 'product_id' : 'order_id';
+
         fetchData(
-            'frohub/clone_ecom_product',
+            endpoint,
             (res) => {
                 const newResults = [...currentResults];
+
                 newResults.push({
-                    productId,
+                    productId: id,
                     status: res.success ? 'success' : 'error',
                     message: res?.data?.message || res?.data?.error || 'Unknown error',
                 });
 
                 setResults(newResults);
-                cloneNextProduct(index + 1, newResults);
+                cloneNext(type, index + 1, newResults);
             },
-            {
-                product_id: productId,
-            }
+            { [payloadKey]: id }
         );
     };
 
     return (
         <>
-            <div>
+            <div style={{ marginBottom: 20 }}>
                 <h4>Clone Product to Partner Portal</h4>
-                <Button type="primary" loading={loading} onClick={handleBatchClone}>
-                    Clone all products
+                <Button type="primary" loading={loading} onClick={() => handleBatchClone('products')}>
+                    Clone all Products
+                </Button>
+            </div>
+
+            <div>
+                <h4>Clone Orders to Partner Portal</h4>
+                <Button type="primary" loading={loading} onClick={() => handleBatchClone('orders')}>
+                    Clone All Orders
                 </Button>
             </div>
 
             <Modal
-                title="Cloning Products"
+                title={`Cloning ${mode === 'products' ? 'Products' : 'Orders'}`}
                 open={cloningModalVisible}
                 closable={!loading}
                 footer={null}
                 onCancel={() => !loading && setCloningModalVisible(false)}
             >
                 <Progress
-                    percent={Math.round((currentIndex / productIds.length) * 100)}
+                    percent={Math.round((currentIndex / (mode === 'products' ? productIds.length : orderIds.length)) * 100)}
                     status={loading ? 'active' : 'normal'}
                     style={{ marginBottom: 20 }}
                 />
 
-                {/* ✅ Scrollable List Container */}
                 <div style={{ maxHeight: '300px', overflowY: 'auto', marginBottom: 20 }}>
                     <List
                         size="small"
@@ -88,7 +101,7 @@ const CloneProduct = () => {
                         dataSource={results}
                         renderItem={(item) => (
                             <List.Item>
-                                Product #{item.productId}: <b>{item.status.toUpperCase()}</b> — {item.message}
+                                {mode === 'products' ? 'Product' : 'Order'} #{item.productId}: <b>{item.status.toUpperCase()}</b> — {item.message}
                             </List.Item>
                         )}
                     />
