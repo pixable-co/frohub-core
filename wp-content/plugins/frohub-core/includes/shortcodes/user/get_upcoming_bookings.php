@@ -168,6 +168,40 @@ class GetUpcomingBookings {
         }
 
         echo '</table>';
+    
+                // Accept Success Modal
+        echo '<div id="acceptSuccessModal" class="status-modal" style="display:none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5>Appointment Confirmed!</h5>
+                    <span class="close-modal">×</span>
+                </div>
+                <div class="modal-body">
+                    <p>Your new appointment time has been successfully booked! 🎉</p>
+                </div>
+                <div class="modal-footer">
+                    <a href="/my-account/bookings/" class="w-btn us-btn-style_6 w-btn-underlined">Back to My Bookings</a>
+                </div>
+            </div>
+        </div>';
+
+        // Cancel Success Modal
+        echo '<div id="cancelSuccessModal" class="status-modal" style="display:none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5>Proposed Appointment Declined</h5>
+                    <span class="close-modal">×</span>
+                </div>
+                <div class="modal-body">
+                    <p>Your booking request has been cancelled. No payment has been charged.</p>
+                </div>
+                <div class="modal-footer">
+                    <a href="/my-account/bookings/" class="w-btn us-btn-style_6 w-btn-underlined">Back to My Bookings</a>
+                </div>
+            </div>
+        </div>';
+
+
         echo '<div id="' . esc_attr($modal_accept) . '" class="status-modal"  style="display:none;">
             <div class="modal-content">
                 <div class="modal-header">
@@ -207,83 +241,183 @@ class GetUpcomingBookings {
             </div>
         </div>';
 
+        echo '<div id="cancelReasonModal_' . esc_attr($booking['order_id']) . '" class="status-modal cancel-reason-modal" style="display:none;">
+            <div class="modal-content">
+                <div class="modal-header"><h5>Help us improve, tell us why you’re cancelling</h5><span class="close-modal">×</span></div>
+                <div class="modal-body">
+                    <p>Your feedback helps us improve the booking experience.</p>
+                    <p id="cancel-reason-error-' . esc_attr($booking['order_id']) . '" class="cancel-error-msg" style="color:#c00; display:none;"></p>
+                    <form id="cancel-reason-form-' . esc_attr($booking['order_id']) . '">
+                        <label><input type="radio" name="reason" value="scheduling"> I had a scheduling conflict</label><br>
+                        <label><input type="radio" name="reason" value="changed-mind"> I changed my mind</label><br>
+                        <label><input type="radio" name="reason" value="no-response"> The stylist didn’t respond in time</label><br>
+                        <label><input type="radio" name="reason" value="stylist-cancel"> The stylist asked me to cancel</label><br>
+                        <label><input type="radio" name="reason" value="other"> Other</label>
+                        <div class="other-reason-wrapper" style="display: none; margin-top: 10px;">
+                            <textarea name="other_reason" placeholder="Enter your reason here..."></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="w-btn us-btn-style_6 w-btn-underlined submit-final-cancel"
+                        data-order-id="' . esc_attr($booking['order_id']) . '">
+                        <span class="spinner hidden"></span>
+                        <span class="btn-text">Cancel Booking</span>
+                    </button>
+                </div>
+            </div>
+        </div>';
+
+
         echo $mobile_cards;
         echo '</div>'; // .frohub_table_wrapper
     }
 
-    echo '<script>
-        jQuery(document).ready(function($) {
-            $(".modal-trigger").click(function () {
-                const modalId = $(this).data("modal");
-                const startTime = $(this).data("start");
-                const orderId = $(this).data("order-id");
+echo '<script>
+jQuery(document).ready(function($) {
 
-                $("body").addClass("frohub-modal-open");
-                $("#" + modalId).fadeIn(200);
+    // Open modal
+    $(".modal-trigger").click(function () {
+        const modalId = $(this).data("modal");
+        const startTime = $(this).data("start");
+        const orderId = $(this).data("order-id");
 
-                $("#" + modalId).find(".modal-start-time").text(startTime);
-                $("#" + modalId).find(".confirm-proposed-date, .decline-proposed-date")
-                    .attr("data-order-id", orderId)
-                    .attr("data-start", startTime);
-            });
+        $("body").addClass("frohub-modal-open");
+        $("#" + modalId).fadeIn(200);
 
-            $(".close-modal, .close-modal-text").click(function () {
-                $(".status-modal").fadeOut(200);
+        $("#" + modalId).find(".modal-start-time").text(startTime);
+        $("#" + modalId).find(".confirm-proposed-date, .decline-proposed-date")
+            .attr("data-order-id", orderId)
+            .attr("data-start", startTime);
+    });
+
+    // Close modal
+    $(".close-modal, .close-modal-text").click(function () {
+        $(".status-modal").fadeOut(200);
+        $("body").removeClass("frohub-modal-open");
+    });
+
+    // Click outside to close
+    $(window).click(function (e) {
+        $(".status-modal").each(function () {
+            if (e.target === this) {
+                $(this).fadeOut(200);
                 $("body").removeClass("frohub-modal-open");
-            });
-
-            $(window).click(function (e) {
-                $(".status-modal").each(function () {
-                    if (e.target === this) {
-                        $(this).fadeOut(200);
-                        $("body").removeClass("frohub-modal-open");
-                    }
-                });
-            });
-
-            function showSpinner(button) {
-                var footer = button.closest(".modal-footer");
-                footer.find("button").prop("disabled", true);
-                footer.find("button").not(button).hide();
-                button.find(".btn-text").hide();
-                button.find(".spinner").removeClass("hidden");
             }
-
-            function hideSpinner(button) {
-                var footer = button.closest(".modal-footer");
-                footer.find("button").prop("disabled", false).show();
-                button.find(".btn-text").show();
-                button.find(".spinner").addClass("hidden");
-            }
-
-            $(".confirm-proposed-date").click(function () {
-                const button = $(this);
-                const orderId = button.data("order-id");
-                showSpinner(button);
-
-                $.post("' . admin_url('admin-ajax.php') . '", {
-                    action: "accept_new_time",
-                    security: "' . wp_create_nonce('ajax_nonce') . '",
-                    order_id: orderId
-                }, function (response) {
-                    hideSpinner(button);
-                    if (response.success) {
-                        $(".status-modal").hide();
-                        $("#acceptSuccessModal").fadeIn();
-                    } else {
-                        alert("Error: " + (response.data?.message || "Unknown"));
-                    }
-                });
-            });
-
-            $(".decline-proposed-date").click(function () {
-                const button = $(this);
-                const orderId = button.data("order-id");
-                $(".status-modal").hide();
-                $("#cancelReasonModal_" + orderId).show();
-            });
         });
-        </script>';
+    });
+
+    // Show "Other reason" field if selected
+    $(document).on("change", "input[name=\'reason\']", function () {
+        const wrapper = $(this).closest("form").find(".other-reason-wrapper");
+        if ($(this).val() === "other") {
+            wrapper.slideDown();
+        } else {
+            wrapper.slideUp();
+        }
+    });
+
+    // Spinner controls
+    function showSpinner(button) {
+        const footer = button.closest(".modal-footer");
+        footer.find("button").prop("disabled", true).not(button).hide();
+        button.find(".btn-text").hide();
+        button.find(".spinner").removeClass("hidden");
+    }
+
+    function hideSpinner(button) {
+        const footer = button.closest(".modal-footer");
+        footer.find("button").prop("disabled", false).show();
+        button.find(".btn-text").show();
+        button.find(".spinner").addClass("hidden");
+    }
+
+    // Accept proposed time
+    $(".confirm-proposed-date").click(function () {
+        const button = $(this);
+        const orderId = button.data("order-id");
+
+        showSpinner(button);
+
+        $.post("' . admin_url('admin-ajax.php') . '", {
+            action: "accept_new_time",
+            security: "' . wp_create_nonce('ajax_nonce') . '",
+            order_id: orderId
+        }, function (response) {
+            hideSpinner(button);
+            if (response.success) {
+                $(".status-modal").fadeOut(200);
+                $("#acceptSuccessModal").fadeIn(200);
+            } else {
+                alert("Error: " + (response?.data?.message || "Unknown error occurred."));
+            }
+        }).fail(function () {
+            hideSpinner(button);
+            alert("Network error. Please try again.");
+        });
+    });
+
+    // Decline opens reason modal
+    $(".decline-proposed-date").click(function () {
+        const button = $(this);
+        const orderId = button.data("order-id");
+
+        $(".status-modal").fadeOut(200);
+        $("#cancelReasonModal_" + orderId).fadeIn(200);
+    });
+
+    // Submit cancel reason
+    $(".submit-final-cancel").click(function () {
+        const button = $(this);
+        const orderId = button.data("order-id");
+        const form = $("#cancel-reason-form-" + orderId);
+        const errorBox = $("#cancel-reason-error-" + orderId);
+
+        const selectedReason = form.find("input[name=\'reason\']:checked").val();
+        const otherText = form.find("textarea[name=\'other_reason\']").val();
+
+        errorBox.hide().text("");
+
+        if (!selectedReason) {
+            errorBox.text("Please select a reason for declining.").show();
+            return;
+        }
+
+        if (selectedReason === "other" && (!otherText || !otherText.trim())) {
+            errorBox.text("Please enter your reason in the textbox.").show();
+            return;
+        }
+
+        showSpinner(button);
+
+        $.ajax({
+            url: "' . admin_url('admin-ajax.php') . '",
+            method: "POST",
+            data: {
+                action: "decline_new_proposed_time",
+                security: "' . wp_create_nonce('ajax_nonce') . '",
+                order_id: orderId,
+                reason: selectedReason,
+                other_reason: otherText
+            },
+            success: function (response) {
+                hideSpinner(button);
+                if (response.success) {
+                    $(".status-modal").fadeOut(200);
+                    $("#cancelSuccessModal").fadeIn(200);
+                } else {
+                    errorBox.text(response?.data?.message || "Something went wrong.").show();
+                }
+            },
+            error: function () {
+                hideSpinner(button);
+                errorBox.text("Something went wrong. Please try again.").show();
+            }
+        });
+    });
+
+});
+</script>';
 
 
     return ob_get_clean();
