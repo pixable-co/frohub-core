@@ -36,6 +36,7 @@ class GetUpcomingBookings {
             $appointment = $service_name = $service_type = $duration = $total_due = '';
             $partner_title = get_the_title(get_field('partner_id', $product_id));
             $appointment_datetime = null;
+            $end_datetime = null;
             $deposit = (float) $item->get_total();
             $item_meta_data = $item->get_meta_data();
 
@@ -44,6 +45,9 @@ class GetUpcomingBookings {
                     case 'Start Date Time':
                         $appointment = esc_html($meta->value);
                         $appointment_datetime = strtotime($appointment);
+                        break;
+                    case 'End Date Time':
+                        $end_datetime = strtotime($meta->value);
                         break;
                     case 'pa_service-type':
                         $service_type = esc_html(ucwords(str_replace('-', ' ', $meta->value)));
@@ -57,9 +61,11 @@ class GetUpcomingBookings {
                 }
             }
 
-            if (!$appointment_datetime || $appointment_datetime < strtotime($now)) {
-                continue; // Skip invalid or past appointments
+
+            if (!$appointment_datetime || !$end_datetime || $end_datetime < strtotime($now)) {
+                continue; // Skip if appointment has ended
             }
+
 
             $upcoming_orders[] = array(
                 'order_id'            => $order_id,
