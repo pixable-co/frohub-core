@@ -38,7 +38,7 @@ class GetUserPastBookings
             $order_status = $order->get_status();
             $review = get_field('review', $order_id);
 
-            if (!in_array($order_status, ['completed', 'cancelled']))
+            if (!in_array($order_status, ['completed', 'cancelled','on-hold']))
                 continue;
 
             $found_past_booking = true;
