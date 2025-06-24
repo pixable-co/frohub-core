@@ -52,6 +52,7 @@ class GetPartnerData {
         $upcoming_bookings = Helper::get_next_upcoming_order_by_partner($partner_post_id);
         $pending_orders_count = $this->get_pending_orders_count($partner_post_id);
         $vacation_status = $this->get_vacation_status($partner_post_id);
+        $stripe_data = $this->get_stripe_data($partner_post_id);
 
         // Keep existing keys while adding new ones
         $partner_data = [
@@ -88,6 +89,9 @@ class GetPartnerData {
             'upcomingBookings' => $upcoming_bookings,
             'pendingOrdersCount' => $pending_orders_count,
             'onVacation' => $vacation_status,
+            'stripeUserId'       => $stripe_data['stripe_user_id'] ?? '',
+            'stripeConnected'    => !empty($stripe_data['stripe_user_id']),
+            'showStripeWarning'  => empty($stripe_data['stripe_user_id']),
         ];
 
         return rest_ensure_response($partner_data);
@@ -171,5 +175,23 @@ class GetPartnerData {
         $is_on_vacation = ($vacation_status === true || $vacation_status === '1' || $vacation_status === 1);
 
         return $is_on_vacation;
+    }
+
+    /**
+     * Get Stripe account data for a partner.
+     *
+     * @param int $partner_id
+     * @return array
+     */
+    private function get_stripe_data($partner_id) {
+        // Get the Stripe Account ID directly from ACF field
+        $stripe_account_id = get_field('stripe_account_id', $partner_id);
+
+        $stripe_data = [];
+        if (!empty($stripe_account_id)) {
+            $stripe_data['stripe_user_id'] = $stripe_account_id;
+        }
+
+        return $stripe_data;
     }
 }
