@@ -51,6 +51,7 @@ class GetPartnerData {
         $reviews = $this->get_partner_reviews($partner_post_id);
         $upcoming_bookings = Helper::get_next_upcoming_order_by_partner($partner_post_id);
         $pending_orders_count = $this->get_pending_orders_count($partner_post_id);
+        $vacation_status = $this->get_vacation_status($partner_post_id);
 
         // Keep existing keys while adding new ones
         $partner_data = [
@@ -86,6 +87,7 @@ class GetPartnerData {
             'auto_message_text' => get_field('auto_message_text', $partner_post_id),
             'upcomingBookings' => $upcoming_bookings,
             'pendingOrdersCount' => $pending_orders_count,
+            'onVacation' => $vacation_status,
         ];
 
         return rest_ensure_response($partner_data);
@@ -154,4 +156,20 @@ class GetPartnerData {
 
          return $query->found_posts;
      }
+
+    /**
+     * Get vacation status for a partner.
+     *
+     * @param int $partner_id
+     * @return bool
+     */
+    private function get_vacation_status($partner_id) {
+        // Use field name and force boolean logic
+        $vacation_status = get_field('on_vacation', $partner_id);
+
+        // Force to true/false explicitly
+        $is_on_vacation = ($vacation_status === true || $vacation_status === '1' || $vacation_status === 1);
+
+        return $is_on_vacation;
+    }
 }
