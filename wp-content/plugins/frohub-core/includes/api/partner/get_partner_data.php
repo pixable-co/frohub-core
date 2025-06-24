@@ -1,6 +1,8 @@
 <?php
 namespace FECore;
 
+use FECore\Helper;
+
 if (!defined('ABSPATH')) {
     exit;
 }
@@ -47,6 +49,8 @@ class GetPartnerData {
         // Get Featured Image URL
         $featured_image_url = get_the_post_thumbnail_url($partner_post_id, 'full') ?: '';
         $reviews = $this->get_partner_reviews($partner_post_id);
+        $upcoming_bookings = Helper::get_next_upcoming_order_by_partner($partner_post_id);
+        $pending_orders_count = $this->get_pending_orders_count($partner_post_id);
 
         // Keep existing keys while adding new ones
         $partner_data = [
@@ -80,6 +84,8 @@ class GetPartnerData {
             'mobileServiceFee' => get_field('radius_fees', $partner_post_id),
             'auto_message' => get_field('auto_message', $partner_post_id),
             'auto_message_text' => get_field('auto_message_text', $partner_post_id),
+            'upcomingBookings' => $upcoming_bookings,
+            'pendingOrdersCount' => $pending_orders_count,
         ];
 
         return rest_ensure_response($partner_data);
@@ -124,5 +130,28 @@ class GetPartnerData {
          }
 
          return $reviews;
+     }
+
+     /**
+      * Get count of pending orders for a partner.
+      *
+      * @param int $partner_id
+      * @return int
+      */
+     private function get_pending_orders_count($partner_id) {
+         $query = new \WP_Query(array(
+             'post_type'      => 'shop_order',
+             'post_status'    => 'wc-on-hold',
+             'posts_per_page' => -1,
+             'meta_query'     => array(
+                 array(
+                     'key'     => 'partner_name', // ACF field
+                     'value'   => $partner_id,
+                     'compare' => '='
+                 ),
+             ),
+         ));
+
+         return $query->found_posts;
      }
 }
