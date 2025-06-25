@@ -90,9 +90,7 @@ public function handle_my_services(\WP_REST_Request $request) {
             $terms = get_the_terms($product_id, 'product_cat');
             if ($terms && !is_wp_error($terms)) {
                 foreach ($terms as $term) {
-                    if ($term->parent == 0) { // Only include parent categories
-                        $categories[] = $term->name;
-                    }
+                     $categories[] = $term->name;
                 }
             }
 
