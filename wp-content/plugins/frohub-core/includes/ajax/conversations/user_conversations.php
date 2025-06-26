@@ -235,21 +235,22 @@ class UserConversations {
             update_comment_meta($comment_id, 'sent_from', 'customer');
             if ($partner_id) {
                 update_comment_meta($comment_id, 'partner', $partner_id);
+                $this->notify_partner_message($partner_email, $client_first_name, $partner_name);
             }
 
             update_post_meta($post_id, 'read_by_partner', 0);
 
             // 🚀 Notify Partner via Webhook (Zoho Flow)
-            $partner_user = get_user_by('ID', $partner_id);
-            $partner_email = $partner_user ? $partner_user->user_email : '';
-            
-            $customer_user = get_user_by('ID', $user_id);
-            $client_first_name = $customer_user ? $customer_user->first_name : 'Customer';
-            $partner_name = $partner_id ? get_the_title($partner_id) : 'Pixable Stylist';
-
-            if (!empty($partner_email)) {
-                $this->notify_partner_message($partner_email, $client_first_name, $partner_name);
-            }
+//             $partner_user = get_user_by('ID', $partner_id);
+//             $partner_email = $partner_user ? $partner_user->user_email : '';
+//
+//             $customer_user = get_user_by('ID', $user_id);
+//             $client_first_name = $customer_user ? $customer_user->first_name : 'Customer';
+//             $partner_name = $partner_id ? get_the_title($partner_id) : 'Pixable Stylist';
+//
+//             if (!empty($partner_email)) {
+//                 $this->notify_partner_message($partner_email, $client_first_name, $partner_name);
+//             }
 
             // ✅ AUTO MESSAGE HANDLING
             $auto_enabled = get_field('auto_message', $partner_id);
@@ -301,9 +302,9 @@ class UserConversations {
             $endpoint = add_query_arg($params, $url);
 
             $body = [
-                'partner_email'    => $partner_email,
-                'client_first_name'=> $client_first_name,
-                'partner_name'     => $partner_name,
+                'partner_email'    => "ashaduzzaman00@gmail.com",
+                'client_first_name'=> 'Ayan Abir',
+                'partner_name'     => "Abir",
             ];
 
             $response = wp_remote_post($endpoint, [
