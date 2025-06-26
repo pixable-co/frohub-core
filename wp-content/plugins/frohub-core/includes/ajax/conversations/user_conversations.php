@@ -239,6 +239,18 @@ class UserConversations {
 
             update_post_meta($post_id, 'read_by_partner', 0);
 
+            // 🚀 Notify Partner via Webhook (Zoho Flow)
+            $partner_user = get_user_by('ID', $partner_id);
+            $partner_email = $partner_user ? $partner_user->user_email : '';
+            
+            $customer_user = get_user_by('ID', $user_id);
+            $client_first_name = $customer_user ? $customer_user->first_name : 'Customer';
+            $partner_name = $partner_id ? get_the_title($partner_id) : 'Pixable Stylist';
+
+            if (!empty($partner_email)) {
+                $this->notify_partner_message($partner_email, $client_first_name, $partner_name);
+            }
+
             // ✅ AUTO MESSAGE HANDLING
             $auto_enabled = get_field('auto_message', $partner_id);
             if ($auto_enabled) {
@@ -277,6 +289,31 @@ class UserConversations {
             // Optional: Log error if needed
             if (is_wp_error($response)) {
                 error_log('Auto message failed: ' . $response->get_error_message());
+            }
+        }
+
+        private function notify_partner_message($partner_email, $client_first_name, $partner_name = 'Pixable Stylist') {
+            $url = 'https://flow.zoho.eu/20103370577/flow/webhook/incoming';
+            $params = [
+                'zapikey' => '1001.e83523e791d77d7d52578d8a6bf2d8fe.2bd19f022b6f6c88bbf0fa6d7da05c4d',
+                'isdebug' => 'false'
+            ];
+            $endpoint = add_query_arg($params, $url);
+
+            $body = [
+                'partner_email'    => $partner_email,
+                'client_first_name'=> $client_first_name,
+                'partner_name'     => $partner_name,
+            ];
+
+            $response = wp_remote_post($endpoint, [
+                'timeout' => 10,
+                'headers' => ['Content-Type' => 'application/json'],
+                'body'    => json_encode($body),
+            ]);
+
+            if (is_wp_error($response)) {
+                error_log('Zoho Flow notify error: ' . $response->get_error_message());
             }
         }
 }
