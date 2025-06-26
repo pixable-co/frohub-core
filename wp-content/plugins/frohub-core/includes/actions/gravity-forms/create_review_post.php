@@ -92,8 +92,9 @@ class CreateReviewPost
                 'method'      => 'POST',
                 'headers'     => array('Content-Type' => 'application/json'),
                 'body'        => wp_json_encode($payload),
-                'data_format' => 'body',
+                'data_format' => 'body'
             ));
+
         }
     }
 }
