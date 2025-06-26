@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Button, Modal, Progress, List } from 'antd';
 import { fetchData } from '../services/fetchData.js';
+import MigrateComments from "./MigrateComments.jsx";
+import ImportComments from "./ImportComments.jsx";
 
 const CloneProduct = () => {
     const [loading, setLoading] = useState(false);
@@ -79,6 +81,16 @@ const CloneProduct = () => {
                 <Button type="primary" loading={loading} onClick={() => handleBatchClone('orders')}>
                     Clone All Orders
                 </Button>
+            </div>
+
+            {/*<div>*/}
+            {/*    <h4>Migrate Comments</h4>*/}
+            {/*    <MigrateComments />*/}
+            {/*</div>*/}
+
+            <div>
+                <h4>Import Comments</h4>
+                <ImportComments />
             </div>
 
             <Modal
