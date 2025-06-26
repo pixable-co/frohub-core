@@ -18,3 +18,8 @@ wp-content/wpvividbackups
 # Ignore everything inside wp-content/plugins except frohub-core
 wp-content/plugins/*
 !wp-content/plugins/frohub-core/
+wp-content/advanced-cache.php
+/wp-content/ai1wm-backups
+wp-content/object-cache.php
+wp-content/php-error.php
+/wp-content/updraft
