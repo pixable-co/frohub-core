@@ -73,8 +73,28 @@ class CreateReviewPost
                 update_field('review_gallery', $attachment_ids, $post_id);
             }
 
-            // ✅ Send review to webhook.site
+            // ✅ Send review to booking post on partner side. /wp-admin/post.php?post=31668&action=edit
             send_review_to_webhook($post_id);
+
+            // ✅ Send review to partner via email.
+            $partner_email = get_field('partner_email',  $partner_id);
+            $partner_name = get_the_title($partner_id);
+            $order = wc_get_order($order_id);
+            $customer_first_name = $order ? $order->get_billing_first_name() : '';
+
+            $payload = array(
+                'partner_email'     => $partner_email,
+                'client_first_name' => $customer_first_name,
+                'partner_name'      => $partner_name ?: 'Pixable Stylist'
+            );
+
+            $response = wp_remote_post('https://flow.zoho.eu/20103370577/flow/webhook/incoming?zapikey=1001.e83523e791d77d7d52578d8a6bf2d8fe.2bd19f022b6f6c88bbf0fa6d7da05c4d&isdebug=false', array(
+                'method'      => 'POST',
+                'headers'     => array('Content-Type' => 'application/json'),
+                'body'        => wp_json_encode($payload),
+                'data_format' => 'body',
+            ));
+
         }
     }
 }
