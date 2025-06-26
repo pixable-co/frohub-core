@@ -85,7 +85,7 @@ class CreateReviewPost
             $payload = array(
                 'partner_email'     => $partner_email,
                 'client_first_name' => $customer_first_name,
-                'partner_name'      => $partner_name ?: 'Pixable Stylist'
+                'partner_name'      => $partner_name . 
             );
 
             $response = wp_remote_post('https://flow.zoho.eu/20103370577/flow/webhook/incoming?zapikey=1001.e83523e791d77d7d52578d8a6bf2d8fe.2bd19f022b6f6c88bbf0fa6d7da05c4d&isdebug=false', array(
@@ -94,7 +94,6 @@ class CreateReviewPost
                 'body'        => wp_json_encode($payload),
                 'data_format' => 'body',
             ));
-
         }
     }
 }
