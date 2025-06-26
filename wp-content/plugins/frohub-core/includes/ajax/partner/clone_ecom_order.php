@@ -42,7 +42,7 @@ class CloneEcomOrder {
             $payload['acf_fields']['partner_id'] = sanitize_text_field($partner_id);
         }
 
-        $response = wp_remote_post('https://frohubpartners.mystagingwebsite.com/wp-json/frohub/v1/create-booking-post', [
+        $response = wp_remote_post(FHCORE_PARTNER_BASE_API_URL . '/wp-json/frohub/v1/create-booking-post', [
             'method'      => 'POST',
             'headers'     => ['Content-Type' => 'application/json'],
             'body'        => wp_json_encode($payload),

@@ -38,7 +38,7 @@ class CreatePartnerPost {
             'partner_post_id' => $partner_id,
         ];
 
-        $url = 'https://frohubpartners.mystagingwebsite.com/wp-json/v1/user/update';
+        $url = FHCORE_PARTNER_BASE_API_URL . '/wp-json/v1/user/update';
 
         $response = wp_remote_post($url, [
             'body'    => json_encode($payload),

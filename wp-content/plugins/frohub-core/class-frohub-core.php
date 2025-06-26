@@ -51,6 +51,7 @@ final class FrohubCore {
 		define( 'FHCORE_ROOT_DIR_URL', plugin_dir_url( __FILE__ ) );
 		define( 'FHCORE_INCLUDES_DIR_PATH', FHCORE_ROOT_DIR_PATH . 'includes/' );
 		define( 'FHCORE_PLUGIN_SLUG', 'frohub-core' );
+		define( 'FHCORE_PARTNER_BASE_API_URL',untrailingslashit(get_field( 'frohub_partner_base_api_url', 'option' )));
 	}
 
 	public function on_plugins_loaded() {
