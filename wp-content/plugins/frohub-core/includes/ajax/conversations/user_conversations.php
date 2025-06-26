@@ -235,7 +235,7 @@ class UserConversations {
             update_comment_meta($comment_id, 'sent_from', 'customer');
             if ($partner_id) {
                 update_comment_meta($comment_id, 'partner', $partner_id);
-                $this->notify_partner_message($partner_email, $client_first_name, $partner_name);
+                $this->notify_partner_message($partner_id, $author_name);
             }
 
             update_post_meta($post_id, 'read_by_partner', 0);
@@ -293,28 +293,53 @@ class UserConversations {
             }
         }
 
-        private function notify_partner_message($partner_email, $client_first_name, $partner_name = 'Pixable Stylist') {
-            $url = 'https://flow.zoho.eu/20103370577/flow/webhook/incoming';
-            $params = [
-                'zapikey' => '1001.e83523e791d77d7d52578d8a6bf2d8fe.2bd19f022b6f6c88bbf0fa6d7da05c4d',
-                'isdebug' => 'false'
-            ];
-            $endpoint = add_query_arg($params, $url);
+        private function notify_partner_message($partner_id, $author_name) {
+                    // Safety check: Ensure it's a valid post of type "partner"
+                    if (get_post_type($partner_id) !== 'partner') {
+                        error_log("Invalid partner ID: $partner_id");
+                        return;
+                    }
 
-            $body = [
-                'partner_email'    => "ashaduzzaman00@gmail.com",
-                'client_first_name'=> 'Ayan Abir',
-                'partner_name'     => "Abir",
-            ];
+                    $partner_email = get_field('partner_email', $partner_id);
+                    $partner_name  = get_the_title($partner_id);
 
-            $response = wp_remote_post($endpoint, [
-                'timeout' => 10,
-                'headers' => ['Content-Type' => 'application/json'],
-                'body'    => json_encode($body),
-            ]);
+                    // Fallback to user email via post author if ACF field is missing
+                    if (empty($partner_email)) {
+                        $partner_user_id = get_post_field('post_author', $partner_id); // ✅ get user ID from post author
+                        $partner_user = get_user_by('ID', $partner_user_id);
 
-            if (is_wp_error($response)) {
-                error_log('Zoho Flow notify error: ' . $response->get_error_message());
-            }
+                        if ($partner_user && !empty($partner_user->user_email)) {
+                            $partner_email = $partner_user->user_email;
+                        }
+                    }
+
+                    // Still missing? Abort
+                    if (empty($partner_email)) {
+                        error_log("Missing partner email from both ACF and user lookup for partner ID: $partner_id");
+                        return;
+                    }
+
+                    $url = 'https://flow.zoho.eu/20103370577/flow/webhook/incoming';
+                    $params = [
+                        'zapikey' => '1001.e83523e791d77d7d52578d8a6bf2d8fe.2bd19f022b6f6c88bbf0fa6d7da05c4d',
+                        'isdebug' => 'false'
+                    ];
+                    $endpoint = add_query_arg($params, $url);
+
+                    $body = [
+                        'partner_email'     => $partner_email,
+                        'client_first_name' => $author_name,
+                        'partner_name'      => $partner_name ?: 'Pixable Stylist',
+                    ];
+
+                    $response = wp_remote_post($endpoint, [
+                        'timeout' => 10,
+                        'headers' => ['Content-Type' => 'application/json'],
+                        'body'    => json_encode($body),
+                    ]);
+
+                    if (is_wp_error($response)) {
+                        error_log('Zoho Flow notify error: ' . $response->get_error_message());
+                    }
         }
 }

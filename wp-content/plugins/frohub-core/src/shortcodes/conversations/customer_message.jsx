@@ -11,7 +11,7 @@ const CustomerMessage = ({ dataKey, currentUserPartnerPostId }) => {
     const [comments, setComments] = useState([]);
     const [activeConversation, setActiveConversation] = useState(null);
     const [activeConversationId, setActiveConversationId] = useState(null);
-    const [userPartnerId, setUserPartnerId] = useState(currentUserPartnerPostId);
+    const [userPartnerId, setUserPartnerId] = useState(null);
     const [loading, setLoading] = useState({ conversations: false, comments: false, sending: false });
     const [error, setError] = useState(null);
 
@@ -118,7 +118,8 @@ const CustomerMessage = ({ dataKey, currentUserPartnerPostId }) => {
             if (response.success) {
                 const data = response.data || {};
                 const commentsData = data.comments || [];
-                const partnerIdFromResponse = data.user_partner_id;
+                const partnerIdFromResponse = data.user_partner_id.ID;
+                setUserPartnerId(partnerIdFromResponse);
 
                 if (Array.isArray(commentsData)) {
                     if (showLoading || comments.length === 0) {
@@ -224,7 +225,7 @@ const CustomerMessage = ({ dataKey, currentUserPartnerPostId }) => {
         }, {
             post_id: postId,
             conversation_id: activeConversationId,
-            partner_id: currentUserPartnerPostId,
+            partner_id: userPartnerId,
             comment: content,
             image_url: imageUrl
         });
