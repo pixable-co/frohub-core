@@ -91,7 +91,7 @@ class CloneEcomProduct {
     	];
 
     	// ✅ 4. Send to external API
-    	$response = wp_remote_post('https://frohubpartners.mystagingwebsite.com/wp-json/fpserver/v1/clone-ecom-product', [
+    	$response = wp_remote_post(FHCORE_PARTNER_BASE_API_URL . '/wp-json/fpserver/v1/clone-ecom-product', [
     		'headers' => [
     			'Content-Type' => 'application/json',
     		],

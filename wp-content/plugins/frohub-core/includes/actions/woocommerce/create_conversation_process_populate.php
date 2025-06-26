@@ -117,7 +117,7 @@ class CreateConversionProcessPopulate {
     }
 
     private function send_conversation_to_endpoint($post_id, $partner_id, $user_id, $order_id) {
-        $endpoint_url = 'https://frohubpartners.mystagingwebsite.com/wp-json/frohub/v1/create-client-post';
+        $endpoint_url = FHCORE_PARTNER_BASE_API_URL . '/wp-json/frohub/v1/create-client-post';
 
         $user_info = get_userdata($user_id);
         $email = $user_info->user_email ?? '';

@@ -118,7 +118,7 @@ class SubmitComment
         // 🔹 API: mark unread for partner
         $partner_client_post_id = get_field('partner_client_post_id', $post_id);
         if ($partner_client_post_id) {
-            $api_endpoint = 'https://frohubpartners.mystagingwebsite.com/wp-json/frohub/v1/mark-unread-for-partner/';
+            $api_endpoint = FHCORE_PARTNER_BASE_API_URL . '/wp-json/frohub/v1/mark-unread-for-partner/';
             $response = wp_remote_post($api_endpoint, array(
                 'method'  => 'POST',
                 'headers' => array('Content-Type' => 'application/json'),

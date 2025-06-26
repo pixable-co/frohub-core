@@ -253,7 +253,7 @@ class GetAvailibility {
     }
 
     private function get_google_calendar_bookings($partner_id, $date) {
-        $url = "https://frohubpartners.mystagingwebsite.com/wp-json/fpserver/v1/google-calendar-events?partner_id=" . $partner_id . "&date=" . $date;
+        $url = FHCORE_PARTNER_BASE_API_URL . "/wp-json/fpserver/v1/google-calendar-events?partner_id=" . $partner_id . "&date=" . $date;
         $response = wp_remote_get($url);
 
         if (is_wp_error($response)) {
