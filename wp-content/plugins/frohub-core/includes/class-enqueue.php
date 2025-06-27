@@ -17,6 +17,8 @@ class Enqueue {
 	public function fpserver_scripts() {
 	        wp_enqueue_style( 'frohub-shortcode-style', FHCORE_ROOT_DIR_URL . 'includes/assets/shortcode/style.css' );
 	        wp_enqueue_script( 'frohub-shortcode-script', FHCORE_ROOT_DIR_URL . 'includes/assets/shortcode/scripts.js', 'jquery', '0.0.1', true );
+
+	         wp_enqueue_script('frohub-google-maps','https://maps.googleapis.com/maps/api/js?key=' . FROHUB_GOOGLE_MAPS_API_KEY . '&libraries=places',[],null,true);
 			wp_enqueue_style( 'frohub-build-style', FHCORE_ROOT_DIR_URL . 'includes/assets/build/frontend.css' );
 			wp_enqueue_script( 'frohub-build-script', FHCORE_ROOT_DIR_URL . 'includes/assets/build/frontend.js', 'jquery', '0.0.1', true );
 			wp_localize_script(

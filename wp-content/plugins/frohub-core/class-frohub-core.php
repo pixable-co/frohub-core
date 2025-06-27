@@ -52,6 +52,7 @@ final class FrohubCore {
 		define( 'FHCORE_INCLUDES_DIR_PATH', FHCORE_ROOT_DIR_PATH . 'includes/' );
 		define( 'FHCORE_PLUGIN_SLUG', 'frohub-core' );
 		define( 'FHCORE_PARTNER_BASE_API_URL',untrailingslashit(get_field( 'frohub_partner_base_api_url', 'option' )));
+		define( 'FROHUB_GOOGLE_MAPS_API_KEY',untrailingslashit(get_field( 'google_geocoding_api_key', 'option' )));
 	}
 
 	public function on_plugins_loaded() {
