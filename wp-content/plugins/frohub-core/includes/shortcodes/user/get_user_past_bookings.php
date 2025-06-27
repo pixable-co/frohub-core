@@ -139,6 +139,7 @@ class GetUserPastBookings
             $mobile_cards .= '<p><strong>' . esc_html($appointment) . '</strong></p>';
             $mobile_cards .= '<p>' . esc_html($clean_service_name) . '</p>';
             $mobile_cards .= '<p>' . esc_html($partner_title) . '</p>';
+            $mobile_cards .= '<p><strong>Status:</strong> <span class="status_text">' . esc_html($status_label) . '</span></p>';
             $mobile_cards .= '<p>Deposit: £' . number_format($deposit, 2) . '</p>';
             $mobile_cards .= '<p><input disabled type="text" value="Due on the day: £' . number_format($total_due, 2) . '" /></p>';
             $mobile_cards .= '<div class="actions">';

@@ -154,6 +154,7 @@ class GetUpcomingBookings {
             $mobile_cards .= '<p><strong>' . esc_html($booking['appointment']) . '</strong></p>';
             $mobile_cards .= '<p>' . $clean_service_name . '</p>';
             $mobile_cards .= '<p>' . esc_html($booking['partner_title']) . '</p>';
+            $mobile_cards .= '<p><strong>Status:</strong> ' . esc_html($status_label) . '</p>';
             $mobile_cards .= '<p>Deposit: £' . number_format($booking['deposit'], 2) . '</p>';
             $mobile_cards .= '<p><input disabled type="text" value="Due on the day: ' . esc_attr($booking['total_due']) . '" /></p>';
             $mobile_cards .= '<div class="actions">';
