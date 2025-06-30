@@ -60,34 +60,10 @@ class ReturnPayoutsPost {
             }
 
             $order = get_field('order', $payout->ID);
-            $order_id = ($order && isset($order->ID)) ? $order->ID : null;
+            $order_id = $order->ID ?? $payout->post_title; // Use post title if order ID is not set
 
             $deposit_total = 0;
             $total_due = 0;
-            $start_date_time_raw = '';
-            $end_date_time_raw = '';
-
-            if ($order_id) {
-                $order = wc_get_order($order_id);
-
-                if ($order) {
-                    foreach ($order->get_items() as $item) {
-                        $product_id = $item->get_product_id();
-                        if ($product_id != 28990) {
-                            $deposit_total = $item->get_total();
-
-                            $total_due_raw = $item->get_meta('Total Due on the Day', true) ?? '';
-                            $total_due = (float) preg_replace('/[^0-9.]/', '', $total_due_raw);
-
-                            $start_date_time_raw = $item->get_meta('Start Date Time', true) ?? '';
-                            $end_date_time_raw = $item->get_meta('End Date Time', true) ?? '';
-
-                            break;
-                        }
-                    }
-                }
-            }
-
             $total_service_price = (float) $deposit_total + (float) $total_due;
 
             $response[] = [
@@ -95,7 +71,6 @@ class ReturnPayoutsPost {
                 'partner_id'           => $partner_post_id,
                 'partner_name'         => get_the_title($partner_post_id),
                 'order_id'             => $order_id,
-                'total_service_price'  => $total_service_price,
                 'appointment_date_time'=> get_field('appointment_date_time', $payout->ID),
                 'deposit'              => get_field('deposit', $payout->ID),
                 'frohub_commission'    => get_field('frohub_commission', $payout->ID),
