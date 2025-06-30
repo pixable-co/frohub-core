@@ -60,7 +60,7 @@ class ReturnPayoutsPost {
             }
 
             $order = get_field('order', $payout->ID);
-            $order_id = absint($payout->post_title);
+            $order_id = $payout->post_title;
 
             $deposit_total = 0;
             $total_due = 0;
