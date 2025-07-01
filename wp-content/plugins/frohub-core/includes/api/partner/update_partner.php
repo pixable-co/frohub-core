@@ -84,6 +84,15 @@ class UpdatePartner {
            update_field('buffer_period_hours', intval($data['bufferPeriodHour']), $partnerPostId);
         }
 
+        // ➕ Update Latitude & Longitude
+        $this->update_geolocation(
+            $partnerPostId,
+            sanitize_text_field($data['addressLine1']),
+            sanitize_text_field($data['postcode']),
+            sanitize_text_field($data['city']),
+            sanitize_text_field($data['county'])
+        );
+
         // Update availability (Repeater field)
         if (!empty($data['availability'])) {
             $availability_data = array_map(function ($slot) {
@@ -97,8 +106,6 @@ class UpdatePartner {
             update_field('availability', $availability_data, $partnerPostId);
         }
 
-        // Update location (Latitude & Longitude)
-        $this->update_geolocation($partnerPostId, $data);
 
         // Handle image uploads
         if (!empty($data['profileImage'])) {
@@ -121,40 +128,6 @@ class UpdatePartner {
         ], 200);
     }
 
-    /**
-     * Updates the geolocation (latitude & longitude) for the partner based on the address.
-     *
-     * @param int   $partnerPostId
-     * @param array $data
-     */
-    private function update_geolocation($partnerPostId, $data) {
-        $full_address = sanitize_text_field($data['addressLine1']) . ', ' . 
-                        sanitize_text_field($data['town']) . ', ' . 
-                        sanitize_text_field($data['county']) . ', ' . 
-                        sanitize_text_field($data['postcode']) . ', UK';
-
-        $api_key = get_field('google_geocoding_api_key', 'option'); // Ensure API key is stored in ACF options
-
-        if (!$api_key) {
-            return;
-        }
-
-        $geocode_url = "https://maps.googleapis.com/maps/api/geocode/json?address=" . urlencode($full_address) . "&key=" . $api_key;
-        $response = wp_remote_get($geocode_url);
-
-        if (!is_wp_error($response)) {
-            $body = wp_remote_retrieve_body($response);
-            $json = json_decode($body, true);
-
-            if (!empty($json['results'][0]['geometry']['location'])) {
-                $latitude = $json['results'][0]['geometry']['location']['lat'];
-                $longitude = $json['results'][0]['geometry']['location']['lng'];
-
-                update_field('latitude', $latitude, $partnerPostId);
-                update_field('longitude', $longitude, $partnerPostId);
-            }
-        }
-    }
 
     /**
      * Handles image uploads and attaches to a post.
