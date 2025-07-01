@@ -85,7 +85,7 @@ class UpdatePartner {
         }
 
         // ➕ Update Latitude & Longitude
-        $this->update_geolocation(
+        update_geolocation(
             $partnerPostId,
             sanitize_text_field($data['addressLine1']),
             sanitize_text_field($data['postcode']),

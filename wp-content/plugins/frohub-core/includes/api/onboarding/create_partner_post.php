@@ -120,6 +120,15 @@ class CreatePartnerPost {
         update_field('postcode', $postcode, $partner_post_id);
     }
 
+      // ➕ Update Latitude & Longitude
+    update_geolocation(
+        $partner_post_id,
+        $streetAddress,
+        $postcode,
+        $city,
+        $county
+    );
+
     if (!empty($availability)) {
         $availability_rows = [];
 
