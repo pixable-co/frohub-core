@@ -88,6 +88,12 @@ class CreatePartnerPost {
     $email = $data['42'] ?? null;
     $phone = $data['41'] ?? null;
 
+    //address fields
+    $streetAddress = $data['43.1'] ?? null;
+    $city = $data['43.3'] ?? null;
+    $county = $data['43.4'] ?? null;
+    $postcode = $data['43.5'] ?? null;
+
     $partner_post_id = wp_insert_post([
         'post_title'  => $businessName,
         'post_type'   => 'partner',
@@ -98,6 +104,20 @@ class CreatePartnerPost {
         return new \WP_REST_Response([
             'message' => 'Failed to create partner post.',
         ], 500);
+    }
+
+    // Update Address
+    if ($streetAddress) {
+        update_field('street_address', $streetAddress, $partner_post_id);
+    }
+    if ($city) {
+        update_field('city', $city, $partner_post_id);
+    }
+    if ($county) {
+        update_field('county_district', $county, $partner_post_id);
+    }
+    if ($postcode) {
+        update_field('postcode', $postcode, $partner_post_id);
     }
 
     if (!empty($availability)) {
