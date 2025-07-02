@@ -49,7 +49,7 @@ class CloneEcomProduct {
     		foreach ($children as $variation_id) {
     			$variation = wc_get_product($variation_id);
 
-    			if ($variation && $variation->get_status() === 'publish' && $variation->get_catalog_visibility() !== 'hidden') {
+    			if ($variation && $variation->get_catalog_visibility() !== 'hidden') {
     				$attributes = $variation->get_attributes();
 
     				foreach ($attributes as $taxonomy => $term_slug) {
@@ -107,6 +107,10 @@ class CloneEcomProduct {
     	}
 
     	$body = json_decode(wp_remote_retrieve_body($response), true);
+
+        if (isset($body['success']) && $body['success'] && !empty($body['post_id'])) {
+            update_post_meta($product_id, 'portal_product_post_id', intval($body['post_id']));
+        }
 
     	// ✅ 5. Return API’s actual response
     	wp_send_json_success($body);
