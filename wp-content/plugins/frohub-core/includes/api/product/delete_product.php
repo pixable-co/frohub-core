@@ -16,7 +16,7 @@ class DeleteProduct {
      * Registers the REST API routes.
      */
     public function register_rest_routes() {
-        register_rest_route('frohub/v1', '/delete-product', array(
+        register_rest_route('frohub/v1', '/deactivate-product', array(
             'methods'             => 'POST',
             'callback'            => array($this, 'handle_request'),
             'permission_callback' => '__return_true',
@@ -54,26 +54,37 @@ class DeleteProduct {
             ], 404);
         }
 
-        if (!current_user_can('delete_post', $product_id)) {
+        if (!current_user_can('edit_post', $product_id)) {
             return new \WP_REST_Response([
                 'success' => false,
-                'message' => 'You do not have permission to delete this product.'
+                'message' => 'You do not have permission to update this product.'
             ], 403);
         }
 
-        $trashed = wp_trash_post($product_id);
+        // Update post status to draft
+        $update_result = wp_update_post([
+            'ID'          => $product_id,
+            'post_status' => 'draft',
+        ], true);
 
-        if ($trashed && !is_wp_error($trashed)) {
+        // Check if update failed
+        if (is_wp_error($update_result)) {
             return new \WP_REST_Response([
-                'success'    => true,
-                'message'    => 'Product moved to trash successfully.',
-                'product_id' => $product_id
-            ], 200);
+                'success' => false,
+                'message' => 'Failed to update product status. ' . $update_result->get_error_message()
+            ], 500);
+        }
+
+        // Update ACF field "deactivated" to true
+        if (function_exists('update_field')) {
+            update_field('deactivated', true, $product_id);
         }
 
         return new \WP_REST_Response([
-            'success' => false,
-            'message' => 'Failed to move product to trash. Please try again.'
-        ], 500);
+            'success'    => true,
+            'message'    => 'Product set to draft and marked as deactivated.',
+            'product_id' => $product_id
+        ], 200);
     }
+
 }
