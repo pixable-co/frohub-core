@@ -5,7 +5,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-class DeleteProduct {
+class DeactivateProduct {
 
     public static function init() {
         $self = new self();

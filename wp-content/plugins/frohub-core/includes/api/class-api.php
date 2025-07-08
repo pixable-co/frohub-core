@@ -7,7 +7,7 @@ use FECore\PartnerConversations;
 
 use FECore\PartnersMyPendingOrdersCount;
 
-use FECore\DeleteProduct;
+use FECore\DeactivateProduct;
 
 
 use FECore\GetProduct;
@@ -130,7 +130,7 @@ class API {
 		CustomerOrders::init();
 		CustomerMetrics::init();
 		GetProduct::init();
-		DeleteProduct::init();
+		DeactivateProduct::init();
 		PartnersMyPendingOrdersCount::init();
 		PartnerFaqs::init();
 		UpdateProfileAutoMessage::init();
