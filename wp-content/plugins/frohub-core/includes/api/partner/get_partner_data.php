@@ -53,6 +53,7 @@ class GetPartnerData {
         $pending_orders_count = $this->get_pending_orders_count($partner_post_id);
         $vacation_status = $this->get_vacation_status($partner_post_id);
         $stripe_data = $this->get_stripe_data($partner_post_id);
+        $unreadConversations = $this->get_unread_conversation_count($partner_post_id);
 
         // Keep existing keys while adding new ones
         $partner_data = [
@@ -92,6 +93,7 @@ class GetPartnerData {
             'stripeUserId'       => $stripe_data['stripe_user_id'] ?? '',
             'stripeConnected'    => !empty($stripe_data['stripe_user_id']),
             'showStripeWarning'  => empty($stripe_data['stripe_user_id']),
+            'unreadConversations' => $unreadConversations,
         ];
 
         return rest_ensure_response($partner_data);
@@ -194,4 +196,27 @@ class GetPartnerData {
 
         return $stripe_data;
     }
+
+    private function get_unread_conversation_count($partner_id) {
+        global $wpdb;
+
+        $sql = "
+            SELECT SUM(CAST(pm.meta_value AS UNSIGNED)) as total_unread
+            FROM {$wpdb->postmeta} pm
+            INNER JOIN {$wpdb->postmeta} pm2 ON pm.post_id = pm2.post_id
+            INNER JOIN {$wpdb->posts} p ON p.ID = pm.post_id
+            WHERE pm.meta_key = 'unread_count_partner'
+              AND CAST(pm.meta_value AS UNSIGNED) > 0
+              AND pm2.meta_key = 'partner'
+              AND pm2.meta_value = %d
+              AND p.post_type = 'conversation'
+              AND p.post_status = 'publish'
+        ";
+
+        $prepared = $wpdb->prepare($sql, $partner_id);
+        $count = (int) $wpdb->get_var($prepared);
+
+        return $count;
+    }
+
 }

@@ -89,6 +89,12 @@ class SubmitComment
 
         update_comment_meta($comment_id, 'submitted_by_user_id', $user_id);
 
+        $previous_unread_count = (int) get_post_meta($post_id, 'unread_count_partner', true);
+        $new_unread_count = $previous_unread_count + 1;
+
+        update_post_meta($post_id, 'read_by_partner', 0);
+        update_post_meta($post_id, 'unread_count_partner', $new_unread_count);
+
         // 🔸 AUTO MESSAGE LOGIC
         $partner_id = get_field('partner', $post_id)->ID;
         $auto_message_enabled = get_field('auto_message', $partner_id);
@@ -148,11 +154,11 @@ class SubmitComment
 
         $partner_webhook = 'https://flow.zoho.eu/20103370577/flow/webhook/incoming?zapikey=1001.e83523e791d77d7d52578d8a6bf2d8fe.2bd19f022b6f6c88bbf0fa6d7da05c4d&isdebug=false';
 
-        wp_remote_post($partner_webhook, [
-            'method'  => 'POST',
-            'headers' => ['Content-Type' => 'application/json'],
-            'body'    => $payload_partner,
-        ]);
+//         wp_remote_post($partner_webhook, [
+//             'method'  => 'POST',
+//             'headers' => ['Content-Type' => 'application/json'],
+//             'body'    => $payload_partner,
+//         ]);
 
         wp_send_json_success([
             'comment'     => $comment_text,
