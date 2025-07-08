@@ -107,6 +107,9 @@ public function handle_my_services(\WP_REST_Request $request) {
             // Is Private (ACF True/False field)
             $is_private = get_field('is_private', $product_id) ? true : false;
 
+            // Is Private (ACF True/False field)
+            $is_deactivated = get_field('deactivated', $product_id) ? true : false;
+
             // Public Product URL
             $url = get_permalink($product_id);
 
@@ -157,6 +160,8 @@ public function handle_my_services(\WP_REST_Request $request) {
 
 
 
+
+
             $products_data[] = [
                 'product_id'              => $product_id,
                 'portal_product_post_id'      => get_field('portal_product_post_id', $product_id),
@@ -165,6 +170,7 @@ public function handle_my_services(\WP_REST_Request $request) {
                 'price'                   => $price,
                 'status'                  => $status,
                 'is_private'  => $is_private,
+                'is_deactivated'          => $is_deactivated, // New field for deactivated status
                 'marketplace_visibility' => $marketplace_visibility, // Inverse of is_private
                 'url'                     => $url,
                 'thumbnail'               => $thumbnail,
