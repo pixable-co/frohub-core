@@ -90,25 +90,48 @@ class PartnerConversations {
                             }
 
                             // Get profile image URL (ACF image field or user meta)
-                            $user_image = get_field('user_image', 'user_' . $customer_id); // ACF-style
+                            $user_image = get_field('user_image', 'user_' . $customer_id); // ACF field
                             if (is_array($user_image) && isset($user_image['url'])) {
                                 $profile_image_url = $user_image['url'];
                             } elseif (is_string($user_image)) {
                                 $profile_image_url = $user_image;
                             }
+
+                            // Fallback to meta field or WordPress avatar
+                            if (!$profile_image_url) {
+                                $avatar_attachment_id = get_user_meta($customer_id, 'yith-wcmap-avatar', true);
+                                if ($avatar_attachment_id) {
+                                    $profile_image_url = wp_get_attachment_url($avatar_attachment_id);
+                                } else {
+                                    $profile_image_url = get_avatar_url($customer_id, ['size' => 96]);
+                                }
+                            }
                         }
                     }
 
                     $read_by_partner = get_field('read_by_partner', $conversation_id);
+                    $unread_count_partner = (int) get_post_meta($conversation_id, 'unread_count_partner', true);
                     $last_activity = get_the_modified_date('c', $conversation_id) ?: get_the_date('c', $conversation_id);
+
+
+                    $partner_image_url = null;
+                    $partner_post = get_field('partner', $conversation_id);
+                    if ($partner_post && is_object($partner_post) && isset($partner_post->ID)) {
+                        $partner_thumb_id = get_post_thumbnail_id($partner_post->ID);
+                        if ($partner_thumb_id) {
+                            $partner_image_url = wp_get_attachment_url($partner_thumb_id);
+                        }
+                    }
 
                     $conversations[] = [
                         'conversation_id' => (int)$conversation_id,
                         'customer_id' => $customer_id,
                         'customer_name' => $customer_name,
                         'customer_image' => $profile_image_url,
+                        'partner_image' => $partner_image_url,
                         'customer_phone' => $billing_phone,
                         'read_by_partner' => (bool)$read_by_partner,
+                        'unread_count_partner' => (int)$unread_count_partner,
                         'last_activity' => $last_activity ?: date('c'),
                         'permalink' => get_permalink($conversation_id),
                         'status' => 'Active',
