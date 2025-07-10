@@ -57,13 +57,19 @@ const ChatInput = ({ onSendMessage, isLoading = false, disabled = false }) => {
     };
 
     return (
+        <>
+            <div className="deposit-notification-banner">
+                <span><i
+                    className="fas fa-exclamation-triangle"></i> Only deposits paid through FroHub are protected. <a
+                    href="/help-centre">Learn more.</a></span>
+            </div>
         <div className="border-t bg-white p-3">
             <div className="flex">
                 <input
                     type="file"
                     accept="image/*"
                     ref={fileInputRef}
-                    style={{ display: 'none' }}
+                    style={{display: 'none'}}
                     onChange={handleFileChange}
                 />
 
@@ -73,8 +79,10 @@ const ChatInput = ({ onSendMessage, isLoading = false, disabled = false }) => {
                     className="ml-2 px-3 py-2 text-gray-500 hover:text-gray-700"
                     disabled={disabled || isUploading}
                 >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path>
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                         xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
+                              d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path>
                     </svg>
                 </button>
 
@@ -99,7 +107,7 @@ const ChatInput = ({ onSendMessage, isLoading = false, disabled = false }) => {
             {imagePreview && (
                 <div className="mt-2 ml-10">
                     <div className="relative inline-block">
-                        <img src={imagePreview} alt="Preview" className="max-h-32 rounded" />
+                        <img src={imagePreview} alt="Preview" className="max-h-32 rounded"/>
                         <button
                             onClick={() => {
                                 setImageFile(null);
@@ -108,7 +116,8 @@ const ChatInput = ({ onSendMessage, isLoading = false, disabled = false }) => {
                             className="absolute top-1 right-1 bg-gray-800 bg-opacity-50 rounded-full p-1 text-white hover:bg-opacity-70"
                         >
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                      d="M6 18L18 6M6 6l12 12"/>
                             </svg>
                         </button>
                     </div>
@@ -116,7 +125,8 @@ const ChatInput = ({ onSendMessage, isLoading = false, disabled = false }) => {
             )}
 
             <div className="text-xs text-gray-400 mt-1 ml-10">
-                Please be respectful: Keep your messages kind and considerate. Treat others as you would like to be treated. Report any abusive messages here.
+                Please be respectful: Keep your messages kind and considerate. Treat others as you would like to be
+                treated. Report any abusive messages here.
             </div>
 
             {isUploading && (
@@ -125,6 +135,7 @@ const ChatInput = ({ onSendMessage, isLoading = false, disabled = false }) => {
                 </div>
             )}
         </div>
+        </>
     );
 };
 

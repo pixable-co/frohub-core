@@ -2,7 +2,7 @@
 import React from 'react';
 import Avatar from './Avatar';
 
-const ContactItem = ({ conversation, isActive, onClick, isLoading = false }) => {
+const ContactItem = ({ conversation, partnerImage, isActive, onClick, isLoading = false }) => {
     const handleClick = (event) => {
         if (!isLoading) {
             const hiddenInput = event.currentTarget.querySelector('input[type="hidden"]');
@@ -19,7 +19,7 @@ const ContactItem = ({ conversation, isActive, onClick, isLoading = false }) => 
             onClick={handleClick}
         >
             <div className="flex items-center space-x-2">
-                <Avatar name={conversation.partner_name || 'P'} />
+                <Avatar name={conversation.partner_name || 'P'} image={partnerImage} />
                 <div className="text-gray-700">
                     {conversation.partner_name || `Partner #${conversation.partner_id}`}
                 </div>

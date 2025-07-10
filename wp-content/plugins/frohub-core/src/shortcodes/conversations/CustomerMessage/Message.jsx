@@ -1,7 +1,7 @@
 import React from 'react';
 import Avatar from './Avatar';
 
-const Message = ({ comment }) => {
+const Message = ({ comment, conversationId, customerImage, partnerImage }) => {
     const sentFrom = comment?.meta_data?.sent_from?.[0] || '';
     const isCustomerMessage = sentFrom !== 'partner';
 
@@ -23,7 +23,7 @@ const Message = ({ comment }) => {
 
     return (
         <div className={`flex mb-4 ${isCustomerMessage ? 'justify-end' : 'justify-start'}`}>
-            {!isCustomerMessage && <Avatar name={comment.author || 'Partner'} size="sm" />}
+            {!isCustomerMessage && <Avatar name={comment.author || 'Partner'} size="sm" image={partnerImage} />}
             <div className={`flex flex-col ${isCustomerMessage ? 'items-end' : 'items-start'} max-w-xs`}>
                 <div className={`p-3 rounded-lg break-words shadow-sm ${bubbleClass}`}>
                     <div className="text-xs mb-1">
@@ -39,7 +39,7 @@ const Message = ({ comment }) => {
                     )}
                 </div>
             </div>
-            {isCustomerMessage && <Avatar name="You" size="sm" />}
+            {isCustomerMessage && <Avatar name="You" size="sm" image={customerImage} />}
         </div>
     );
 };
