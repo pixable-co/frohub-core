@@ -112,6 +112,7 @@ class PartnerConversations {
                     $read_by_partner = get_field('read_by_partner', $conversation_id);
                     $unread_count_partner = (int) get_post_meta($conversation_id, 'unread_count_partner', true);
                     $last_activity = get_the_modified_date('c', $conversation_id) ?: get_the_date('c', $conversation_id);
+                    $auto_message_enabled = get_field('auto_message', $partner_id);
 
 
                     $partner_image_url = null;
@@ -131,6 +132,7 @@ class PartnerConversations {
                         'partner_image' => $partner_image_url,
                         'customer_phone' => $billing_phone,
                         'read_by_partner' => (bool)$read_by_partner,
+                        'auto_message' => (bool) $auto_message_enabled,
                         'unread_count_partner' => (int)$unread_count_partner,
                         'last_activity' => $last_activity ?: date('c'),
                         'permalink' => get_permalink($conversation_id),
