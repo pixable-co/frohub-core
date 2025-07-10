@@ -233,24 +233,27 @@ class UserConversations {
             }
 
             update_comment_meta($comment_id, 'sent_from', 'customer');
+            $previous_unread_count = (int) get_post_meta($post_id, 'unread_count_partner', true);
+            $new_unread_count = $previous_unread_count + 1;
+
+            update_post_meta($post_id, 'read_by_partner', 0);
+            update_post_meta($post_id, 'unread_count_partner', $new_unread_count);
             if ($partner_id) {
                 update_comment_meta($comment_id, 'partner', $partner_id);
                 $this->notify_partner_message($partner_id, $author_name);
             }
 
-            update_post_meta($post_id, 'read_by_partner', 0);
-
             // 🚀 Notify Partner via Webhook (Zoho Flow)
-//             $partner_user = get_user_by('ID', $partner_id);
-//             $partner_email = $partner_user ? $partner_user->user_email : '';
-//
-//             $customer_user = get_user_by('ID', $user_id);
-//             $client_first_name = $customer_user ? $customer_user->first_name : 'Customer';
-//             $partner_name = $partner_id ? get_the_title($partner_id) : 'Pixable Stylist';
-//
-//             if (!empty($partner_email)) {
-//                 $this->notify_partner_message($partner_email, $client_first_name, $partner_name);
-//             }
+            $partner_user = get_user_by('ID', $partner_id);
+            $partner_email = $partner_user ? $partner_user->user_email : '';
+
+            $customer_user = get_user_by('ID', $user_id);
+            $client_first_name = $customer_user ? $customer_user->first_name : 'Customer';
+            $partner_name = $partner_id ? get_the_title($partner_id) : 'Pixable Stylist';
+
+            if (!empty($partner_email)) {
+                $this->notify_partner_message($partner_email, $client_first_name, $partner_name);
+            }
 
             // ✅ AUTO MESSAGE HANDLING
             $auto_enabled = get_field('auto_message', $partner_id);

@@ -94,11 +94,16 @@ public function get_conversation_comments(\WP_REST_Request $request) {
         ];
     }, $comments);
 
-    // 📦 Return full response with both profile pictures
+
+    $read_by_partner = (bool) get_post_meta($post_id, 'read_by_partner', true);
+    $unread_count_partner = (int) get_post_meta($post_id, 'unread_count_partner', true);
+
     return rest_ensure_response([
-        'profile_picture'         => $profile_picture,
-        'partner_profile_picture' => $partner_profile_picture,
-        'comments'                => $formatted_comments,
+        'profile_picture'          => $profile_picture,
+        'partner_profile_picture'  => $partner_profile_picture,
+        'comments'                 => $formatted_comments,
+        'read_by_partner'          => $read_by_partner,
+        'unread_count_partner'     => $unread_count_partner,
     ]);
 }
 

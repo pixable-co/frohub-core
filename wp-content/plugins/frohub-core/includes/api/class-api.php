@@ -1,6 +1,8 @@
 <?php
 namespace FECore;
 
+use FECore\ReadByPartner;
+
 use FECore\SendAutoMessage;
 
 use FECore\PartnerConversations;
@@ -137,5 +139,6 @@ class API {
 		SetStripeFailedPayout::init();
 		PartnerConversations::init();
 		SendAutoMessage::init();
+		ReadByPartner::init();
 	}
 }
