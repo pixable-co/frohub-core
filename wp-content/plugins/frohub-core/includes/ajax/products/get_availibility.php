@@ -30,10 +30,21 @@ class GetAvailibility {
         $date = sanitize_text_field($_POST['date']);
         $partner_id = get_field('partner_id', $product_id);
 
-        $availability = get_field('availability', $product_id);
-        if (empty($availability)) {
+        $override_availability = get_field('override_availability', $product_id);
+
+        if ($override_availability) {
+            // Use product-level values
+            $availability = get_field('availability', $product_id);
+            $booking_notice = get_field('booking_notice', $product_id);
+            $booking_scope = get_field('booking_scope', $product_id);
+        } else {
+            // Use partner-level values
             $availability = get_field('availability', $partner_id);
+            $booking_notice = get_field('booking_notice', $partner_id);
+            $booking_scope = get_field('booking_scope', $partner_id);
         }
+
+        $booking_scope = is_numeric($booking_scope) ? intval($booking_scope) : 30;
 
         if (!$availability) {
             wp_send_json_error(['message' => 'No availability data found.']);
@@ -87,9 +98,6 @@ class GetAvailibility {
         $booked_slots = array_merge($booked_slots, $google_calendar_booked_slots);
 
         $booked_slots_timestamps = $this->convert_slots_to_timestamps($booked_slots);
-
-        $booking_scope = get_field('booking_scope', $partner_id);
-        $booking_scope = is_numeric($booking_scope) ? intval($booking_scope) : 30;
 
         $current_date = date('Y-m-d');
         $max_date = date('Y-m-d', strtotime($current_date . ' + ' . $booking_scope . ' days'));
@@ -172,10 +180,7 @@ class GetAvailibility {
             return true;
         });
 
-        $booking_notice = get_field('booking_notice', $product_id);
-        if (empty($booking_notice)) {
-              $booking_notice = get_field('booking_notice', $partner_id);
-        }
+
         $booking_notice_days = is_numeric($booking_notice) ? intval($booking_notice) : 0;
 
         $today = new \DateTime();
