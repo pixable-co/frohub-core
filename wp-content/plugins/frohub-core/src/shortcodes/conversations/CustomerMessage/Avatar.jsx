@@ -18,7 +18,7 @@ const Avatar = ({ name, size = 'md', image }) => {
             <img
                 src={image}
                 alt={name}
-                className={`${sizeClass} rounded-full object-cover`}
+                className="msg-avatar-image rounded-full object-cover"
             />
         ) : (
             <div className={`${sizeClass} bg-gray-400 rounded-full flex items-center justify-center text-white font-medium`}>

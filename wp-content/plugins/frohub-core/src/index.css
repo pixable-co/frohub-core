@@ -84,3 +84,8 @@
     color: #777;
     font-weight: 500;
 }
+
+.msg-avatar-image {
+    width: 70px;
+    height: 50px;
+}
