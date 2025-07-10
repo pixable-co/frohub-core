@@ -243,7 +243,7 @@ class FrohubProductPartnerPage
             'posts_per_page' => 8,
             'paged'          => $paged,
             'fields'         => 'ids',
-            'status'    => 'publish',
+            'post_status'    => 'publish',
             'meta_query'     => [
                 'relation' => 'AND',
                 [
