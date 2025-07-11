@@ -177,10 +177,11 @@ class CreateComment {
 
          if (!empty($sent_from)) {
              update_comment_meta($comment_id, 'sent_from', $sent_from);
+             $previous_unread_count = (int) get_post_meta($post_id, 'unread_count_customer', true);
+             $new_unread_count = $previous_unread_count + 1;
+             update_post_meta($post_id, 'read_by_customer', 0);
+             update_post_meta($post_id, 'unread_count_customer', $new_unread_count);
          }
-
-         // Set conversation as unread by customer
-         update_post_meta($post_id, 'read_by_customer', 0);
 
          // Get comment object
          $comment_obj = get_comment($comment_id);

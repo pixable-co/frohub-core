@@ -1,6 +1,8 @@
 <?php
 namespace FECore;
 
+use FECore\CustomerUnreadConversations;
+
 use FECore\CustomerMessageMobile;
 
 use FECore\CustomerMessage;
@@ -164,5 +166,6 @@ class Shortcodes {
 		CancelOrderButton::init();
 		CustomerMessage::init();
 		CustomerMessageMobile::init();
+		CustomerUnreadConversations::init();
 	}
 }
