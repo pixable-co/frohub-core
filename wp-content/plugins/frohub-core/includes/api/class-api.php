@@ -101,7 +101,6 @@ class API {
 		BroadcastMessage::init();
 		SubmitReviewReply::init();
 		ReturnAllReviewsForPartner::init();
-		AddGlobalAddon::init();
 		SingleFaq::init();
 		Upsert::init();
 		UpdatePartner::init();
