@@ -106,7 +106,6 @@ class API {
 		UpdatePartner::init();
 		CheckSlug::init();
 		Order::init();
-		SaveAddOns::init();
 		GetAllAddOns::init();
 		ConfirmPartnerPayout::init();
 		PayoutPartners::init();
