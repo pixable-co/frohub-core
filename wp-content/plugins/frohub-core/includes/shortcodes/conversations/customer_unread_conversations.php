@@ -12,15 +12,24 @@ class CustomerUnreadConversations {
         add_shortcode( 'customer_unread_conversations', array($self, 'customer_unread_conversations_shortcode') );
     }
 
-    public function customer_unread_conversations_shortcode() {
+    public function customer_unread_conversations_shortcode($atts = []) {
         $current_user_id = get_current_user_id();
         if ( ! $current_user_id ) {
             return '';
         }
 
+        // Parse shortcode attributes
+        $atts = shortcode_atts([
+            'details' => false, // default: false
+        ], $atts, 'customer_unread_conversations');
+
         $count = $this->get_unread_conversation_count_for_user($current_user_id);
 
-        return '<a href="/my-account/messages"><i class="fas fa-comments"></i> (' . intval($count) . ')</a>';
+        if ( $atts['details'] ) {
+            return '<a href="/my-account/messages"><i class="fas fa-comments"></i> (' . intval($count) . ')</a>';
+        } else {
+            return intval($count);
+        }
     }
 
     private function get_unread_conversation_count_for_user($user_id) {
