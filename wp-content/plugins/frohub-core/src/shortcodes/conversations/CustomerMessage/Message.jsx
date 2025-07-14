@@ -1,9 +1,29 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Avatar from './Avatar';
+import { fetchData } from '../../../services/fetchData';
 
-const Message = ({ comment, conversationId, customerImage, partnerImage }) => {
+const Message = ({ comment, conversationId, isLastCustomerMessage, customerImage, partnerImage }) => {
     const sentFrom = comment?.meta_data?.sent_from?.[0] || '';
     const isCustomerMessage = sentFrom !== 'partner';
+
+    const [hasMarkedRead, setHasMarkedRead] = useState(false);
+
+    useEffect(() => {
+        if (!hasMarkedRead && isLastCustomerMessage) {
+            fetchData(
+                'frohub/read_by_customer',
+                (res) => {
+                    if (res.success) {
+                        setHasMarkedRead(true);
+                        document.cookie = "unreadConversations=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                    } else {
+                        console.warn('Failed to mark as read by customer:', res.message);
+                    }
+                },
+                { conversation_post_id: conversationId } // make sure this matches your PHP handler
+            );
+        }
+    }, [isLastCustomerMessage, conversationId, hasMarkedRead]);
 
     const formatTimestamp = (date) =>
         new Date(comment.date).toLocaleString('en-GB', {
@@ -13,7 +33,6 @@ const Message = ({ comment, conversationId, customerImage, partnerImage }) => {
             month: 'short',
             year: 'numeric'
         });
-
 
     const createMarkup = (htmlContent) => ({ __html: htmlContent });
     const isPending = comment.status === 'pending';

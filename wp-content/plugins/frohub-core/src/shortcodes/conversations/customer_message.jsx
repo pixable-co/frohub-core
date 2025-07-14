@@ -271,7 +271,10 @@ const CustomerMessage = ({ dataKey, currentUserPartnerPostId }) => {
                         ))
                     )}
                     {!loading.conversations && conversations.length === 0 && (
-                        <div className="p-4 text-center text-gray-500">No conversations found</div>
+                        <div className="text-center p-16 mt-8">
+                            <h3 className="font-medium mb-2">👋🏾 Welcome to your inbox!</h3>
+                            <p>When you book a service or send an enquiry, you’ll see your messages here. Need help? Start a conversation with your stylist.</p>
+                        </div>
                     )}
                 </div>
             </div>
@@ -290,7 +293,7 @@ const CustomerMessage = ({ dataKey, currentUserPartnerPostId }) => {
                                             comment={comment}
                                             conversationId={activeConversation?.conversation_id}
                                             isLastCustomerMessage={
-                                                comment?.meta_data?.sent_from?.[0] !== 'partner' &&
+                                                comment?.meta_data?.sent_from?.[0] !== 'customer' &&
                                                 index === comments.length - 1
                                             }
                                             customerImage={activeConversation?.customer_image}
@@ -307,10 +310,10 @@ const CustomerMessage = ({ dataKey, currentUserPartnerPostId }) => {
                         <ChatInput onSendMessage={handleSendMessage} isLoading={loading.sending} disabled={loading.comments} />
                     </>
                 ) : (
-                    <div className="flex-1 flex items-center justify-center text-gray-500">
-                        <div className="text-center">
-                            <h3 className="text-lg font-medium mb-2">Select a conversation</h3>
-                            <p>Choose a conversation from the sidebar to start messaging</p>
+                    <div className="flex-1 flex items-start justify-center text-gray-500">
+                        <div className="text-center p-16 mt-8">
+                            <h3 className="font-medium mb-2">👋🏾 Welcome to your inbox!</h3>
+                            <p>When you book a service or send an enquiry, you’ll see your messages here. Need help? Start a conversation with your stylist.</p>
                         </div>
                     </div>
                 )}

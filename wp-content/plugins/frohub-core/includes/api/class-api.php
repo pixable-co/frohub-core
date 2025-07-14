@@ -109,7 +109,7 @@ class API {
 		GetAllAddOns::init();
 		ConfirmPartnerPayout::init();
 		PayoutPartners::init();
-		PartnerAddOns::init();
+// 		PartnerAddOns::init();
 // 		Payouts::init();
 		MyServices::init();
 // 		ConfirmOrder::init();
