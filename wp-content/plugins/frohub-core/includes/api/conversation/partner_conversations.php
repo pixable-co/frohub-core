@@ -114,6 +114,33 @@ class PartnerConversations {
                     $last_activity = get_the_modified_date('c', $conversation_id) ?: get_the_date('c', $conversation_id);
                     $auto_message_enabled = get_field('auto_message', $partner_id);
 
+                    // WooCommerce Data
+                    $total_completed_bookings = 0;
+                    $total_spend = 0.0;
+                    $last_booking_date = '';
+
+                    if ($customer_id) {
+                        $order_args = array(
+                            'limit'        => -1,
+                            'status'       => 'wc-completed',
+                            'customer_id'  => $customer_id,
+                            'orderby'      => 'date',
+                            'order'        => 'DESC'
+                        );
+
+                        $orders = wc_get_orders($order_args);
+
+                        if (!empty($orders)) {
+                            $total_completed_bookings = count($orders);
+                            $total_spend = array_reduce($orders, function ($carry, $order) {
+                                return $carry + floatval($order->get_total());
+                            }, 0.0);
+
+                            $last_order = $orders[0];
+                            $last_booking_date = $last_order->get_date_created() ? $last_order->get_date_created()->date('Y-m-d') : '';
+                        }
+                    }
+
 
                     $partner_image_url = null;
                     $partner_post = get_field('partner', $conversation_id);
@@ -138,6 +165,9 @@ class PartnerConversations {
                         'permalink' => get_permalink($conversation_id),
                         'status' => 'Active',
                         'last_message' => '',
+                        'total_completed_bookings' => $total_completed_bookings,
+                        'total_spend' => number_format($total_spend, 2),
+                        'last_booking_date' => $last_booking_date,
                     ];
                 }
                     wp_reset_postdata();
