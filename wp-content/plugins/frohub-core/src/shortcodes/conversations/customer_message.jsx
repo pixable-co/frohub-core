@@ -271,9 +271,8 @@ const CustomerMessage = ({ dataKey, currentUserPartnerPostId }) => {
                         ))
                     )}
                     {!loading.conversations && conversations.length === 0 && (
-                        <div className="text-center p-16 mt-8">
-                            <h3 className="font-medium mb-2">👋🏾 Welcome to your inbox!</h3>
-                            <p>When you book a service or send an enquiry, you’ll see your messages here. Need help? Start a conversation with your stylist.</p>
+                        <div className="flex justify-center items-center p-24">
+                            <p className="text-gray-600 text-base text-center max-w-xl mx-auto">No messages yet</p>
                         </div>
                     )}
                 </div>
