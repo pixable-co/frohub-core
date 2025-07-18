@@ -397,6 +397,11 @@ export default function MobileService({ partnerId }) {
                         Mobile Travel Fee: <span className="text-gray-900">+£{travelFee.toFixed(2)}</span>
                     </p>
                     <input type="hidden" name="travelFee" value={travelFee.toFixed(2)} />
+                    <input
+                        type="hidden"
+                        name="postCode"
+                        value={selectedPlace?.address || staticLocation?.name || postcode}
+                    />
                 </>
             )}
             {/* Reset Button to clear location cookie */}

@@ -23,6 +23,8 @@ class AddToCart {
         add_filter('woocommerce_get_item_data', array($self, 'display_selected_add_ons'), 10, 2);
         // Save custom meta to order
         add_action('woocommerce_add_order_item_meta', array($self, 'add_order_item_meta'), 10, 2);
+
+        add_filter('woocommerce_checkout_fields', array($self, 'force_checkout_postcode'));
     }
 
 public function add_to_cart() {
@@ -61,7 +63,15 @@ public function add_to_cart() {
 
     $extra_charge = isset($extra_charge_data['bookingExtra']) ? sanitize_text_field($extra_charge_data['bookingExtra']) : '';
     $mobile_travel_fee = isset($extra_charge_data['mobileFee']) ? sanitize_text_field($extra_charge_data['mobileFee']) : '';
+    $post_code = isset($extra_charge_data['postCode']) ? sanitize_text_field($extra_charge_data['postCode']) : '';
 
+    if (!empty($selected_service_type)) {
+        WC()->session->set('frohub_selected_service_type', strtolower($selected_service_type));
+    }
+
+    if (!empty($post_code)) {
+        WC()->session->set('frohub_forced_postcode', $post_code);
+    }
 
     // Fetch the product and find the correct variation
     $product = wc_get_product($product_id);
@@ -384,6 +394,44 @@ public function add_to_cart() {
             wc_add_order_item_meta($item_id, 'Mobile Travel Fee', '£' . number_format((float)$values['mobile_travel_fee'], 2));
         }
     }
-    
+
+
+    public function force_checkout_postcode($fields) {
+        $raw_value = WC()->session->get('frohub_forced_postcode');
+        $service_type = WC()->session->get('frohub_selected_service_type');
+
+        // Only proceed if service type is mobile
+        if (strtolower($service_type) !== 'mobile') {
+            return $fields;
+        }
+
+        if (!empty($raw_value)) {
+            if (preg_match('/\b([A-Z]{1,2}\d{1,2}[A-Z]?)\s?(\d[A-Z]{2})\b/i', $raw_value, $matches)) {
+                $postcode = strtoupper(trim($matches[0]));
+
+                $fields['billing']['billing_postcode']['default'] = $postcode;
+
+                add_action('wp_footer', function () use ($postcode) {
+                    if (is_checkout()) {
+                        ?>
+                        <script>
+                        document.addEventListener('DOMContentLoaded', function () {
+                            const input = document.querySelector('#billing_postcode');
+                            if (input) {
+                                input.value = '<?php echo esc_js($postcode); ?>';
+                                input.setAttribute('readonly', 'readonly');
+                                input.style.backgroundColor = '#f9f9f9';
+                                input.style.cursor = 'not-allowed';
+                            }
+                        });
+                        </script>
+                        <?php
+                    }
+                });
+            }
+        }
+
+        return $fields;
+    }
     
 }

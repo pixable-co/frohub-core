@@ -121,6 +121,7 @@ export default function RequestBookButton() {
         const selectedTimeButton = document.querySelector(".timeslot-button.selected");
         const extraCharge = document.querySelector('input[name="selectedPrice"]')?.value || "";
         const mobileFee = document.querySelector('input[name="travelFee"]')?.value || "";
+        const postCode = document.querySelector('input[name="postCode"]')?.value || "";
 
         if (!selectedDate || !selectedTimeButton) {
             toastNotification('error', 'Missing Information', 'Please select a service type and date & time before proceeding.');
@@ -153,7 +154,8 @@ export default function RequestBookButton() {
                 selectedTime,
                 extraCharge: JSON.stringify({
                     bookingExtra: extraCharge,
-                    mobileFee: mobileFee
+                    mobileFee: mobileFee,
+                    postCode: postCode,
                 })
             });
 
