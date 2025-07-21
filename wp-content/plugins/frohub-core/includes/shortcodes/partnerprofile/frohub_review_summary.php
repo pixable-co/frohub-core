@@ -104,11 +104,17 @@ class FrohubReviewSummary
             <style>
                 .frohub-review-summary {
                     display: flex;
+                    flex-direction: row;
                     align-items: center;
                     gap: 4rem;
-                    font-family: sans-serif;
                     margin: 2rem 0;
                 }
+
+                @media only screen and (max-width: 600px) {
+                  .frohub-review-summary {
+                       flex-direction: column;
+                  }
+              }
 
                 .frohub-review-summary .overall .label {
                     font-size: 1.125rem;

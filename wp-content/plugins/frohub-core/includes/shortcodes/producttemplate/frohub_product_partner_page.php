@@ -143,9 +143,95 @@ class FrohubProductPartnerPage
         </script>
 
         <style>
-            .frohub-category-item.selected {
-                font-weight: bold;
-            }
+           /* Shared: Style for selected category item */
+           .frohub-category-item.selected {
+               font-weight: bold;
+               border-bottom: 2px solid #0e2a5c;
+               color: #0e2a5c;
+           }
+
+           /* Base styles for parent and child lists */
+           .frohub-category-list {
+               list-style: none;
+               margin: 0;
+               padding: 0;
+           }
+
+           /* Parent category list - horizontal scroll */
+           .frohub-parent-list {
+               display: flex;
+               flex-wrap: nowrap;
+               overflow-x: auto;
+               white-space: nowrap;
+               gap: 1rem;
+               padding: 0.5rem 1rem;
+               scroll-snap-type: x mandatory;
+               -webkit-overflow-scrolling: touch;
+               margin-bottom: 1rem;
+           }
+
+           .frohub-parent-list::-webkit-scrollbar {
+               display: none;
+           }
+
+           .frohub-parent-list .frohub-category-item {
+               display: inline-block;
+               padding: 0.5rem 1rem;
+               font-weight: 600;
+               color: #0e2a5c;
+               cursor: pointer;
+               scroll-snap-align: start;
+               white-space: nowrap;
+               border-bottom: 2px solid transparent;
+               transition: border-color 0.3s, color 0.3s;
+           }
+
+           /* Child category list - horizontal scroll */
+           .frohub-child-list {
+               display: flex;
+               flex-wrap: nowrap;
+               overflow-x: auto;
+               white-space: nowrap;
+               gap: 1rem;
+               padding: 0.5rem 1rem;
+               scroll-snap-type: x mandatory;
+               -webkit-overflow-scrolling: touch;
+               margin-bottom: 1.5rem;
+           }
+
+           .frohub-child-list::-webkit-scrollbar {
+               display: none;
+           }
+
+           .frohub-child-list .frohub-category-item {
+               display: inline-block;
+               padding: 0.5rem 1rem;
+               font-weight: 500;
+               color: #444;
+               cursor: pointer;
+               scroll-snap-align: start;
+               white-space: nowrap;
+               border-bottom: 2px solid transparent;
+               transition: border-color 0.3s, color 0.3s;
+           }
+
+           /* .selected is shared above — used by both lists */
+
+           /* Desktop layout improvements */
+           @media (min-width: 769px) {
+               .frohub-parent-list,
+               .frohub-child-list {
+                   justify-content: center;
+                   overflow-x: visible;
+                   flex-wrap: wrap;
+               }
+
+               .frohub-parent-list .frohub-category-item,
+               .frohub-child-list .frohub-category-item {
+                   margin: 0.5rem;
+               }
+           }
+
         </style>
         <?php
         return ob_get_clean();
