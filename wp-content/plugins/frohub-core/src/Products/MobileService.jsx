@@ -319,22 +319,22 @@ export default function MobileService({ partnerId }) {
     }
 
     return (
-        <div className="w-3/6 mt-4 mb-6 p-4 border border-gray-300 rounded-lg bg-white">
+        <div className="w-5/6 mt-4 mb-6 p-4 border border-gray-300 rounded-xl bg-[#F5F5F5]">
             {!staticLocation ? (
                 // UI with Google Places Autocomplete
                 <>
                     <p className="text-sm text-gray-700">
                         To check if you are within their mobile service area, enter your location or postcode.
                     </p>
-                    <div className="flex justify-start flex-col items-center gap-6 mt-3">
-                        <div className="w-full">
+                    <div className="flex justify-start items-center gap-6 mt-3">
+                        <div className="w-[35%]">
                             <input
                                 ref={autocompleteInputRef}
                                 type="text"
-                                placeholder="Enter location or postcode"
+                                placeholder="Enter Location Or Postcode"
                                 value={postcode}
                                 onChange={handlePostcodeChange}
-                                className="w-full px-4 py-2 text-gray-600 border rounded-md bg-gray-100 border-gray-300 focus:ring focus:ring-indigo-300 focus:outline-none"
+                                className="us-field-style_2"
                             />
                         </div>
 
@@ -344,8 +344,8 @@ export default function MobileService({ partnerId }) {
 
                             {/* Success Message */}
                             {isValid && travelFee !== null && (
-                                <div className="flex text-green-600 font-semibold mt-2">
-                                    <CheckCircle className="w-5 h-5 mr-1" />
+                                <div className="flex text-sm font-semibold mt-2">
+                                    <CheckCircle className="w-5 h-5 mr-1"/>
                                     Yasss! You're in the service area - this stylist can come to you!
                                 </div>
                             )}
