@@ -104,8 +104,11 @@ class FrohubReviewSummary
             <style>
                 .frohub-review-summary {
                     display: flex;
+<<<<<<< Updated upstream
                     flex-direction: row;
                     align-items: center;
+=======
+>>>>>>> Stashed changes
                     gap: 4rem;
                     margin: 2rem 0;
                 }
