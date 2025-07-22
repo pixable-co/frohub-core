@@ -25,7 +25,7 @@ class PoliciesTab {
 
         echo '<div class="partner-policies">';
 
-        echo '<h3>Deposit Refunt Policy</h3>';
+        echo '<h3>Deposit Refund Policy</h3>';
         echo '<p>At FroHub, we have a deposit refund policy in place to protect both our stylists and clients, ensuring a fair experience for everyone.
 
 Cancellations up to 7 Days Before Appointment: If a client cancels their booking at least 7 days before the scheduled appointment, they will receive a full refund of their deposit. However, the booking fee is non-refundable.
