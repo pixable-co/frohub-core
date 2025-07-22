@@ -25,19 +25,23 @@ class PoliciesTab {
 
         echo '<div class="partner-policies">';
 
-        if ($terms_conditions) {
-            echo '<h3>Terms & Conditions</h3>';
-            echo '<p>' . nl2br(esc_html($terms_conditions)) . '</p>';
-        }
+        if ($terms_conditions || $late_fees || $payments) {
+            if ($terms_conditions) {
+                echo '<h3>Terms & Conditions</h3>';
+                echo '<p>' . nl2br(esc_html($terms_conditions)) . '</p>';
+            }
 
-        if ($late_fees) {
-            echo '<h3>Late Fees</h3>';
-            echo '<p>' . nl2br(esc_html($late_fees)) . '</p>';
-        }
+            if ($late_fees) {
+                echo '<h3>Late Fees</h3>';
+                echo '<p>' . nl2br(esc_html($late_fees)) . '</p>';
+            }
 
-        if ($payments) {
-            echo '<h3>Payments</h3>';
-            echo '<p>' . nl2br(esc_html($payments)) . '</p>';
+            if ($payments) {
+                echo '<h3>Payments</h3>';
+                echo '<p>' . nl2br(esc_html($payments)) . '</p>';
+            }
+        } else {
+            echo '<p>No policies listed. We recommend messaging the stylist if you need more information before booking.</p>';
         }
 
         echo '</div>';
