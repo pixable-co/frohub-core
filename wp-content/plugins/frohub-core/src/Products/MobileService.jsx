@@ -319,15 +319,15 @@ export default function MobileService({ partnerId }) {
     }
 
     return (
-        <div className="w-5/6 mt-4 mb-6 p-4 border border-gray-300 rounded-xl bg-[#F5F5F5]">
+        <div className="sm:w-full md:w-5/6 mt-4 mb-6 p-4 border border-gray-300 rounded-xl bg-[#F5F5F5]">
             {!staticLocation ? (
                 // UI with Google Places Autocomplete
                 <>
                     <p className="text-sm text-gray-700">
                         To check if you are within their mobile service area, enter your location or postcode.
                     </p>
-                    <div className="flex justify-start items-center gap-6 mt-3">
-                        <div className="w-[35%]">
+                    <div className="flex flex-col md:flex-row justify-start items-center gap-6 mt-3">
+                        <div className="sm:w-full md:w-[35%]">
                             <input
                                 ref={autocompleteInputRef}
                                 type="text"
