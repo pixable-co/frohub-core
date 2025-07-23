@@ -60,7 +60,7 @@ class FrohubReviewSummary
         <div class="frohub-review-summary">
             <div class="overall">
                 <div class="label">
-                    <strong>Overall Rating</strong> (<?php echo esc_html(number_format($avg_overall, 1)); ?>)
+                    <strong>Overall Rating</strong> (<?php echo esc_html(number_format($avg_overall, 0)); ?>)
                 </div>
                 <div class="stars">
                     <?php
@@ -80,21 +80,21 @@ class FrohubReviewSummary
                     <i class="fas fa-shield-alt fa-2x metric-icon"></i>
                     <div class="meta-label">
                         Reliability <i class="fas fa-star"></i>
-                        <?php echo esc_html(number_format($avg_reliability, 1)); ?>
+                        <?php echo esc_html(number_format($avg_reliability, 0)); ?>
                     </div>
                 </div>
                 <div class="metric">
                     <i class="fas fa-cut fa-2x metric-icon"></i>
                     <div class="meta-label">
                         Skill <i class="fas fa-star"></i>
-                        <?php echo esc_html(number_format($avg_skill, 1)); ?>
+                        <?php echo esc_html(number_format($avg_skill, 0)); ?>
                     </div>
                 </div>
                 <div class="metric">
                     <i class="fas fa-user-tie fa-2x metric-icon"></i>
                     <div class="meta-label">
                         Professionalism <i class="fas fa-star"></i>
-                        <?php echo esc_html(number_format($avg_professionalism, 1)); ?>
+                        <?php echo esc_html(number_format($avg_professionalism, 0)); ?>
                     </div>
                 </div>
             </div>

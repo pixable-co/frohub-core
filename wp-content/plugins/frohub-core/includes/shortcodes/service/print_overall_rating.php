@@ -16,7 +16,7 @@ class PrintOverallRating {
         ob_start();
         //need [get_product_rating] on the page
         if ( isset($GLOBALS['s_average_rating']) && $GLOBALS['s_average_rating'] ) {
-            echo '<span><i class="fas fa-star"></i> ' . number_format((float) $GLOBALS['s_average_rating'], 2) . '</span>';
+            echo '<span><i class="fas fa-star"></i> ' . number_format((float) $GLOBALS['s_average_rating'], 0) . '</span>';
         }
 
         return ob_get_clean();

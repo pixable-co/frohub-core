@@ -87,8 +87,8 @@ class ReviewTab {
 
         <script>
         jQuery(document).ready(function($) {
-            let s_rating = <?php echo number_format((float)$GLOBALS['s_average_rating'], 2); ?>;
-            let b_rating = <?php echo number_format((float)$b_average_rating, 2); ?>;
+            let s_rating = <?php echo number_format((float)$GLOBALS['s_average_rating'],0); ?>;
+            let b_rating = <?php echo number_format((float)$b_average_rating, 0); ?>;
             let sHtml = '<i class="fas fa-star"></i> ' + s_rating;
             let bHtml = '<i class="fas fa-star"></i> ' + b_rating;
 

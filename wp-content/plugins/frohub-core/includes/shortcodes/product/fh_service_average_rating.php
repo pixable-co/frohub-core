@@ -46,7 +46,7 @@ class FhServiceAverageRating {
             return '';
         }
     
-        $average_rating = number_format($total_rating / $count, 2);
+        $average_rating = number_format($total_rating / $count, 0);
     
         return '<div class="fh_service_average_rating"><i class="fas fa-star"></i> ' . esc_html($average_rating) . '</div>';
     }
