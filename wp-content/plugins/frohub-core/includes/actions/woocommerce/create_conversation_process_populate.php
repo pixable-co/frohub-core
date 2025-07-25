@@ -9,8 +9,8 @@ class CreateConversionProcessPopulate {
 
     public static function init() {
         $self = new self();
-        add_action('woocommerce_payment_complete', [$self, 'handle_order'], 10, 1);
-        //add_action('woocommerce_thankyou', [$self, 'handle_order'], 10, 1);
+        //add_action('woocommerce_payment_complete', [$self, 'handle_order'], 10, 1);
+        add_action('woocommerce_thankyou', [$self, 'handle_order'], 10, 1);
     }
 
     public function handle_order($order_id) {
