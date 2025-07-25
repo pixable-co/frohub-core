@@ -10,7 +10,6 @@ use FECore\ManagePartnerPostColumn;
 use FECore\CreateReviewPost;
 use FECore\CreateUpdatePayoutPost;
 use FECore\CustomOrderStatus;
-use FECore\CreateConversionProcessPopulate;
 use FECore\ConversationAutoReply;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -31,7 +30,6 @@ class Actions {
 		CreateReviewPost::init();
 		CreateUpdatePayoutPost::init();
 		CustomOrderStatus::init();
-		CreateConversionProcessPopulate::init();
 		ConversationAutoReply::init();
 	}
 }
