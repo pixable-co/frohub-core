@@ -47,7 +47,6 @@ use FECore\ReturnProductCategories;
 use FECore\ReturnPartnerFaqs;
 use FECore\ReturnSpecificPartnerAddOns;
 use FECore\ReturnAllProductTags;
-use FECore\CreateConversionProcessPopulate;
 
 
 // use FECore\Payouts;
@@ -136,6 +135,5 @@ class API {
 		SendAutoMessage::init();
 		ReadByPartner::init();
 
-		CreateConversionProcessPopulate::init();
 	}
 }
