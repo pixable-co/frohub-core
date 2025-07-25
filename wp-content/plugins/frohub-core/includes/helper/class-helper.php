@@ -187,6 +187,7 @@ class Helper
             'client_name'     => $order->get_billing_first_name() . ' ' . $order->get_billing_last_name(),
             'client_phone'    => $order->get_billing_phone(),
             'client_email'    => $order->get_billing_email(),
+            'customer_id'     => $order->get_customer_id(),
             'partner_platform_client_id' => $partnerPlatformClientId,
         ];
     }

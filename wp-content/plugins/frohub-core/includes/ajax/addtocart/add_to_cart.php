@@ -24,7 +24,7 @@ class AddToCart {
         // Save custom meta to order
         add_action('woocommerce_add_order_item_meta', array($self, 'add_order_item_meta'), 10, 2);
 
-        add_filter('woocommerce_checkout_fields', array($self, 'force_checkout_postcode'));
+//         add_filter('woocommerce_checkout_fields', array($self, 'force_checkout_postcode'));
     }
 
 public function add_to_cart() {
