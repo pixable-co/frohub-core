@@ -126,7 +126,21 @@ const FhCalender = ({ onDateChange, bookingNotice, initialServiceDuration, maxDa
 
                 const slotTime = `${entry.from} - ${entry.to}`;
                 const bookedSlotsForDate = allBookings[formattedDate] || [];
-                if (bookedSlotsForDate.includes(slotTime)) return false;
+                // if (bookedSlotsForDate.includes(slotTime)) return false;
+
+                const overlapsBooking = bookedSlotsForDate.some(timeStr => {
+                    if (!timeStr || !timeStr.includes(" - ")) return false;
+
+                    const [bookedFrom, bookedTo] = timeStr.split(" - ");
+                    const bookedStart = dayjs(`${formattedDate} ${bookedFrom}`, "YYYY-MM-DD HH:mm");
+                    const bookedEnd = dayjs(`${formattedDate} ${bookedTo}`, "YYYY-MM-DD HH:mm");
+
+                    const slotStart = dayjs(`${formattedDate} ${entry.from}`, "YYYY-MM-DD HH:mm");
+                    const slotEnd = dayjs(`${formattedDate} ${entry.to}`, "YYYY-MM-DD HH:mm");
+
+                    return slotStart.isBefore(bookedEnd) && slotEnd.isAfter(bookedStart);
+                });
+                if (overlapsBooking) return false;
 
                 const slotStart = dayjs(`${formattedDate} ${entry.from}`, "YYYY-MM-DD HH:mm");
                 const slotEnd = dayjs(`${formattedDate} ${entry.to}`, "YYYY-MM-DD HH:mm");
@@ -149,7 +163,9 @@ const FhCalender = ({ onDateChange, bookingNotice, initialServiceDuration, maxDa
             }))
         : [];
 
-    console.log(`🟢 Selected Date: ${selectedDate.format("YYYY-MM-DD")} - Available Time Slots:`, availableTimeSlots);
+    console.log(unavailableTimes);
+
+    // console.log(`🟢 Selected Date: ${selectedDate.format("YYYY-MM-DD")} - Available Time Slots:`, availableTimeSlots);
 
     const isToday = (date) => dayjs().format("YYYY-MM-DD") === date.format("YYYY-MM-DD");
     const isSelected = (date) => selectedDate.format("YYYY-MM-DD") === date.format("YYYY-MM-DD");
