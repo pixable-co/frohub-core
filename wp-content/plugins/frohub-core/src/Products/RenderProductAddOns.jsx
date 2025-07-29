@@ -88,15 +88,21 @@ export default function RenderProductAddOns({ productId, setProductId, selectedA
                 "frohub/get_availibility",
                 (response) => {
                     if (response.success) {
-                        const currentAvailabilityData = frohubStore.getState().availabilityData;
-                        if (JSON.stringify(currentAvailabilityData) !== JSON.stringify(response.data.availability)) {
-                            setAvailabilityData(response.data.availability);
-                            frohubStore.setState({ loading: false });
-                        }
+                        setAvailabilityData(response.data.availability);
                     } else {
                         console.error("Error fetching availability:", response.message);
-                        frohubStore.setState({ loading: false });
                     }
+                    frohubStore.setState({ loading: false });
+                    // if (response.success) {
+                    //     const currentAvailabilityData = frohubStore.getState().availabilityData;
+                    //     if (JSON.stringify(currentAvailabilityData) !== JSON.stringify(response.data.availability)) {
+                    //         setAvailabilityData(response.data.availability);
+                    //         frohubStore.setState({ loading: false });
+                    //     }
+                    // } else {
+                    //     console.error("Error fetching availability:", response.message);
+                    //     frohubStore.setState({ loading: false });
+                    // }
                 },
                 {
                     product_id: productId,
