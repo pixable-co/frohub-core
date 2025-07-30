@@ -1,13 +1,15 @@
 <?php
 namespace FECore;
 
-if ( ! defined( 'ABSPATH' ) ) {
+if (!defined('ABSPATH')) {
     exit;
 }
 
-class CustomerMetrics {
+class CustomerMetrics
+{
 
-    public static function init() {
+    public static function init()
+    {
         $self = new self();
         add_action('rest_api_init', array($self, 'register_rest_routes'));
     }
@@ -15,10 +17,11 @@ class CustomerMetrics {
     /**
      * Registers the REST API routes.
      */
-    public function register_rest_routes() {
+    public function register_rest_routes()
+    {
         register_rest_route('frohub/v1', '/customer-metrics', array(
-            'methods'             => 'POST',
-            'callback'            => array($this, 'handle_request'),
+            'methods' => 'POST',
+            'callback' => array($this, 'handle_request'),
             'permission_callback' => '__return_true',
         ));
     }
@@ -29,7 +32,8 @@ class CustomerMetrics {
      * @param \WP_REST_Request $request
      * @return \WP_REST_Response
      */
-    public function handle_request(\WP_REST_Request $request) {
+    public function handle_request(\WP_REST_Request $request)
+    {
         $customer_id = $request->get_param('customer_id');
 
         if (!$customer_id || !get_userdata($customer_id)) {
@@ -39,8 +43,8 @@ class CustomerMetrics {
         // Fetch completed orders for the customer
         $orders = wc_get_orders([
             'customer_id' => $customer_id,
-            'status'      => 'completed',
-            'limit'       => -1,
+            'status' => 'completed',
+            'limit' => -1,
         ]);
 
         $total_spent = 0;
@@ -70,19 +74,30 @@ class CustomerMetrics {
             $total_spent += $order_total;
         }
 
-        // Get customer registration date
+        // Get customer data
+        $user = get_userdata($customer_id);
         $customer = new \WC_Customer($customer_id);
         $customer_since = $customer->get_date_created();
         $customer_since = $customer_since ? $customer_since->date('Y-m-d H:i:s') : '';
+
+        $first_name = $user->first_name;
+        $last_name = $user->last_name;
+        $user_id = $user->ID;
+        $phone_number = $customer->get_billing_phone();
 
         // Format total spent
         $formatted_total_spent = '£' . number_format($total_spent, 2);
 
         return new \WP_REST_Response([
-            'customer_id'      => $customer_id,
-            'total_spent'      => $formatted_total_spent,
+            'customer_id' => $customer_id,
+            'user_id' => $user_id,
+            'first_name' => $first_name,
+            'last_name' => $last_name,
+            'phone_number' => $phone_number,
+            'total_spent' => $formatted_total_spent,
             'completed_orders' => $completed_orders,
-            'customer_since'   => $customer_since,
+            'customer_since' => $customer_since,
         ], 200);
     }
+
 }
