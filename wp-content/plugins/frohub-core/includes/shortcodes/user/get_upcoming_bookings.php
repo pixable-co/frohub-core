@@ -151,19 +151,21 @@ class GetUpcomingBookings {
             echo '</tr>';
 
             $mobile_cards .= '<div class="frohub_card">';
+            $mobile_cards .= '<a href="' . home_url('/my-account/view-order/' . $booking['order_id'] . '/?_wca_initiator=action') . '" class="order_id">#' . esc_html($booking['order_id']) . '</a>';
             $mobile_cards .= '<p><strong>' . esc_html($booking['appointment']) . '</strong></p>';
             $mobile_cards .= '<p>' . $clean_service_name . '</p>';
             $mobile_cards .= '<p>' . esc_html($booking['partner_title']) . '</p>';
             $mobile_cards .= '<p><strong>Status:</strong> ' . esc_html($status_label) . '</p>';
             $mobile_cards .= '<p>Deposit: £' . number_format($booking['deposit'], 2) . '</p>';
-            $mobile_cards .= '<p><input disabled type="text" value="Due on the day: ' . esc_attr($booking['total_due']) . '" /></p>';
+            $mobile_cards .= '<div class="due-on-day">Due on the day: ' . esc_attr($booking['total_due']) . '</div>';
             $mobile_cards .= '<div class="actions">';
-            if ($booking['order_status'] === 'rescheduling') {
-                $mobile_cards .= '<a href="#" class="w-btn us-btn-style_7 w-btn-underlined accept-button" data-order-id="' . esc_attr($booking['order_id']) . '">Accept</a>';
-                $mobile_cards .= '<a href="#" class="w-btn us-btn-style_7 w-btn-underlined decline-button" data-order-id="' . esc_attr($booking['order_id']) . '">Decline</a>';
-            } else {
-                $mobile_cards .= '<a href="' . home_url('/my-account/view-order/' . $booking['order_id']) . '" class="w-btn us-btn-style_7 w-btn-underlined view-button">View</a>';
-            }
+            $mobile_cards .= '<a href="' . home_url('/my-account/view-order/' . $booking['order_id']) . '" class="w-btn us-btn-style_7 w-btn-underlined view-button">Respond to Request</a>';
+//             if ($booking['order_status'] === 'rescheduling') {
+//                 $mobile_cards .= '<a href="#" class="w-btn us-btn-style_7 w-btn-underlined accept-button" data-order-id="' . esc_attr($booking['order_id']) . '">Accept</a>';
+//                 $mobile_cards .= '<a href="#" class="w-btn us-btn-style_7 w-btn-underlined decline-button" data-order-id="' . esc_attr($booking['order_id']) . '">Decline</a>';
+//             } else {
+//                 $mobile_cards .= '<a href="' . home_url('/my-account/view-order/' . $booking['order_id']) . '" class="w-btn us-btn-style_7 w-btn-underlined view-button">View</a>';
+//             }
             $mobile_cards .= '</div></div>';
         }
 
