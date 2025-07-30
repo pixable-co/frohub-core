@@ -122,7 +122,7 @@ class PartnerConversations {
                     if ($customer_id) {
                         $order_args = array(
                             'limit'        => -1,
-                            'status'       => 'wc-completed',
+                            'status'       => array('wc-completed', 'wc-processing'),
                             'customer_id'  => $customer_id,
                             'orderby'      => 'date',
                             'order'        => 'DESC'
