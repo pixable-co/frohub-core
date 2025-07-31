@@ -53,7 +53,7 @@ The 7-day cancellation policy allows our stylists to fill their time slot with a
                 echo '<p>' . nl2br(esc_html($payments)) . '</p>';
             }
         } else {
-            echo '<p>No policies listed. We recommend messaging the stylist if you need more information before booking.</p>';
+            echo '<i><strong>No other policies listed. We recommend messaging the stylist if you need more information before booking.</strong></i>';
         }
 
         
