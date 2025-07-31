@@ -2,7 +2,7 @@
 
 namespace FECore;
 
-if (! defined('ABSPATH')) {
+if (!defined('ABSPATH')) {
     exit;
 }
 
@@ -22,16 +22,18 @@ class FrohubReviewSummary
 
         // Fetch all review IDs for this partner
         $q = new \WP_Query([
-            'post_type'      => 'review',
+            'post_type' => 'review',
             'posts_per_page' => -1,
-            'fields'         => 'ids',
-            'meta_query'     => [[
-                'key'     => 'partner',
-                'value'   => $partner_id,
-                'compare' => '=',
-            ]]
+            'fields' => 'ids',
+            'meta_query' => [
+                [
+                    'key' => 'partner',
+                    'value' => $partner_id,
+                    'compare' => '=',
+                ]
+            ]
         ]);
-        $ids   = $q->posts;
+        $ids = $q->posts;
         $count = count($ids);
 
         if ($count === 0) {
@@ -39,21 +41,21 @@ class FrohubReviewSummary
         }
 
         // Sum up each ACF rating
-        $sum_overall        = 0;
-        $sum_reliability    = 0;
-        $sum_skill          = 0;
+        $sum_overall = 0;
+        $sum_reliability = 0;
+        $sum_skill = 0;
         $sum_professionalism = 0;
 
         foreach ($ids as $rid) {
-            $sum_overall         += floatval(get_field('overall_rating',     $rid) ?: 0);
-            $sum_reliability     += floatval(get_field('reliability',        $rid) ?: 0);
-            $sum_skill           += floatval(get_field('skill',              $rid) ?: 0);
-            $sum_professionalism += floatval(get_field('professionalism',    $rid) ?: 0);
+            $sum_overall += floatval(get_field('overall_rating', $rid) ?: 0);
+            $sum_reliability += floatval(get_field('reliability', $rid) ?: 0);
+            $sum_skill += floatval(get_field('skill', $rid) ?: 0);
+            $sum_professionalism += floatval(get_field('professionalism', $rid) ?: 0);
         }
 
-        $avg_overall         = round($sum_overall         / $count, 1);
-        $avg_reliability     = round($sum_reliability     / $count, 1);
-        $avg_skill           = round($sum_skill           / $count, 1);
+        $avg_overall = round($sum_overall / $count, 1);
+        $avg_reliability = round($sum_reliability / $count, 1);
+        $avg_skill = round($sum_skill / $count, 1);
         $avg_professionalism = round($sum_professionalism / $count, 1);
 
         ob_start(); ?>
@@ -79,22 +81,31 @@ class FrohubReviewSummary
                 <div class="metric">
                     <i class="fas fa-shield-alt fa-2x metric-icon"></i>
                     <div class="meta-label">
-                        Reliability <i class="fas fa-star"></i>
-                        <?php echo esc_html(number_format($avg_reliability, 0)); ?>
+                        Reliability
+                        <span class="star-rating-container">
+                            <i class="fas fa-star"></i>
+                            <?php echo esc_html(number_format($avg_reliability, 0)); ?>
+                        </span>
                     </div>
                 </div>
                 <div class="metric">
                     <i class="fas fa-cut fa-2x metric-icon"></i>
                     <div class="meta-label">
-                        Skill <i class="fas fa-star"></i>
-                        <?php echo esc_html(number_format($avg_skill, 0)); ?>
+                        Skill
+                        <span class="star-rating-container">
+                            <i class="fas fa-star"></i>
+                            <?php echo esc_html(number_format($avg_skill, 0)); ?>
+                        </span>
                     </div>
                 </div>
                 <div class="metric">
                     <i class="fas fa-user-tie fa-2x metric-icon"></i>
                     <div class="meta-label">
-                        Professionalism <i class="fas fa-star"></i>
-                        <?php echo esc_html(number_format($avg_professionalism, 0)); ?>
+                        Professionalism
+                        <span class="star-rating-container">
+                            <i class="fas fa-star"></i>
+                            <?php echo esc_html(number_format($avg_professionalism, 0)); ?>
+                        </span>
                     </div>
                 </div>
             </div>
@@ -110,10 +121,10 @@ class FrohubReviewSummary
                 }
 
                 @media only screen and (max-width: 600px) {
-                  .frohub-review-summary {
-                       flex-direction: column;
-                  }
-              }
+                    .frohub-review-summary {
+                        flex-direction: column;
+                    }
+                }
 
                 .frohub-review-summary .overall .label {
                     font-size: 1.125rem;
@@ -168,7 +179,7 @@ class FrohubReviewSummary
                     /* gold star */
                 }
             </style>
-    <?php
-        return ob_get_clean();
+            <?php
+            return ob_get_clean();
     }
 }
