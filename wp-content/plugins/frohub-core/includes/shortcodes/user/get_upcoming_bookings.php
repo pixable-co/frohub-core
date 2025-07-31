@@ -131,17 +131,7 @@ class GetUpcomingBookings {
                 $modal_decline = "declineModal_" . $item_id;
 
                 echo '<div class="table-action-buttons">';
-                echo '<button class="modal-trigger w-btn us-btn-style_7 w-btn-underlined accept-button" 
-                        data-modal="' . esc_attr($modal_accept) . '"
-                        data-order-id="' . esc_attr($booking['order_id']) . '"
-                        data-start="' . esc_attr($booking['appointment']) . '">
-                        Accept</button>';
-                echo '<span> / </span>';
-                echo '<button class="modal-trigger w-btn us-btn-style_7 w-btn-underlined decline-button" 
-                        data-modal="' . esc_attr($modal_decline) . '"
-                        data-order-id="' . esc_attr($booking['order_id']) . '"
-                        data-start="' . esc_attr($booking['appointment']) . '">
-                        Decline</button>';
+                    echo '<a href="' . home_url('/my-account/view-order/' . $booking['order_id']) . '">Respond to Request</a>';
                 echo '</div>';
             }
             else {
