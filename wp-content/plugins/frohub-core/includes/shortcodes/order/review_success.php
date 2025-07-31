@@ -87,7 +87,6 @@ class ReviewSuccess {
                     flex-direction: column;
                     align-items: center;
                     text-align: center;
-                    padding: 16px 18px 8px;
                     width: 100%;
                     max-width: 520px;
                     margin: 0 auto;
@@ -120,6 +119,7 @@ class ReviewSuccess {
                     box-shadow: 0 1px 2px var(--rs-ring);
                     overflow: hidden;      /* guard against tiny overflow */
                     box-sizing: border-box;
+                    margin-top: 1rem;
                 }
 
                 .review_success .rs-card-row {
