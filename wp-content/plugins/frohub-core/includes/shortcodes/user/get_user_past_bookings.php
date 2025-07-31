@@ -347,42 +347,93 @@ class GetUserPastBookings
     }
 }
 
+        /* Hide product details when confirmation for form 7 is present */
+        .product-details.is-hidden { display: none !important; }
+
         </style>
 
         <script>
-            jQuery(function ($) {
-                $('.myBtn').on('click', function () {
-                    const data = $(this).data('info');
+        jQuery(function ($) {
+            // Keep the latest review payload so we can use it inside GF event handlers
+            var lastReviewData = null;
 
-                    $('#productName').text(data.productName);
-                    $('#serviceType .status_text').text(data.serviceType);
-                    $('#partnerTitle').text(data.partnerTitle);
-                    $('#selectedDate').text(data.selectedDate);
-                    $('#partnerAddress').text(data.partnerAddress);
-                    $('.review-product-img').attr('src', data.productImgURL);
+            // Helper: toggle visibility of the product details based on confirmation presence
+            function toggleProductDetailsVisibility() {
+                var hasConfirmation = $('#gform_confirmation_wrapper_7').length > 0;
+                $('#frohubReviewModal .product-details').toggleClass('is-hidden', hasConfirmation);
+            }
 
-                    $('#frohubReviewModal').fadeIn();
+            // Helper: attach a MutationObserver (once) to watch the feedback area for DOM changes
+            function ensureObserver() {
+                var feedback = document.querySelector('#frohubReviewModal .feedback-form');
+                if (feedback && !feedback._observerAttached) {
+                    var mo = new MutationObserver(toggleProductDetailsVisibility);
+                    mo.observe(feedback, { childList: true, subtree: true });
+                    feedback._observerAttached = true; // mark so we don't attach again
+                }
+            }
 
-                    $(document).on('gform_post_render', function (event, formId) {
-                        if (formId === 7) {
-                            $('#input_7_18').val(data.orderId).prop('readonly', true);
-                            $('#input_7_19').val(data.productId).prop('readonly', true);
-                        }
-                    });
-                });
+            // Open modal and prefill fields
+            $('.myBtn').on('click', function () {
+                const data = $(this).data('info');
+                lastReviewData = data;
 
-                $('.frohub-close').on('click', function () {
-                    $('#frohubReviewModal').fadeOut();
-                });
+                // Prefill visible details
+                $('#productName').text(data.productName);
+                $('#serviceType .status_text').text(data.serviceType);
+                $('#partnerTitle').text(data.partnerTitle);
+                $('#selectedDate').text(data.selectedDate);
+                $('#partnerAddress').text(data.partnerAddress);
+                $('.review-product-img').attr('src', data.productImgURL);
 
-                $(window).on('click', function (e) {
-                    if ($(e.target).is('#frohubReviewModal')) {
-                        $('#frohubReviewModal').fadeOut();
-                    }
-                });
+                // Show modal
+                $('#frohubReviewModal').fadeIn();
+
+                // Initial visibility check (covers non-AJAX / already-rendered states)
+                toggleProductDetailsVisibility();
+
+                // Make sure our observer is attached (only once)
+                ensureObserver();
             });
 
+            // Gravity Forms: after the form is (re)rendered via AJAX
+            $(document).off('gform_post_render._review7').on('gform_post_render._review7', function (event, formId) {
+                if (formId === 7 && lastReviewData) {
+                    // Set hidden/readonly values
+                    $('#input_7_18').val(lastReviewData.orderId).prop('readonly', true);
+                    $('#input_7_19').val(lastReviewData.productId).prop('readonly', true);
+                }
+                // Re-evaluate visibility in case the render replaced markup
+                toggleProductDetailsVisibility();
+            });
+
+            // Gravity Forms: when the confirmation is injected via AJAX
+            $(document).off('gform_confirmation_loaded._review7').on('gform_confirmation_loaded._review7', function (event, formId) {
+                if (formId === 7) {
+                    toggleProductDetailsVisibility();
+                }
+            });
+
+            // Close handlers
+            $('.frohub-close').on('click', function () {
+                $('#frohubReviewModal').fadeOut();
+            });
+
+            $(window).on('click', function (e) {
+                if ($(e.target).is('#frohubReviewModal')) {
+                    $('#frohubReviewModal').fadeOut();
+                }
+            });
+
+            // Safety: if the modal is already in DOM and a confirmation is present (e.g., after navigation),
+            // make an initial check on page load
+            toggleProductDetailsVisibility();
+
+            // Also try attaching the observer once on page load (in case users load the page with the modal markup present)
+            ensureObserver();
+        });
         </script>
+
         <?php
 
         return ob_get_clean();

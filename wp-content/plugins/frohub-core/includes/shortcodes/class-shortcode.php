@@ -1,6 +1,8 @@
 <?php
 namespace FECore;
 
+use FECore\ReviewSuccess;
+
 use FECore\CustomerUnreadConversations;
 
 use FECore\CustomerMessageMobile;
@@ -167,5 +169,6 @@ class Shortcodes {
 		CustomerMessage::init();
 		CustomerMessageMobile::init();
 		CustomerUnreadConversations::init();
+		ReviewSuccess::init();
 	}
 }
