@@ -80,7 +80,7 @@
     {
         flex-direction: column;
     }
-    .sm:w-full
+    .sm\:w-full
     {
         width: 100%;
     }
