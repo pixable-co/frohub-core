@@ -13,9 +13,6 @@ use FECore\UserConversations;
 
 use FECore\SubmitComment;
 
-use FECore\SubmitLike;
-
-use FECore\SubmitDislike;
 
 use FECore\GetCategoryTerms;
 
@@ -63,8 +60,6 @@ class Ajax {
 		CancelOrder::init();
 		AcceptNewTime::init();
 		GetCategoryTerms::init();
-		SubmitDislike::init();
-		SubmitLike::init();
 		SubmitComment::init();
 		UserConversations::init();
 		CloneEcomProduct::init();
