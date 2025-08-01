@@ -13,7 +13,6 @@ use FECore\FhServicePrice;
 
 use FECore\DisplayPartnerName;
 
-use FECore\ShowComments;
 
 use FECore\GetUserAvatar;
 
@@ -159,7 +158,6 @@ class Shortcodes {
 		ShowNextBookings::init();
 		GetUpcomingBookings::init();
 		GetUserAvatar::init();
-		ShowComments::init();
 		DisplayPartnerName::init();
 		FhServicePrice::init();
 		FrohubRenderReviews::init();
