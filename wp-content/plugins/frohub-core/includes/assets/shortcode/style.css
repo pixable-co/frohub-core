@@ -76,6 +76,10 @@
         flex-wrap: wrap;
         justify-content: flex-start;
     }
+    .frohub_add_to_cart ul
+    {
+        flex-direction: column;
+    }
 }
 
 @media only screen and (min-width: 769px) {
