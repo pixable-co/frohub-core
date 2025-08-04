@@ -25,7 +25,10 @@ class FrohubProductPartnerPage
             <ul class="frohub-category-list frohub-parent-list">
                 <?php echo $this->render_parent_categories(); ?>
             </ul>
+            <div class="frohub-dots frohub-parent-dots"></div>
+
             <ul class="frohub-category-list frohub-child-list"></ul>
+            <div class="frohub-dots frohub-child-dots"></div>
         </div>
 
         <div id="frohub-product-results" style="position:relative;">
