@@ -2,7 +2,7 @@
 
 namespace FECore;
 
-if (! defined('ABSPATH')) {
+if (!defined('ABSPATH')) {
     exit;
 }
 
@@ -11,10 +11,10 @@ class FrohubProductPartnerPage
     public static function init()
     {
         $self = new self();
-        add_shortcode('frohub_product_partner_page',         [$self, 'shortcode']);
-        add_action('wp_ajax_frohub_filter_products',       [$self, 'ajax_filter_products']);
+        add_shortcode('frohub_product_partner_page', [$self, 'shortcode']);
+        add_action('wp_ajax_frohub_filter_products', [$self, 'ajax_filter_products']);
         add_action('wp_ajax_nopriv_frohub_filter_products', [$self, 'ajax_filter_products']);
-        add_action('wp_ajax_frohub_get_subcategories',       [$self, 'ajax_get_subcategories']);
+        add_action('wp_ajax_frohub_get_subcategories', [$self, 'ajax_get_subcategories']);
         add_action('wp_ajax_nopriv_frohub_get_subcategories', [$self, 'ajax_get_subcategories']);
     }
 
@@ -142,99 +142,122 @@ class FrohubProductPartnerPage
                 if (initial) {
                     initial.click();
                 }
+
+                function createDots(container, dotsContainer) {
+                    const scrollWidth = container.scrollWidth;
+                    const visibleWidth = container.clientWidth;
+                    const totalDots = Math.ceil(scrollWidth / visibleWidth);
+                    dotsContainer.innerHTML = '';
+
+                    for (let i = 0; i < totalDots; i++) {
+                        const dot = document.createElement('span');
+                        dot.classList.add('dot');
+                        if (i === 0) dot.classList.add('active');
+                        dotsContainer.appendChild(dot);
+                    }
+                }
+
+                function updateActiveDot(container, dotsContainer) {
+                    const scrollLeft = container.scrollLeft;
+                    const visibleWidth = container.clientWidth;
+                    const currentDot = Math.round(scrollLeft / visibleWidth);
+                    const dots = dotsContainer.querySelectorAll('.dot');
+                    dots.forEach((d, i) => d.classList.toggle('active', i === currentDot));
+                }
+
             });
         </script>
 
         <style>
-           /* Shared: Style for selected category item */
-           .frohub-category-item.selected {
-               font-weight: bold;
-               border-bottom: 2px solid #0e2a5c;
-               color: #0e2a5c;
-           }
+            /* Shared: Style for selected category item */
+            .frohub-category-item.selected {
+                font-weight: bold;
+                border-bottom: 2px solid #0e2a5c;
+                color: #0e2a5c;
+            }
 
-           /* Base styles for parent and child lists */
-           .frohub-category-list {
-               list-style: none;
-               margin: 0;
-               padding: 0;
-           }
+            /* Base styles for parent and child lists */
+            .frohub-category-list {
+                list-style: none;
+                margin: 0;
+                padding: 0;
+            }
 
-           /* Parent category list - horizontal scroll */
-           .frohub-parent-list {
-               display: flex;
-               flex-wrap: nowrap;
-               overflow-x: auto;
-               white-space: nowrap;
-               gap: 1rem;
-               padding: 0.5rem 1rem;
-               scroll-snap-type: x mandatory;
-               -webkit-overflow-scrolling: touch;
-               margin-bottom: 1rem;
-           }
+            /* Parent category list - horizontal scroll */
+            .frohub-parent-list {
+                display: flex;
+                flex-wrap: nowrap;
+                overflow-x: auto;
+                white-space: nowrap;
+                gap: 1rem;
+                padding: 0.5rem 1rem;
+                scroll-snap-type: x mandatory;
+                -webkit-overflow-scrolling: touch;
+                margin-bottom: 1rem;
+            }
 
-           .frohub-parent-list::-webkit-scrollbar {
-               display: none;
-           }
+            .frohub-parent-list::-webkit-scrollbar {
+                display: none;
+            }
 
-           .frohub-parent-list .frohub-category-item {
-               display: inline-block;
-               padding: 0.5rem 1rem;
-               font-weight: 600;
-               color: #0e2a5c;
-               cursor: pointer;
-               scroll-snap-align: start;
-               white-space: nowrap;
-               border-bottom: 2px solid transparent;
-               transition: border-color 0.3s, color 0.3s;
-           }
+            .frohub-parent-list .frohub-category-item {
+                display: inline-block;
+                padding: 0.5rem 1rem;
+                font-weight: 600;
+                color: #0e2a5c;
+                cursor: pointer;
+                scroll-snap-align: start;
+                white-space: nowrap;
+                border-bottom: 2px solid transparent;
+                transition: border-color 0.3s, color 0.3s;
+            }
 
-           /* Child category list - horizontal scroll */
-           .frohub-child-list {
-               display: flex;
-               flex-wrap: nowrap;
-               overflow-x: auto;
-               white-space: nowrap;
-               gap: 1rem;
-               padding: 0.5rem 1rem;
-               scroll-snap-type: x mandatory;
-               -webkit-overflow-scrolling: touch;
-               margin-bottom: 1.5rem;
-           }
+            /* Child category list - horizontal scroll */
+            .frohub-child-list {
+                display: flex;
+                flex-wrap: nowrap;
+                overflow-x: auto;
+                white-space: nowrap;
+                gap: 1rem;
+                padding: 0.5rem 1rem;
+                scroll-snap-type: x mandatory;
+                -webkit-overflow-scrolling: touch;
+                margin-bottom: 1.5rem;
+            }
 
-           .frohub-child-list::-webkit-scrollbar {
-               display: none;
-           }
+            .frohub-child-list::-webkit-scrollbar {
+                display: none;
+            }
 
-           .frohub-child-list .frohub-category-item {
-               display: inline-block;
-               padding: 0.5rem 1rem;
-               font-weight: 500;
-               color: #444;
-               cursor: pointer;
-               scroll-snap-align: start;
-               white-space: nowrap;
-               border-bottom: 2px solid transparent;
-               transition: border-color 0.3s, color 0.3s;
-           }
+            .frohub-child-list .frohub-category-item {
+                display: inline-block;
+                padding: 0.5rem 1rem;
+                font-weight: 500;
+                color: #444;
+                cursor: pointer;
+                scroll-snap-align: start;
+                white-space: nowrap;
+                border-bottom: 2px solid transparent;
+                transition: border-color 0.3s, color 0.3s;
+            }
 
-           /* .selected is shared above — used by both lists */
+            /* .selected is shared above — used by both lists */
 
-           /* Desktop layout improvements */
-           @media (min-width: 769px) {
-               .frohub-parent-list,
-               .frohub-child-list {
-                   justify-content: center;
-                   overflow-x: visible;
-                   flex-wrap: wrap;
-               }
+            /* Desktop layout improvements */
+            @media (min-width: 769px) {
 
-               .frohub-parent-list .frohub-category-item,
-               .frohub-child-list .frohub-category-item {
-                   margin: 0.5rem;
-               }
-           }
+                .frohub-parent-list,
+                .frohub-child-list {
+                    justify-content: center;
+                    overflow-x: visible;
+                    flex-wrap: wrap;
+                }
 
+                .frohub-parent-list .frohub-category-item,
+                .frohub-child-list .frohub-category-item {
+                    margin: 0.5rem;
+                }
+            }
         </style>
         <?php
         return ob_get_clean();
@@ -242,8 +265,8 @@ class FrohubProductPartnerPage
 
     public function ajax_filter_products()
     {
-        $partner_id  = intval($_POST['partner_id'] ?? 0);
-        $page        = max(1, intval($_POST['page'] ?? 1));
+        $partner_id = intval($_POST['partner_id'] ?? 0);
+        $page = max(1, intval($_POST['page'] ?? 1));
         $filter_cats = (array) ($_POST['filter_product_cat'] ?? []);
         echo $this->render_products($partner_id, $filter_cats, $page);
         wp_die();
@@ -251,7 +274,7 @@ class FrohubProductPartnerPage
 
     public function ajax_get_subcategories()
     {
-        $parent_id  = intval($_POST['parent_id']  ?? 0);
+        $parent_id = intval($_POST['parent_id'] ?? 0);
         $partner_id = intval($_POST['partner_id'] ?? 0);
         echo $this->render_subcategories($parent_id, $partner_id);
         wp_die();
@@ -285,7 +308,7 @@ class FrohubProductPartnerPage
 
     private function render_subcategories($parent_id, $partner_id)
     {
-        $out   = '';
+        $out = '';
         $terms = get_terms(['taxonomy' => 'product_cat', 'hide_empty' => false, 'parent' => $parent_id]);
         foreach ($terms as $t) {
             $has = (new \WP_Query([
@@ -308,46 +331,47 @@ class FrohubProductPartnerPage
 
     private function render_products($partner_id = null, $filter_cats = [], $paged = 1)
     {
-        if (! $partner_id) {
+        if (!$partner_id) {
             $partner_id = get_the_ID();
         }
 
         $tax_query = [];
-        if (! empty($filter_cats)) {
+        if (!empty($filter_cats)) {
             $tax_query['relation'] = 'AND';
             foreach ($filter_cats as $slug) {
                 $term = get_term_by('slug', $slug, 'product_cat');
-                if (! $term) continue;
+                if (!$term)
+                    continue;
                 $tax_query[] = [
-                    'taxonomy'         => 'product_cat',
-                    'field'            => 'slug',
-                    'terms'            => [$slug],
+                    'taxonomy' => 'product_cat',
+                    'field' => 'slug',
+                    'terms' => [$slug],
                     'include_children' => $term->parent === 0,
                 ];
             }
         }
 
         $args = [
-            'post_type'      => 'product',
+            'post_type' => 'product',
             'posts_per_page' => 8,
-            'paged'          => $paged,
-            'fields'         => 'ids',
-            'post_status'    => 'publish',
-            'meta_query'     => [
+            'paged' => $paged,
+            'fields' => 'ids',
+            'post_status' => 'publish',
+            'meta_query' => [
                 'relation' => 'AND',
                 [
-                    'key'     => 'partner_id',
-                    'value'   => $partner_id,
+                    'key' => 'partner_id',
+                    'value' => $partner_id,
                     'compare' => '=',
                 ],
                 [
-                    'key'     => 'is_private',
-                    'value'   => '0', // false is stored as string '0' in ACF/DB
+                    'key' => 'is_private',
+                    'value' => '0', // false is stored as string '0' in ACF/DB
                     'compare' => '=',
                 ],
             ],
         ];
-        if (! empty($tax_query)) {
+        if (!empty($tax_query)) {
             $args['tax_query'] = $tax_query;
         }
 
