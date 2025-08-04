@@ -34,9 +34,12 @@ class FrohubProductPartnerPage
                     <?php echo $this->render_parent_options(); ?>
                 </select>
 
-                <select id="frohub-child-select" disabled>
-                    <option value="">Select subcategory</option>
-                </select>
+                <div id="frohub-child-select-wrapper" style="display:none;">
+                    <select id="frohub-child-select">
+                        <option value="">Select subcategory</option>
+                    </select>
+                </div>
+
             </div>
         </div>
 
@@ -164,7 +167,8 @@ class FrohubProductPartnerPage
                     selectedParent = selectedSlug ? { dataset: { slug: selectedSlug } } : null;
                     selectedChild = null;
                     childSelect.innerHTML = '<option value="">Select subcategory</option>';
-                    childSelect.disabled = true;
+                    document.getElementById('frohub-child-select-wrapper').style.display = 'none';
+
 
                     if (termId) {
                         // Load subcategories for this parent
@@ -190,10 +194,11 @@ class FrohubProductPartnerPage
                                     option.textContent = label;
                                     childSelect.appendChild(option);
                                 });
-
+                                
                                 if (lis.length > 0) {
-                                    childSelect.disabled = false;
+                                    document.getElementById('frohub-child-select-wrapper').style.display = 'block';
                                 }
+
                             });
                     }
 
