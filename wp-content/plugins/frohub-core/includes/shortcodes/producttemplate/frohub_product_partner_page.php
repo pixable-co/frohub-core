@@ -47,6 +47,8 @@ class FrohubProductPartnerPage
                 const childList = document.querySelector('.frohub-child-list');
                 const resultsWrap = document.getElementById('frohub-product-results');
                 const spinner = document.getElementById('frohub-loading-spinner');
+                const parentDots = document.querySelector('.frohub-parent-dots');
+                const childDots = document.querySelector('.frohub-child-dots');
                 let currentPage = 1;
                 let selectedParent = null;
                 let selectedChild = null;
@@ -102,7 +104,6 @@ class FrohubProductPartnerPage
                         .then(html => {
                             childList.innerHTML = html;
 
-                            // Re-attach click events to child category items
                             childList.querySelectorAll('[data-type="subcat"]').forEach(li => {
                                 li.addEventListener('click', () => {
                                     if (selectedChild === li) {
@@ -118,26 +119,65 @@ class FrohubProductPartnerPage
                                 });
                             });
 
-                            // Setup carousel dots for child categories
-                            const childDots = document.querySelector('.frohub-child-dots');
+                            // Dots for child list
                             if (childDots) {
-                                createDots(childList, childDots);
-                                updateActiveDot(childList, childDots);
+                                setTimeout(() => {
+                                    createDots(childList, childDots);
+                                    updateActiveDot(childList, childDots);
+                                }, 50);
+
                                 childList.addEventListener('scroll', () => updateActiveDot(childList, childDots));
 
-                                // Optional: Make dots clickable
-                                childDots.querySelectorAll('.dot').forEach((dot, i) => {
-                                    dot.addEventListener('click', () => {
+                                // Dot click navigation
+                                childDots.addEventListener('click', e => {
+                                    if (e.target.classList.contains('dot')) {
+                                        const index = [...childDots.children].indexOf(e.target);
                                         childList.scrollTo({
-                                            left: childList.clientWidth * i,
+                                            left: childList.clientWidth * index,
                                             behavior: 'smooth'
                                         });
-                                    });
+                                    }
                                 });
                             }
                         });
                 }
 
+                function createDots(container, dotsContainer) {
+                    requestAnimationFrame(() => {
+                        const scrollWidth = container.scrollWidth;
+                        const visibleWidth = container.clientWidth;
+
+                        if (scrollWidth <= visibleWidth || visibleWidth === 0) {
+                            dotsContainer.innerHTML = '';
+                            return;
+                        }
+
+                        const totalDots = Math.ceil(scrollWidth / visibleWidth);
+                        dotsContainer.innerHTML = '';
+
+                        for (let i = 0; i < totalDots; i++) {
+                            const dot = document.createElement('span');
+                            dot.classList.add('dot');
+                            if (i === 0) dot.classList.add('active');
+                            dotsContainer.appendChild(dot);
+                        }
+                    });
+                }
+
+                function updateActiveDot(container, dotsContainer) {
+                    const scrollLeft = container.scrollLeft;
+                    const visibleWidth = container.clientWidth;
+                    const totalDots = dotsContainer.children.length;
+
+                    if (totalDots === 0 || visibleWidth === 0) return;
+
+                    let currentDot = Math.round(scrollLeft / visibleWidth);
+                    currentDot = Math.max(0, Math.min(currentDot, totalDots - 1));
+
+                    dotsContainer.querySelectorAll('.dot').forEach((dot, index) => {
+                        dot.classList.toggle('active', index === currentDot);
+                    });
+                }
 
                 parentList.querySelectorAll('.frohub-category-item').forEach(li => {
                     li.addEventListener('click', () => {
@@ -159,41 +199,42 @@ class FrohubProductPartnerPage
                     });
                 });
 
+                // Initial parent selection
                 const initial = parentList.querySelector('.selected') || parentList.querySelector('[data-type="all"]');
                 if (initial) {
                     initial.click();
                 }
 
-                function createDots(container, dotsContainer) {
-                    const scrollWidth = container.scrollWidth;
-                    const visibleWidth = container.clientWidth;
-                    const totalDots = Math.ceil(scrollWidth / visibleWidth);
-                    dotsContainer.innerHTML = '';
+                // Initial parent dots setup
+                if (parentDots) {
+                    setTimeout(() => {
+                        createDots(parentList, parentDots);
+                        updateActiveDot(parentList, parentDots);
+                    }, 50);
 
-                    for (let i = 0; i < totalDots; i++) {
-                        const dot = document.createElement('span');
-                        dot.classList.add('dot');
-                        if (i === 0) dot.classList.add('active');
-                        dotsContainer.appendChild(dot);
-                    }
+                    parentList.addEventListener('scroll', () => updateActiveDot(parentList, parentDots));
+
+                    parentDots.addEventListener('click', e => {
+                        if (e.target.classList.contains('dot')) {
+                            const index = [...parentDots.children].indexOf(e.target);
+                            parentList.scrollTo({
+                                left: parentList.clientWidth * index,
+                                behavior: 'smooth'
+                            });
+                        }
+                    });
                 }
 
-                function updateActiveDot(container, dotsContainer) {
-                    const scrollLeft = container.scrollLeft;
-                    const visibleWidth = container.clientWidth;
-                    const currentDot = Math.round(scrollLeft / visibleWidth);
-                    const dots = dotsContainer.querySelectorAll('.dot');
-                    dots.forEach((d, i) => d.classList.toggle('active', i === currentDot));
-                }
-
-                const parentDots = document.querySelector('.frohub-parent-dots');
-                const childDots = document.querySelector('.frohub-child-dots');
-
-                createDots(parentList, parentDots);
-                parentList.addEventListener('scroll', () => updateActiveDot(parentList, parentDots));
-
+                // Responsive updates on resize
+                window.addEventListener('resize', () => {
+                    createDots(parentList, parentDots);
+                    updateActiveDot(parentList, parentDots);
+                    createDots(childList, childDots);
+                    updateActiveDot(childList, childDots);
+                });
             });
         </script>
+
 
         <style>
             /* Shared: Style for selected category item */
