@@ -101,6 +101,8 @@ class FrohubProductPartnerPage
                         .then(r => r.text())
                         .then(html => {
                             childList.innerHTML = html;
+
+                            // Re-attach click events to child category items
                             childList.querySelectorAll('[data-type="subcat"]').forEach(li => {
                                 li.addEventListener('click', () => {
                                     if (selectedChild === li) {
@@ -115,8 +117,27 @@ class FrohubProductPartnerPage
                                     filterProducts();
                                 });
                             });
+
+                            // Setup carousel dots for child categories
+                            const childDots = document.querySelector('.frohub-child-dots');
+                            if (childDots) {
+                                createDots(childList, childDots);
+                                updateActiveDot(childList, childDots);
+                                childList.addEventListener('scroll', () => updateActiveDot(childList, childDots));
+
+                                // Optional: Make dots clickable
+                                childDots.querySelectorAll('.dot').forEach((dot, i) => {
+                                    dot.addEventListener('click', () => {
+                                        childList.scrollTo({
+                                            left: childList.clientWidth * i,
+                                            behavior: 'smooth'
+                                        });
+                                    });
+                                });
+                            }
                         });
                 }
+
 
                 parentList.querySelectorAll('.frohub-category-item').forEach(li => {
                     li.addEventListener('click', () => {
@@ -164,6 +185,12 @@ class FrohubProductPartnerPage
                     const dots = dotsContainer.querySelectorAll('.dot');
                     dots.forEach((d, i) => d.classList.toggle('active', i === currentDot));
                 }
+
+                const parentDots = document.querySelector('.frohub-parent-dots');
+                const childDots = document.querySelector('.frohub-child-dots');
+
+                createDots(parentList, parentDots);
+                parentList.addEventListener('scroll', () => updateActiveDot(parentList, parentDots));
 
             });
         </script>
