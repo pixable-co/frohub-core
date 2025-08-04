@@ -114,6 +114,14 @@ class FrohubProductPartnerPage
                         .then(r => r.text())
                         .then(html => {
                             childList.innerHTML = html;
+
+                            const hasSubcats = html.trim() !== '';
+                            childList.style.display = hasSubcats ? 'flex' : 'none';
+
+                            if (!hasSubcats) {
+                                selectedChild = null;
+                            }
+
                             childList.querySelectorAll('[data-type="subcat"]').forEach(li => {
                                 li.addEventListener('click', () => {
                                     if (selectedChild === li) {
@@ -129,6 +137,7 @@ class FrohubProductPartnerPage
                                 });
                             });
                         });
+
                 }
 
                 parentList.querySelectorAll('.frohub-category-item').forEach(li => {
@@ -194,7 +203,7 @@ class FrohubProductPartnerPage
                                     option.textContent = label;
                                     childSelect.appendChild(option);
                                 });
-                                
+
                                 if (lis.length > 0) {
                                     document.getElementById('frohub-child-select-wrapper').style.display = 'block';
                                 }
