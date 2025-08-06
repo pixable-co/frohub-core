@@ -174,12 +174,12 @@ export default function RequestBookButton() {
     return (
         <>
             <div className="fixed bottom-0 left-0 w-full bg-[#f2f4f7] border-t border-[#E8E8E8] shadow-md py-4 px-6 z-50">
-                <div className="sm:w-full md:w-4/6 mx-auto flex flex-col items-center">
+                <div className="sm:w-full md:w-4/5 mx-auto flex flex-col items-center">
                     <div className="w-full bottom-bar">
                         <div className="bottom-bar-notice flex items-center gap-2 text-gray-700 text-sm">
                         <span className="flex items-center">
                             <i className="fas fa-shield-alt text-base"></i>
-                            <span>All deposits paid through FroHub are protected. <a href="/help-centre/" className="text-black font-medium">Learn More</a></span>
+                            <span className="ml-2">Only deposits paid through FroHub are protected. <a href="/help-centre/" className="text-black font-medium">Learn More</a></span>
                         </span>
                         </div>
 

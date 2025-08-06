@@ -238,7 +238,7 @@ export default function MobileService({ partnerId }) {
                 setError("Oops! They don't cover your area. Try another stylist nearby.");
             }
             else {
-                setError("Oops! Mobile's not available in your area, but you can still book at their home or salon");
+                setError("Oops! Mobile's not available in your area. Check if they offer home or salon services, or explore other stylists nearby.");
             }
             setMobileTravelFee(0);
             frohubStore.setState({ readyForMobile: false });
@@ -294,7 +294,7 @@ export default function MobileService({ partnerId }) {
                 setError("Oops! They don't cover your area. Try another stylist nearby.");
             }
             else {
-                setError("Oops! Mobile's not available in your area, but you can still book at their home or salon");
+                setError("Oops! Mobile's not available in your area. Check if they offer home or salon services, or explore other stylists nearby.");
             }
             setMobileTravelFee(0);
             frohubStore.setState({ readyForMobile: false });
