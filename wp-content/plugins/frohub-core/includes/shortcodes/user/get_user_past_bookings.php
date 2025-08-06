@@ -23,7 +23,7 @@ class GetUserPastBookings
             'customer' => $current_user_id,
             'orderby' => 'date',
             'order' => 'DESC',
-            'status' => ['completed', 'cancelled', 'on-hold'],
+            'status' => ['completed', 'cancelled'],
         ];
 
         $orders = wc_get_orders($args);
