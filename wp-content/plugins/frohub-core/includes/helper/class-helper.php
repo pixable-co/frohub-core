@@ -179,7 +179,7 @@ class Helper
         $status_label_map = [
             'wc-rescheduling' => 'Rescheduled',
             'wc-pending'      => 'Pending',
-            'wc-on-hold'      => 'On hold',
+            'wc-on-hold'      => 'Pending',
             'wc-processing'   => 'Confirmed',
         ];
         $status_label = $status_label_map[$result->post_status] ?? ucfirst(str_replace('wc-', '', $result->post_status));
