@@ -132,9 +132,28 @@ class PartnerConversations {
 
                         if (!empty($orders)) {
                             $total_completed_bookings = count($orders);
-                            $total_spend = array_reduce($orders, function ($carry, $order) {
-                                return $carry + floatval($order->get_total());
-                            }, 0.0);
+
+                            $total_spend = 0.0;
+
+                            foreach ($orders as $order) {
+                                foreach ($order->get_items() as $item) {
+                                    $product_id = $item->get_product_id();
+
+                                    // Skip Frohub Booking Fee (product ID 28990)
+                                    if ($product_id == 28990) {
+                                        continue;
+                                    }
+
+                                    $subtotal = floatval($item->get_subtotal());
+                                    $total_spend += $subtotal;
+
+                                    $meta_total_due = $item->get_meta('Total Due on the Day', true);
+                                    if ($meta_total_due) {
+                                        $meta_total_due = floatval(preg_replace('/[^\d.]/', '', $meta_total_due));
+                                        $total_spend += $meta_total_due;
+                                    }
+                                }
+                            }
 
                             $last_order = $orders[0];
                             $last_booking_date = $last_order->get_date_created() ? $last_order->get_date_created()->date('Y-m-d') : '';
