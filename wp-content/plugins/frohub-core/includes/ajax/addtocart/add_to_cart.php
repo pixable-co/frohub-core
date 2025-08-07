@@ -285,19 +285,17 @@ public function add_to_cart() {
         }
     
         // Requested Time + Extra Charge
-        if (!empty($cart_item['booking_time'])) {
-            $time_value = $cart_item['booking_time'];
-            if (!empty($cart_item['extra_charge'])) {
-                $extra = floatval($cart_item['extra_charge']);
-                $time_value .= ' (£' . number_format($extra, 2) . ')';
-            }
-    
-            $item_data[] = array(
-                'name' => __('Requested Time', 'frohub'),
-                'value' => $time_value,
-            );
+        $start_time = $cart_item['booking_time'];
+        if (strpos($start_time, ' - ') !== false) {
+            $start_time = explode(' - ', $start_time)[0];
         }
-    
+        $time_value = $start_time;
+
+        if (!empty($cart_item['extra_charge'])) {
+            $extra = floatval($cart_item['extra_charge']);
+            $time_value .= ' (£' . number_format($extra, 2) . ')';
+        }
+
         // Stylist
         if (!empty($cart_item['stylist_name'])) {
             $item_data[] = array(
