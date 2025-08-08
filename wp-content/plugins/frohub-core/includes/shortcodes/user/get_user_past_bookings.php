@@ -157,7 +157,7 @@ class GetUserPastBookings
 
         // === Final Output ===
         if ($found_past_booking) {
-            echo '<h5>Past Bookings</h5>';
+            echo '<h2>Past Bookings</h2>';
             echo '<div class="frohub_table_wrapper">';
             echo '<table class="frohub_table">
                     <tr>
