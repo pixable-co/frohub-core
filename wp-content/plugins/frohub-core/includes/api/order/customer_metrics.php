@@ -7,66 +7,68 @@ if (!defined('ABSPATH')) {
 
 class CustomerMetrics
 {
-
     public static function init()
     {
         $self = new self();
         add_action('rest_api_init', array($self, 'register_rest_routes'));
     }
 
-    /**
-     * Registers the REST API routes.
-     */
     public function register_rest_routes()
     {
         register_rest_route('frohub/v1', '/customer-metrics', array(
-            'methods' => 'POST',
+            'methods'  => 'POST',
             'callback' => array($this, 'handle_request'),
             'permission_callback' => '__return_true',
         ));
     }
 
-    /**
-     * Handles the API request to get customer metrics.
-     *
-     * @param \WP_REST_Request $request
-     * @return \WP_REST_Response
-     */
     public function handle_request(\WP_REST_Request $request)
     {
-        $customer_id = $request->get_param('customer_id');
+        $customer_id = (int) $request->get_param('customer_id');
+        $partner_id  = (int) $request->get_param('partner_id');
 
         if (!$customer_id || !get_userdata($customer_id)) {
             return new \WP_REST_Response(['error' => 'Invalid customer ID'], 400);
         }
 
-        // Fetch completed orders for the customer
+        if (!$partner_id) {
+            return new \WP_REST_Response(['error' => 'Missing partner ID'], 400);
+        }
+
+        // Query only completed orders for this customer with matching partner_id
         $orders = wc_get_orders([
             'customer_id' => $customer_id,
-            'status' => 'completed',
-            'limit' => -1,
+            'status'      => 'completed',
+            'limit'       => -1,
+            'meta_key'    => 'partner_id',
+            'meta_value'  => $partner_id,
+            'meta_compare'=> '=',
         ]);
 
-        $total_spent = 0;
-        $completed_orders = count($orders);
+        $total_spent       = 0.0;
+        $completed_orders  = count($orders);
+        $first_order_ts    = null;
 
         foreach ($orders as $order) {
-            $order_total = 0;
+            $created = $order->get_date_created();
+            if ($created) {
+                $ts = $created->getTimestamp();
+                if ($first_order_ts === null || $ts < $first_order_ts) {
+                    $first_order_ts = $ts;
+                }
+            }
 
+            $order_total = 0.0;
             foreach ($order->get_items() as $item) {
-                $product_id = $item->get_product_id();
-
-                // Skip Frohub Booking Fee (product ID 28990)
-                if ($product_id == 28990) {
-                    continue;
+                if ((int)$item->get_product_id() === 28990) {
+                    continue; // skip Frohub booking fee
                 }
 
-                $subtotal = floatval($item->get_subtotal());
-                $order_total += $subtotal;
+                $order_total += (float) $item->get_subtotal();
 
                 $meta_total_due = $item->get_meta('Total Due on the Day', true);
                 if ($meta_total_due) {
-                    $meta_total_due = floatval(preg_replace('/[^\d.]/', '', $meta_total_due));
+                    $meta_total_due = (float) preg_replace('/[^\d.]/', '', (string)$meta_total_due);
                     $order_total += $meta_total_due;
                 }
             }
@@ -74,30 +76,21 @@ class CustomerMetrics
             $total_spent += $order_total;
         }
 
-        // Get customer data
-        $user = get_userdata($customer_id);
-        $customer = new \WC_Customer($customer_id);
-        $customer_since = $customer->get_date_created();
-        $customer_since = $customer_since ? $customer_since->date('Y-m-d H:i:s') : '';
+        $user         = get_userdata($customer_id);
+        $wc_customer  = new \WC_Customer($customer_id);
 
-        $first_name = $user->first_name;
-        $last_name = $user->last_name;
-        $user_id = $user->ID;
-        $phone_number = $customer->get_billing_phone();
-
-        // Format total spent
-        $formatted_total_spent = '£' . number_format($total_spent, 2);
-
-        return new \WP_REST_Response([
-            'customer_id' => $customer_id,
-            'user_id' => $user_id,
-            'first_name' => $first_name,
-            'last_name' => $last_name,
-            'phone_number' => $phone_number,
-            'total_spent' => $formatted_total_spent,
+        $response = [
+            'customer_id'      => $customer_id,
+            'user_id'          => $user->ID,
+            'first_name'       => $user->first_name,
+            'last_name'        => $user->last_name,
+            'phone_number'     => $wc_customer->get_billing_phone(),
+            'total_spent'      => '£' . number_format($total_spent, 2),
             'completed_orders' => $completed_orders,
-            'customer_since' => $customer_since,
-        ], 200);
-    }
+            'customer_since'   => $first_order_ts ? gmdate('Y-m-d H:i:s', $first_order_ts) : '',
+            'partner_id'       => $partner_id,
+        ];
 
+        return new \WP_REST_Response($response, 200);
+    }
 }

@@ -12,9 +12,6 @@ class CustomerOrders {
         add_action('rest_api_init', array($self, 'register_rest_routes'));
     }
 
-    /**
-     * Registers the REST API routes.
-     */
     public function register_rest_routes() {
         register_rest_route('frohub/v1', '/customer-orders', array(
             'methods'             => 'POST',
@@ -23,65 +20,62 @@ class CustomerOrders {
         ));
     }
 
-    /**
-     * Handles the API request to retrieve customer orders.
-     *
-     * @param \WP_REST_Request $request
-     * @return \WP_REST_Response
-     */
     public function handle_request(\WP_REST_Request $request) {
-        $customer_id = $request->get_param('customer_id');
+        $customer_id = (int) $request->get_param('customer_id');
+        $partner_id  = (int) $request->get_param('partner_id');
 
         if ( ! $customer_id || ! get_userdata($customer_id) ) {
             return new \WP_REST_Response(['error' => 'Invalid customer ID'], 400);
         }
 
-        $orders = wc_get_orders([
+        if ( ! $partner_id ) {
+            return new \WP_REST_Response(['error' => 'Missing partner ID'], 400);
+        }
+
+        // Only orders for this customer and matching partner_id
+      $orders = wc_get_orders([
             'customer_id' => $customer_id,
             'limit'       => -1,
+            'meta_key'    => 'partner_id',
+            'meta_value'  => $partner_id,
+            'meta_compare'=> '=',
         ]);
 
         if (empty($orders)) {
-            return new \WP_REST_Response(['message' => 'No orders found'], 200);
+            return new \WP_REST_Response([], 200);
         }
 
         $order_data = [];
 
         foreach ($orders as $order) {
-            $order_id = $order->get_id();
-
-            $review = get_field('review', $order_id);
-            $review_id = is_object($review) ? $review->ID : null;
-            $overall_rating = $review_id ? get_field('overall_rating', $review_id) : null;
-
             $order_data[] = [
-                'order_id'        => $order_id,
-                'status'          => $order->get_status(),
-                'total'           => $order->get_formatted_order_total(),
-                'order_date'      => $order->get_date_created()->date('Y-m-d H:i:s'),
-                'items'           => $this->get_order_items($order),
-                'overall_rating'  => $overall_rating ?: null,
+                'order_id'       => $order->get_id(),
+                'status'         => $order->get_status(),
+                'total'          => $order->get_formatted_order_total(),
+                'order_date'     => $order->get_date_created() ? $order->get_date_created()->date('Y-m-d H:i:s') : '',
+                'items'          => $this->get_order_items($order),
+                'overall_rating' => $this->get_overall_rating_from_order($order->get_id()),
             ];
         }
 
         return new \WP_REST_Response($order_data, 200);
     }
 
-    /**
-     * Helper method to get order items with metadata, excluding product ID 28990.
-     *
-     * @param \WC_Order $order
-     * @return array
-     */
+    private function get_overall_rating_from_order($order_id) {
+        $review = get_field('review', $order_id);
+        $review_id = is_object($review) ? $review->ID : null;
+        return $review_id ? get_field('overall_rating', $review_id) : null;
+    }
+
     private function get_order_items($order) {
         $items = [];
 
-        foreach ($order->get_items() as $item_id => $item) {
-            $product = $item->get_product();
+        foreach ($order->get_items() as $item) {
+            $product   = $item->get_product();
             $product_id = $product ? $product->get_id() : null;
 
             if ($product_id == 28990) {
-                continue;
+                continue; // Skip booking fee
             }
 
             $meta_data = [];
