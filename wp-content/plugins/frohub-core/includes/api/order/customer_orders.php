@@ -35,7 +35,6 @@ class CustomerOrders {
         // Only orders for this customer and matching partner_id
       $orders = wc_get_orders([
             'customer_id' => $customer_id,
-            'status'      => 'completed',
             'limit'       => -1,
             'meta_key'    => 'partner_id',
             'meta_value'  => $partner_id,
