@@ -13,99 +13,43 @@ class CustomerMetrics
         add_action('rest_api_init', array($self, 'register_rest_routes'));
     }
 
-    /**
-     * Registers the REST API routes.
-     */
     public function register_rest_routes()
     {
         register_rest_route('frohub/v1', '/customer-metrics', array(
-            'methods' => 'POST',
+            'methods'  => 'POST',
             'callback' => array($this, 'handle_request'),
-            'permission_callback' => '__return_true', // TODO: lock this down
+            'permission_callback' => '__return_true',
         ));
     }
 
-    /**
-     * Handles the API request to get customer metrics for a specific partner.
-     *
-     * @param \WP_REST_Request $request
-     * @return \WP_REST_Response
-     */
-public function handle_request(\WP_REST_Request $request)
-{
-    $customer_id = $request->get_param('customer_id');
-    $partner_id  = $request->get_param('partner_id');
+    public function handle_request(\WP_REST_Request $request)
+    {
+        $customer_id = (int) $request->get_param('customer_id');
+        $partner_id  = (int) $request->get_param('partner_id');
 
-    if (!$customer_id || !get_userdata($customer_id)) {
-        return new \WP_REST_Response(['error' => 'Invalid customer ID'], 400);
-    }
-    if (!$partner_id) {
-        return new \WP_REST_Response(['error' => 'Missing partner_id'], 400);
-    }
-
-    // Fetch ALL completed orders for this customer.
-    // We'll filter at the line-item level to ensure per-partner accuracy.
-    $orders = wc_get_orders([
-        'customer_id' => $customer_id,
-        'status'      => 'completed',
-        'limit'       => -1,
-    ]);
-
-    $total_spent_per_partner = 0.0;
-    $completed_orders_with_partner = 0; // number of orders that have >=1 matching line item
-    $first_order_ts = null;
-
-    foreach ($orders as $order) {
-        $order_has_partner_item = false;
-        $order_partner_sum = 0.0;
-
-        foreach ($order->get_items() as $item) {
-            $product_id = (int) $item->get_product_id();
-
-            // Skip Frohub Booking Fee product
-            if ($product_id === 28990) {
-                continue;
-            }
-
-            /**
-             * Match the item to the partner.
-             * Depending on your setup, partner might be stored as:
-             * - $item->get_meta('partner_name')  (string ID or text)
-             * - $item->get_meta('partner_id')    (numeric ID)
-             * If you *know* the exact meta key, keep only that check.
-             */
-            $item_partner_raw = $item->get_meta('partner_id', true);
-            if ($item_partner_raw === '' || $item_partner_raw === null) {
-                $item_partner_raw = $item->get_meta('partner_name', true);
-            }
-
-            // Normalize both sides to strings for comparison
-            $matches_partner = (string) $item_partner_raw !== '' && (string) $item_partner_raw === (string) $partner_id;
-            if (!$matches_partner) {
-                continue;
-            }
-
-            // This item belongs to the requested partner — include it.
-            $order_has_partner_item = true;
-
-            // Item subtotal (ex tax, before coupons) for this line
-            $subtotal = (float) $item->get_subtotal();
-            $order_partner_sum += $subtotal;
-
-            // Include "Total Due on the Day" if present on this item
-            $meta_total_due = $item->get_meta('Total Due on the Day', true);
-            if (!empty($meta_total_due)) {
-                $clean = preg_replace('/[^\d.]/', '', (string) $meta_total_due);
-                if ($clean !== '' && is_numeric($clean)) {
-                    $order_partner_sum += (float) $clean;
-                }
-            }
+        if (!$customer_id || !get_userdata($customer_id)) {
+            return new \WP_REST_Response(['error' => 'Invalid customer ID'], 400);
         }
 
-        if ($order_has_partner_item) {
-            $total_spent_per_partner += $order_partner_sum;
-            $completed_orders_with_partner++;
+        if (!$partner_id) {
+            return new \WP_REST_Response(['error' => 'Missing partner ID'], 400);
+        }
 
+        // Query only completed orders for this customer with matching partner_id
+        $orders = wc_get_orders([
+            'customer_id' => $customer_id,
+            'status'      => 'completed',
+            'limit'       => -1,
+            'meta_key'    => 'partner_id',
+            'meta_value'  => $partner_id,
+            'meta_compare'=> '=',
+        ]);
+
+        $total_spent       = 0.0;
+        $completed_orders  = count($orders);
+        $first_order_ts    = null;
+
+        foreach ($orders as $order) {
             $created = $order->get_date_created();
             if ($created) {
                 $ts = $created->getTimestamp();
@@ -113,32 +57,40 @@ public function handle_request(\WP_REST_Request $request)
                     $first_order_ts = $ts;
                 }
             }
+
+            $order_total = 0.0;
+            foreach ($order->get_items() as $item) {
+                if ((int)$item->get_product_id() === 28990) {
+                    continue; // skip Frohub booking fee
+                }
+
+                $order_total += (float) $item->get_subtotal();
+
+                $meta_total_due = $item->get_meta('Total Due on the Day', true);
+                if ($meta_total_due) {
+                    $meta_total_due = (float) preg_replace('/[^\d.]/', '', (string)$meta_total_due);
+                    $order_total += $meta_total_due;
+                }
+            }
+
+            $total_spent += $order_total;
         }
+
+        $user         = get_userdata($customer_id);
+        $wc_customer  = new \WC_Customer($customer_id);
+
+        $response = [
+            'customer_id'      => $customer_id,
+            'user_id'          => $user->ID,
+            'first_name'       => $user->first_name,
+            'last_name'        => $user->last_name,
+            'phone_number'     => $wc_customer->get_billing_phone(),
+            'total_spent'      => '£' . number_format($total_spent, 2),
+            'completed_orders' => $completed_orders,
+            'customer_since'   => $first_order_ts ? gmdate('Y-m-d H:i:s', $first_order_ts) : '',
+            'partner_id'       => $partner_id,
+        ];
+
+        return new \WP_REST_Response($response, 200);
     }
-
-    // Customer basics
-    $user      = get_userdata($customer_id);
-    $customer  = new \WC_Customer($customer_id);
-
-    $first_name   = $user ? $user->first_name : '';
-    $last_name    = $user ? $user->last_name : '';
-    $user_id      = $user ? (int) $user->ID : 0;
-    $phone_number = $customer ? $customer->get_billing_phone() : '';
-
-    $formatted_total_spent = '£' . number_format($total_spent_per_partner, 2);
-    $first_order_with_partner = $first_order_ts ? gmdate('Y-m-d H:i:s', $first_order_ts) : '';
-
-    return new \WP_REST_Response([
-        'customer_id'               => (int) $customer_id,
-        'partner_id'                => (string) $partner_id,
-        'user_id'                   => $user_id,
-        'first_name'                => $first_name,
-        'last_name'                 => $last_name,
-        'phone_number'              => $phone_number,
-        'total_spent'               => $formatted_total_spent,           // <-- now strictly per-partner
-        'completed_orders'          => $completed_orders_with_partner,    // count of orders with that partner
-        'first_order_with_partner'  => $first_order_with_partner,
-    ], 200);
-}
-
 }
