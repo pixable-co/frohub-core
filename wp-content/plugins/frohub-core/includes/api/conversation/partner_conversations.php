@@ -116,47 +116,49 @@ class PartnerConversations {
 
                     // WooCommerce Data
                     $total_completed_bookings = 0;
-                    $total_spend = 0.0;
                     $last_booking_date = '';
 
                     if ($customer_id) {
-                        $order_args = array(
-                            'limit'        => -1,
-                            'status'       => array('wc-completed', 'wc-processing'),
-                            'customer_id'  => $customer_id,
-                            'orderby'      => 'date',
-                            'order'        => 'DESC'
-                        );
+                        $orders = wc_get_orders([
+                            'customer_id' => $customer_id,
+                            'status'      => 'completed',
+                            'limit'       => -1,
+                            'meta_key'    => 'partner_id',
+                            'meta_value'  => $partner_id,
+                            'meta_compare'=> '=',
+                        ]);
 
-                        $orders = wc_get_orders($order_args);
-
-                        if (!empty($orders)) {
-                            $total_completed_bookings = count($orders);
-
-                            $total_spend = 0.0;
+                        $total_spent       = 0.0;
+                        $total_completed_bookings = count($orders);
+                        $first_order_ts    = null;
 
                             foreach ($orders as $order) {
-                                foreach ($order->get_items() as $item) {
-                                    $product_id = $item->get_product_id();
-
-                                    // Skip Frohub Booking Fee (product ID 28990)
-                                    if ($product_id == 28990) {
-                                        continue;
+                                   $created = $order->get_date_created();
+                                    if ($created) {
+                                        $ts = $created->getTimestamp();
+                                        if ($first_order_ts === null || $ts < $first_order_ts) {
+                                            $first_order_ts = $ts;
+                                        }
                                     }
 
-                                    $subtotal = floatval($item->get_subtotal());
-                                    $total_spend += $subtotal;
+                                    $order_total = 0.0;
+                                    foreach ($order->get_items() as $item) {
+                                        if ((int)$item->get_product_id() === 28990) {
+                                            continue; // skip Frohub booking fee
+                                        }
 
-                                    $meta_total_due = $item->get_meta('Total Due on the Day', true);
-                                    if ($meta_total_due) {
-                                        $meta_total_due = floatval(preg_replace('/[^\d.]/', '', $meta_total_due));
-                                        $total_spend += $meta_total_due;
+                                        $order_total += (float) $item->get_subtotal();
+
+                                        $meta_total_due = $item->get_meta('Total Due on the Day', true);
+                                        if ($meta_total_due) {
+                                            $meta_total_due = (float) preg_replace('/[^\d.]/', '', (string)$meta_total_due);
+                                            $order_total += $meta_total_due;
+                                        }
                                     }
-                                }
-                            }
 
-                            $last_order = $orders[0];
-                            $last_booking_date = $last_order->get_date_created() ? $last_order->get_date_created()->date('Y-m-d') : '';
+                                    $total_spent += $order_total;
+                                    $last_order = $orders[0];
+                                    $last_booking_date = $last_order->get_date_created() ? $last_order->get_date_created()->date('Y-m-d') : '';
                         }
                     }
 
@@ -185,7 +187,7 @@ class PartnerConversations {
                         'status' => 'Active',
                         'last_message' => '',
                         'total_completed_bookings' => $total_completed_bookings,
-                        'total_spend' => number_format($total_spend, 2),
+                        'total_spend' => number_format($total_spent, 2),
                         'last_booking_date' => $last_booking_date,
                     ];
                 }
