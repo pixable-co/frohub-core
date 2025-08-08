@@ -237,7 +237,8 @@ const FhCalender = ({ onDateChange, bookingNotice, initialServiceDuration, maxDa
                                     className={`timeslot-button ${selectedTime === slot.time ? "selected" : ""}`}
                                     onClick={() => handleTimeSelect(slot.time, slot.price, slot.duration)}
                                 >
-                                    <span>{slot.time}</span>
+                                    {/*<span>{slot.time}</span>*/}
+                                    <span>{slot.time.split(" - ")[0]}</span>
                                     {slot.price > 0 && <span className="extra-charge">+£{slot.price.toFixed(2)}</span>}
                                 </button>
                             ))}
