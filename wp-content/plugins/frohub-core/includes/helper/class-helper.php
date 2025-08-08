@@ -118,7 +118,7 @@ class Helper
         return $orders;
     }
 
-    public static function get_next_upcoming_order_by_partner($partner_id, $statuses = ['wc-rescheduling', 'wc-pending', 'wc-on-hold'])
+    public static function get_next_upcoming_order_by_partner($partner_id, $statuses = ['wc-rescheduling', 'wc-processing', 'wc-on-hold'])
     {
         global $wpdb;
 
