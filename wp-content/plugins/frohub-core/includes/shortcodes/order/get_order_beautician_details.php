@@ -32,7 +32,7 @@ class GetOrderBeauticianDetails {
                     if ($partner_id) {
                         echo '<span>' . esc_html($partner_title) . '</span>   ';
                         if ($message_url) {
-                            echo '<a href="'. esc_attr($message_url) . '"><i class="fas fa-envelope"></i></a>';
+                            echo '<a href="'. esc_attr($message_url) . '"><i class="fas fa-comments"></i></a>';
                         }
                         echo '<br>';
                         if ($phone) {

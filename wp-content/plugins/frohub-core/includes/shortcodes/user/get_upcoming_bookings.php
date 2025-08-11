@@ -61,10 +61,10 @@ class GetUpcomingBookings {
                 }
             }
 
-
-            if (!$appointment_datetime || !$end_datetime || $end_datetime < $now) {
-                continue;
+            if (!$appointment_datetime || !$end_datetime || $now > $end_datetime) {
+                continue; // only past bookings are excluded
             }
+
 
             $upcoming_orders[] = array(
                 'order_id'            => $order_id,
