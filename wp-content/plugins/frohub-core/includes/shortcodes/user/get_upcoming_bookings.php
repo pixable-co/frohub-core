@@ -85,7 +85,7 @@ class GetUpcomingBookings {
     });
 
     ob_start();
-    echo '<h5>Upcoming & Pending Bookings</h5>';
+    echo '<h2>Upcoming & Pending Bookings</h2>';
 
     if (empty($upcoming_orders)) {
         echo '<p>You don’t have any upcoming bookings</p>';
