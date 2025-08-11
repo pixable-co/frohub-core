@@ -36,7 +36,7 @@ class ReviewSuccess {
         <div class="review_success" id="<?php echo esc_attr( $unique_key ); ?>" data-partner-url="<?php echo $partner_url; ?>" data-partner-title="<?php echo esc_attr( $partner_title ); ?>">
             <div class="rs-wrap">
                 <h2 class="rs-title">
-                    Thanks for your review! <span class="rs-emoji" aria-hidden="true">🧑‍🎤</span>
+                    Thanks for your review! <span class="rs-emoji favourite-button active" aria-hidden="true"><i class="fa-heart far"></i></span>
                 </h2>
 
                 <p class="rs-sub rs-sub-1">
@@ -50,15 +50,15 @@ class ReviewSuccess {
                     <div class="rs-card-row">
                         <div class="rs-card-title">Share this Stylist</div>
                         <div class="rs-actions" role="group" aria-label="Share actions">
-                            <a class="rs-action rs-wa" href="#" target="_blank" rel="noopener" aria-label="Share on WhatsApp">
+                            <a href="https://wa.me/?text=Hey%2C+I%E2%80%99ve+been+using+FroHub+to+book+Afro+hairdressers%2C+and+it%E2%80%99s+amazing!+I+think+you%E2%80%99d+be+a+great+addition+to+their+community.+Check+it+out+if+you%E2%80%99d+like+to+join%3A+https%3A%2F%2Ffrohub.com%2Fpartners%2F+x+%F0%9F%98%8A%E2%9D%A4%EF%B8%8F" href="#" target="_blank" rel="noopener" aria-label="Share on WhatsApp">
                                 <i class="fab fa-whatsapp" aria-hidden="true"></i>
                             </a>
-                            <a class="rs-action rs-msgr" href="#" target="_blank" rel="noopener" aria-label="Share on Messenger">
+                            <a href="https://www.messenger.com" target="_blank" href="#" target="_blank" rel="noopener" aria-label="Share on Messenger">
                                 <i class="fab fa-facebook-messenger" aria-hidden="true"></i>
                             </a>
-                            <button class="rs-action rs-placeholder" type="button" aria-disabled="true"></button>
-                            <button class="rs-action rs-placeholder" type="button" aria-disabled="true"></button>
-                            <button class="rs-action rs-placeholder" type="button" aria-disabled="true"></button>
+                            <a href="mailto:?subject=Join+Our+Community&body=Hey%2C+I%E2%80%99ve+been+using+FroHub+to+book+Afro+hairdressers%2C+and+it%E2%80%99s+amazing!+I+think+you%E2%80%99d+be+a+great+addition+to+their+community.+Check+it+out+if+you%E2%80%99d+like+to+join%3A+https%3A%2F%2Ffrohub.com%2Fpartners%2F+x+%F0%9F%98%8A%E2%9D%A4%EF%B8%8F" target="_blank"><i class="fas fa-envelope"></i></a>
+                            <a href="sms:?body=Hey%2C+I%E2%80%99ve+been+using+FroHub+to+book+Afro+hairdressers%2C+and+it%E2%80%99s+amazing!+I+think+you%E2%80%99d+be+a+great+addition+to+their+community.+Check+it+out+if+you%E2%80%99d+like+to+join%3A+https%3A%2F%2Ffrohub.com%2Fpartners%2F+x+%F0%9F%98%8A%E2%9D%A4%EF%B8%8F" target="_blank"><i class="fas fa-sms"></i></a>
+                            <button class="copy-link-btn" type="button"><i class="fas fa-link"></i><span class="copied-msg" style="display: none;">Copied</span></button>
                         </div>
                     </div>
                 </div>
