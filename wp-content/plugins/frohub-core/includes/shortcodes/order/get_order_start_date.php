@@ -145,7 +145,7 @@ class GetOrderStartDate
                                 <p>Your booking request has been cancelled. No payment has been charged.</p>
                             </div>
                             <div class="modal-footer">
-                                <a href="/my-account/bookings/" class="w-btn us-btn-style_6 w-btn-underlined">Back to My Bookings</a>
+                                <a href="/my-account/orders/" class="w-btn us-btn-style_6 w-btn-underlined">Back to My Bookings</a>
                             </div>
                         </div>
                     </div>
@@ -161,7 +161,7 @@ class GetOrderStartDate
                             <p>Your new appointment time has been successfully booked! 🎉</p>
                         </div>
                         <div class="modal-footer">
-                            <a href="/my-account/bookings/" class="w-btn us-btn-style_6 w-btn-underlined">Back to My Bookings</a>
+                            <a href="/my-account/orders/" class="w-btn us-btn-style_6 w-btn-underlined">Back to My Bookings</a>
                         </div>
                     </div>
                 </div>
@@ -267,7 +267,7 @@ class GetOrderStartDate
                         <div class="modal-content">
                             <div class="modal-header"><h5 id="cancel-success-title">Booking Cancelled</h5></div>
                             <div class="modal-body"><p id="cancel-success-message">Your booking has been successfully cancelled.</p></div>
-                            <div class="modal-footer"><a href="/my-account/bookings/" class="w-btn us-btn-style_6 w-btn-underlined">Back to My Bookings</a></div>
+                            <div class="modal-footer"><a href="/my-account/orders/" class="w-btn us-btn-style_6 w-btn-underlined">Back to My Bookings</a></div>
                       </div></div>';
                 }
 
