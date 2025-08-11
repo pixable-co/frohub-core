@@ -61,7 +61,7 @@ const ChatInput = ({ onSendMessage, isLoading = false, disabled = false }) => {
             <div className="deposit-notification-banner">
                 <span><i
                     className="fas fa-exclamation-triangle"></i> Only deposits paid through FroHub are protected. <a
-                    href="/help-centre">Learn more.</a></span>
+                    href="/help-centre" target="_blank">Learn more.</a></span>
             </div>
         <div className="border-t bg-white p-3">
             <div className="flex">

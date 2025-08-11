@@ -179,7 +179,7 @@ export default function RequestBookButton() {
                         <div className="bottom-bar-notice flex items-center gap-2 text-gray-700 text-sm">
                         <span className="flex items-center">
                             <i className="fas fa-shield-alt text-base"></i>
-                            <span className="ml-2">Only deposits paid through FroHub are protected. <a href="/help-centre/" className="text-black font-medium">Learn More</a></span>
+                            <span className="ml-2">Only deposits paid through FroHub are protected. <a href="/help-centre/" className="text-black font-medium" target="_blank">Learn More</a></span>
                         </span>
                         </div>
 
