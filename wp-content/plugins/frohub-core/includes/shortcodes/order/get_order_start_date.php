@@ -54,6 +54,7 @@ class GetOrderStartDate
 
                     echo '<i class="fas fa-arrows-alt-h"></i><span class="text-muted me-3">' . esc_html($formatted_proposed_start) . '</span>';
 
+                    echo '<div class="button-container>';
                     echo '<button class="modal-trigger w-btn us-btn-style_5"
                             data-modal="' . esc_attr($modal_accept) . '"
                             data-order-id="' . esc_attr($order_id) . '"
@@ -68,6 +69,7 @@ class GetOrderStartDate
                             data-end="' . esc_attr($formatted_proposed_end) . '">
                             Decline</button>';
 
+                    echo '</div>' // End of button-container
                     echo '<div id="' . esc_attr($modal_accept) . '" class="status-modal">
                             <div class="modal-content">
                                 <div class="modal-header">
