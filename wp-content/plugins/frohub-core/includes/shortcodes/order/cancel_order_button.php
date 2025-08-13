@@ -56,7 +56,7 @@ class CancelOrderButton
             <button class="modal-trigger w-btn us-btn-style_6 w-btn-underlined"
                     data-modal="<?php echo esc_attr($modal_id); ?>"
                     data-order-id="<?php echo esc_attr($order_id); ?>">
-                Cancel Order
+                Cancel Booking
             </button>
 
             <!-- Modals HTML here -->

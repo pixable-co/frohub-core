@@ -192,7 +192,7 @@ class GetOrderStartDate
                     echo '<button class="modal-trigger w-btn us-btn-style_6 w-btn-underlined"
                         data-modal="' . esc_attr($modal_id) . '"
                         data-order-id="' . esc_attr($order_id) . '">
-                        Cancel Order</button>';
+                        Cancel Booking</button>';
 
                     // Confirmation modals
                     echo '<div id="normalCancelModal_' . esc_attr($order_id) . '" class="status-modal">
