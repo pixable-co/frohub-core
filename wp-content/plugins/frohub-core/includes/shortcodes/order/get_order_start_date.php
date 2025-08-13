@@ -105,7 +105,7 @@ class GetOrderStartDate
                                 <button class="w-btn us-btn-style_6 w-btn-underlined decline-proposed-date"
                                     data-order-id="' . esc_attr($order_id) . '">
                                     <span class="spinner hidden"></span> Yes, Decline Appointment</button>
-                                <button class="w-btn us-btn-style_6 w-btn-underlined close-modal-text">No, Keep Proposed Time</button>
+                                <button class="w-btn us-btn-style_6 w-btn-underlined close-modal-text">Go Back</button>
                             </div>
                         </div>
                     </div>';
