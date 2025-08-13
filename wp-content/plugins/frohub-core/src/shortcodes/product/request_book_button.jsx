@@ -209,10 +209,8 @@ export default function RequestBookButton() {
                     </div>
                     <div className="bottom-bar-notice-mobile">
                         <span className="flex items-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-black mr-1" viewBox="0 0 24 24" fill="currentColor">
-                                <path fillRule="evenodd" d="M12 2a10 10 0 1 1-10 10A10 10 0 0 1 12 2zm0 18a8 8 0 1 0-8-8 8 8 0 0 0 8 8zm-1-13a1 1 0 0 1 2 0v4a1 1 0 0 1-2 0zm1 6a1.25 1.25 0 1 1-1.25 1.25A1.25 1.25 0 0 1 12 13z" clipRule="evenodd" />
-                            </svg>
-                            <span>All deposits paid through FroHub are protected. <a href="#" className="text-black font-medium">Learn More</a></span>
+                            <i className="fas fa-shield"></i>
+                            <span>Only deposits paid through FroHub are protected. <a href="/help-centre" className="text-black font-medium">Learn More</a></span>
                         </span>
                     </div>
                 </div>
