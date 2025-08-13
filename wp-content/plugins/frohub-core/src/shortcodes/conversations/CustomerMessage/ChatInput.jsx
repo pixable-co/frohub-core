@@ -90,7 +90,7 @@ const ChatInput = ({ onSendMessage, isLoading = false, disabled = false }) => {
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
                     onKeyPress={handleKeyPress}
-                    placeholder="Type your message..."
+                    placeholder={window.innerWidth < 768 ? 'Mmessage..' : 'Type your message...'}
                     className="flex-1 border border-gray-300 rounded-md px-3 py-2 text-sm"
                     disabled={disabled || isUploading}
                 />
@@ -100,7 +100,7 @@ const ChatInput = ({ onSendMessage, isLoading = false, disabled = false }) => {
                     disabled={(!message.trim() && !imageFile) || isLoading || disabled || isUploading}
                     className="w-btn us-btn-style_1"
                 >
-                    Send Message
+                    {window.innerWidth < 768 ? 'Send' : 'Send Message'}
                 </button>
             </div>
 
@@ -126,7 +126,7 @@ const ChatInput = ({ onSendMessage, isLoading = false, disabled = false }) => {
 
             <div className="text-xs text-gray-400 mt-1 ml-10">
                 Please be respectful: Keep your messages kind and considerate. Treat others as you would like to be
-                treated. Report any abusive messages here.
+                treated.
             </div>
 
             {isUploading && (

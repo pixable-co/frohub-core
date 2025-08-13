@@ -273,7 +273,13 @@ const CustomerMessageMobile = ({ dataKey, currentUserPartnerPostId }) => {
                                     />
                                 ))}
                                 {!loading.conversations && conversations.length === 0 && (
-                                    <div className="p-4 text-center text-gray-500">No conversations found</div>
+                                    // <div className="p-4 text-center text-gray-500">No conversations found</div>
+                                    <div className="flex-1 flex items-start justify-center text-gray-500">
+                                        <div className="text-center p-8 mt-2">
+                                            <h3 className="font-medium mb-2">👋🏾 Welcome to your inbox!</h3>
+                                            <p>When you book a service or send an enquiry, you’ll see your messages here. Need help? Start a conversation with your stylist.</p>
+                                        </div>
+                                    </div>
                                 )}
                             </>
                         )}
