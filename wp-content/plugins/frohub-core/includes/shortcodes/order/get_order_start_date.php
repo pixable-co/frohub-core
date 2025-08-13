@@ -69,7 +69,7 @@ class GetOrderStartDate
                             data-end="' . esc_attr($formatted_proposed_end) . '">
                             Decline</button>';
 
-                    echo '</div>' // End of button-container
+                    echo '</div>';  // End of button-container
                     echo '<div id="' . esc_attr($modal_accept) . '" class="status-modal">
                             <div class="modal-content">
                                 <div class="modal-header">
