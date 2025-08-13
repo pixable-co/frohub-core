@@ -39,6 +39,7 @@ class GetOrderStartDate
                 }
 
                 echo '<div class="appointment-container">
+                        <div class="appointment-proposed-time-container">
                         <span class="fw-bold me-2">' . esc_html($formatted_start_date_time) . '</span>';
 
                 if ($order_status === 'rescheduling' && !empty($proposed_start_date_time)) {
@@ -52,7 +53,8 @@ class GetOrderStartDate
                     $conversation_url = !empty($conversation_post) ? get_permalink($conversation_post) : '#';
 
 
-                    echo '<i class="fas fa-arrows-alt-h"></i><span class="text-muted me-3">' . esc_html($formatted_proposed_start) . '</span>';
+                    echo '<i class="fas fa-arrows-alt-h"></i><span class="text-muted me-3">' . esc_html($formatted_proposed_start) . '</span> 
+                    </div>';
 
                     echo '<div class="button-container">';
                     echo '<button class="modal-trigger w-btn us-btn-style_5"
