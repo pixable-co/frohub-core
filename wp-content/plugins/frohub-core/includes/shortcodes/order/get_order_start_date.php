@@ -136,7 +136,6 @@ class GetOrderStartDate
                                 <span class="btn-text">Cancel Booking</span>
                             </button>
                         </div>
-                    </div>
                     </div>';
 
                     // Success Modal for Cancellation
