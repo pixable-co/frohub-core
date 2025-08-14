@@ -39,21 +39,22 @@ class GetOrderStartDate
                 }
 
                 echo '<div class="appointment-container">
-                        <div class="appointment-proposed-time-container">
+                    <div class="appointment-proposed-time-container">
                         <span class="fw-bold me-2">' . esc_html($formatted_start_date_time) . '</span>';
 
-                if ($order_status === 'rescheduling' && !empty($proposed_start_date_time)) {
-                    $formatted_proposed_start = date('d M Y, \a\t H:i', strtotime($proposed_start_date_time));
-                    $formatted_proposed_end = !empty($proposed_end_date_time) ? date('d M Y, \a\t H:i', strtotime($proposed_end_date_time)) : '';
+                        if ($order_status === 'rescheduling' && !empty($proposed_start_date_time)) {
+                            $formatted_proposed_start = date('d M Y, \a\t H:i', strtotime($proposed_start_date_time));
+                            $formatted_proposed_end = !empty($proposed_end_date_time) ? date('d M Y, \a\t H:i', strtotime($proposed_end_date_time)) : '';
 
-                    $modal_accept = "acceptModal_" . $item_id;
-                    $modal_decline = "declineModal_" . $item_id;
+                            $modal_accept = "acceptModal_" . $item_id;
+                            $modal_decline = "declineModal_" . $item_id;
 
-                    $conversation_post = get_field('conversation', $order_id);
-                    $conversation_url = !empty($conversation_post) ? get_permalink($conversation_post) : '#';
+                            $conversation_post = get_field('conversation', $order_id);
+                            $conversation_url = !empty($conversation_post) ? get_permalink($conversation_post) : '#';
 
 
-                    echo '<i class="fas fa-arrows-alt-h"></i><span class="text-muted me-3">' . esc_html($formatted_proposed_start) . '</span> 
+                            echo '<i class="fas fa-arrows-alt-h"></i><span class="text-muted me-3">' . esc_html($formatted_proposed_start) . '
+                        </span> 
                     </div>';
 
                     echo '<div class="button-container">';
@@ -267,14 +268,13 @@ class GetOrderStartDate
 
                     // Success modal (shared with dynamic content)
                     echo '<div id="cancelSuccessModal" class="status-modal" style="display:none;">
-                        <div class="modal-content">
-                            <div class="modal-header"><h5 id="cancel-success-title">Booking Cancelled</h5></div>
-                            <div class="modal-body"><p id="cancel-success-message">Your booking has been successfully cancelled.</p></div>
-                            <div class="modal-footer"><a href="/my-account/orders/" class="w-btn us-btn-style_6 w-btn-underlined">Back to My Bookings</a></div>
-                      </div></div>';
+                            <div class="modal-content">
+                                <div class="modal-header"><h5 id="cancel-success-title">Booking Cancelled</h5></div>
+                                <div class="modal-body"><p id="cancel-success-message">Your booking has been successfully cancelled.</p></div>
+                                <div class="modal-footer"><a href="/my-account/orders/" class="w-btn us-btn-style_6 w-btn-underlined">Back to My Bookings</a></div>
+                            </div>
+                      </div>';
                 }
-
-                echo '</div>';
             }
         }
         ?>
