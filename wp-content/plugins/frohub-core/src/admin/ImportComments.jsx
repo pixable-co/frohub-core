@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Button, Modal, List, Progress } from 'antd';
-import jsonData from './comments.json'; // adjust path if needed
+import jsonData from './comments_new.json'; // adjust path if needed
 import { fetchData } from '../services/fetchData';
 
 const ImportComments = () => {
