@@ -78,7 +78,7 @@ class CloneEcomProduct {
     		'service_types'        => $service_types,
     		'size'                 => get_post_meta($product_id, 'size', true),
     		'length'               => get_post_meta($product_id, 'length', true),
-    		'override_availability'=> get_post_meta($product_id, 'override_availability', true) ?: 'no',
+			'override_availability' => get_post_meta($product_id, 'override_availability', true) ? 'yes' : 'no',
     		'is_private'           => get_post_meta($product_id, 'is_private', true) ?: 'no',
     		'categories'           => wp_get_post_terms($product_id, 'product_cat', ['fields' => 'ids']),
     		'tags'                 => wp_get_post_terms($product_id, 'product_tag', ['fields' => 'ids']),
