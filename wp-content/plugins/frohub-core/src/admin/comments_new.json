@@ -1,18 +1,18 @@
 {
   "export_info": {
     "site_url": "https://frohub.com",
-    "export_date": "2025-08-14 08:48:16",
+    "export_date": "2025-08-15 10:57:10",
     "date_range": "All time (complete export)",
-    "total_comments": 3152,
+    "total_comments": 3156,
     "total_meta_entries": 88,
     "excludes_reviews": true,
     "includes_only_regular_comments": true,
     "comment_type_filter": "empty only",
     "wordpress_version": "5.3.2",
     "debug_info": {
-      "total_comments_all": "8202",
-      "total_approved": "8170",
-      "total_approved_empty_type": "3152",
+      "total_comments_all": "8210",
+      "total_approved": "8178",
+      "total_approved_empty_type": "3156",
       "comment_types_all_time": [
         {
           "comment_type": "review",
@@ -20,11 +20,11 @@
         },
         {
           "comment_type": "",
-          "count": "3152"
+          "count": "3156"
         },
         {
           "comment_type": "order_note",
-          "count": "4957"
+          "count": "4961"
         },
         {
           "comment_type": "anspress",
@@ -32,11 +32,143 @@
         }
       ],
       "oldest_comment": "2020-07-14 15:11:40",
-      "newest_comment": "2025-08-13 14:27:09",
-      "current_time": "2025-08-14 08:48:16"
+      "newest_comment": "2025-08-14 20:38:37",
+      "current_time": "2025-08-15 10:57:10"
     }
   },
   "comments": [
+    {
+      "comment_ID": "8778",
+      "comment_post_ID": "16334",
+      "comment_author": "toyin.folawiyo",
+      "comment_author_email": "toyin.folawiyo@sky.com",
+      "comment_author_url": "",
+      "comment_author_IP": "172.69.195.146",
+      "comment_date": "2025-08-14 20:38:37",
+      "comment_date_gmt": "2025-08-14 19:38:37",
+      "comment_content": "Thanks just rang but left a message with my number. Will appreciate it if you can call me tomorrow. Toyin",
+      "comment_karma": "0",
+      "comment_approved": "1",
+      "comment_agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Mobile Safari/537.36",
+      "comment_type": "",
+      "comment_parent": "0",
+      "user_id": "1306",
+      "post_title": "1306 - 338",
+      "post_slug": "1306-338",
+      "post_type": "dokan_store_support",
+      "post_exists": "yes",
+      "user_role": "customer",
+      "user_roles": [
+        "customer"
+      ],
+      "wp_user_role": "customer",
+      "user_display_name": "toyin.folawiyo",
+      "user_login": "toyin.folawiyo",
+      "user_status": "registered",
+      "conversation_has_seller": true,
+      "conversation_has_customer": true,
+      "conversation_is_valid": true,
+      "conversation_comment_count": 3
+    },
+    {
+      "comment_ID": "8777",
+      "comment_post_ID": "16334",
+      "comment_author": "Braiding Meraki",
+      "comment_author_email": "braidingmeraki@gmail.com",
+      "comment_author_url": "",
+      "comment_author_IP": "172.69.194.6",
+      "comment_date": "2025-08-14 20:31:45",
+      "comment_date_gmt": "2025-08-14 19:31:45",
+      "comment_content": "Hiya could you pls give me a call on 07551472769 so I can discuss my advice and experiences with human hair",
+      "comment_karma": "0",
+      "comment_approved": "1",
+      "comment_agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.5 Mobile/15E148 Safari/604.1",
+      "comment_type": "",
+      "comment_parent": "0",
+      "user_id": "338",
+      "post_title": "1306 - 338",
+      "post_slug": "1306-338",
+      "post_type": "dokan_store_support",
+      "post_exists": "yes",
+      "user_role": "seller",
+      "user_roles": [
+        "seller"
+      ],
+      "wp_user_role": "seller",
+      "user_display_name": "Braiding Meraki",
+      "user_login": "braidingmeraki",
+      "user_status": "registered",
+      "conversation_has_seller": true,
+      "conversation_has_customer": true,
+      "conversation_is_valid": true,
+      "conversation_comment_count": 3
+    },
+    {
+      "comment_ID": "8776",
+      "comment_post_ID": "16335",
+      "comment_author": "",
+      "comment_author_email": "",
+      "comment_author_url": "",
+      "comment_author_IP": "",
+      "comment_date": "2025-08-14 19:38:55",
+      "comment_date_gmt": "2025-08-14 18:38:55",
+      "comment_content": "Hi\r\nI would like to do crochet but need some advise please. I am thinking of bodywave human hair from Y wigs but due to cost will plan to use it on more than one occassion. Just wondering if you have any vuews on using human hair. I have seen a synthetic that may be doable from Ivonmelda the chic natural crochet bundle that mimicks afro hair but worried I do a lot of sports and dont want to have to be straithening it. The hair is not pre looped but Dvised a specialist crochet person can work with any hair. I could really do with some advice before buying hair and booking. Thanks",
+      "comment_karma": "0",
+      "comment_approved": "1",
+      "comment_agent": "",
+      "comment_type": "",
+      "comment_parent": "0",
+      "user_id": "1306",
+      "post_title": "1306 - 28",
+      "post_slug": "1306-28",
+      "post_type": "dokan_store_support",
+      "post_exists": "yes",
+      "user_role": "customer",
+      "user_roles": [
+        "customer"
+      ],
+      "wp_user_role": "customer",
+      "user_display_name": "toyin.folawiyo",
+      "user_login": "toyin.folawiyo",
+      "user_status": "registered",
+      "conversation_has_seller": false,
+      "conversation_has_customer": true,
+      "conversation_is_valid": false,
+      "conversation_comment_count": 1
+    },
+    {
+      "comment_ID": "8775",
+      "comment_post_ID": "16334",
+      "comment_author": "",
+      "comment_author_email": "",
+      "comment_author_url": "",
+      "comment_author_IP": "",
+      "comment_date": "2025-08-14 19:33:27",
+      "comment_date_gmt": "2025-08-14 18:33:27",
+      "comment_content": "Hi\r\nI would like to do crochet but need some advise please. I am thinking of bodywave human hair from Y wigs but due to cost will plan to use it on more than one occassion. Just wondering if you have any vuews on using human hair. I have seen a synthetic that may be doable from Ivonmelda the chic natural crochet bundle that mimicks afro hair but worried I do a lot of sports and dont want to have to be straithening it. The hair is not pre looped but Dvised a specialist crochet person can work with any hair. I could really do with some advice before buying the hair and booking with you. I checked abd it says you cover my area GU16 6FT Camberley Surrey Thanks",
+      "comment_karma": "0",
+      "comment_approved": "1",
+      "comment_agent": "",
+      "comment_type": "",
+      "comment_parent": "0",
+      "user_id": "1306",
+      "post_title": "1306 - 338",
+      "post_slug": "1306-338",
+      "post_type": "dokan_store_support",
+      "post_exists": "yes",
+      "user_role": "customer",
+      "user_roles": [
+        "customer"
+      ],
+      "wp_user_role": "customer",
+      "user_display_name": "toyin.folawiyo",
+      "user_login": "toyin.folawiyo",
+      "user_status": "registered",
+      "conversation_has_seller": true,
+      "conversation_has_customer": true,
+      "conversation_is_valid": true,
+      "conversation_comment_count": 3
+    },
     {
       "comment_ID": "8770",
       "comment_post_ID": "16313",
