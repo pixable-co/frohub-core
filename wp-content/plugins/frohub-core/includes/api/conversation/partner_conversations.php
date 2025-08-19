@@ -172,6 +172,25 @@ class PartnerConversations {
                         }
                     }
 
+                    // Fetch last comment (message) for this conversation
+                    $last_message_content = '';
+                    $last_message_date    = '';
+
+                    $comments = get_comments([
+                        'post_id' => $conversation_id,
+                        'number'  => 1,
+                        'orderby' => 'comment_date',
+                        'order'   => 'DESC',
+                    ]);
+
+                    if (!empty($comments)) {
+                        $last_comment = $comments[0];
+                        $last_message_content = $last_comment->comment_content;
+                        $last_message_date    = $last_comment->comment_date_gmt
+                            ? get_date_from_gmt($last_comment->comment_date_gmt, 'c')
+                            : $last_comment->comment_date;
+                    }
+
                     $conversations[] = [
                         'conversation_id' => (int)$conversation_id,
                         'customer_id' => $customer_id,
@@ -185,7 +204,8 @@ class PartnerConversations {
                         'last_activity' => $last_activity ?: date('c'),
                         'permalink' => get_permalink($conversation_id),
                         'status' => 'Active',
-                        'last_message' => '',
+                        'last_message' => $last_message_content,
+                        'last_message_date' => $last_message_date,
                         'total_completed_bookings' => $total_completed_bookings,
                         'total_spend' => number_format($total_spent, 2),
                         'last_booking_date' => $last_booking_date,
