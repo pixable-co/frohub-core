@@ -76,6 +76,7 @@ class PartnerConversations {
                             if ($user_info) {
                                 $first_name = $user_info->first_name;
                                 $last_name = $user_info->last_name;
+                                $customer_email = $user_info->user_email;
                                 $billing_phone = get_user_meta($customer_id, 'billing_phone', true);
 
                                 if (!empty($first_name) && !empty($last_name)) {
@@ -194,6 +195,7 @@ class PartnerConversations {
                     $conversations[] = [
                         'conversation_id' => (int)$conversation_id,
                         'customer_id' => $customer_id,
+                        'customer_email' => $customer_email,
                         'customer_name' => $customer_name,
                         'customer_image' => $profile_image_url,
                         'partner_image' => $partner_image_url,
