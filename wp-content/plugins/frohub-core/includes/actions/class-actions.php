@@ -11,6 +11,7 @@ use FECore\CreateReviewPost;
 use FECore\CreateUpdatePayoutPost;
 use FECore\CustomOrderStatus;
 use FECore\ConversationAutoReply;
+use FECore\UpdateStartEndDate;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -31,5 +32,6 @@ class Actions {
 		CreateUpdatePayoutPost::init();
 		CustomOrderStatus::init();
 		ConversationAutoReply::init();
+		UpdateStartEndDate::init();
 	}
 }
