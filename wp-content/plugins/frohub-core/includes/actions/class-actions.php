@@ -34,6 +34,6 @@ class Actions {
 		CustomOrderStatus::init();
 		ConversationAutoReply::init();
 		UpdateStartEndDate::init();
-// 		RestrictLogin::init();
+		RestrictLogin::init();
 	}
 }
