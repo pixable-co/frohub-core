@@ -50,11 +50,11 @@ class PayoutPartners {
                     'value'   => 'Queued',
                     'compare' => '='
                 ),
-				// array(
-				// 	'key'     => 'scheduled_date',
-				// 	'value'   => $today, // formatted as Ymd
-				// 	'compare' => '='
-				// )
+				array(
+					'key'     => 'scheduled_date',
+					'value'   => $today, // formatted as Ymd
+					'compare' => '='
+				)
             )
         );
 
