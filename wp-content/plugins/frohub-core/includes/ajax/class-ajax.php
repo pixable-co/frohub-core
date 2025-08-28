@@ -1,6 +1,8 @@
 <?php
 namespace FECore;
 
+use FECore\CheckActiveStatus;
+
 use FECore\ReadByCustomer;
 
 use FECore\ConversationImport;
@@ -66,5 +68,6 @@ class Ajax {
 		CloneEcomOrder::init();
 		ConversationImport::init();
 		ReadByCustomer::init();
+		CheckActiveStatus::init();
 	}
 }

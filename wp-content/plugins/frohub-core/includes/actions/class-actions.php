@@ -12,6 +12,7 @@ use FECore\CreateUpdatePayoutPost;
 use FECore\CustomOrderStatus;
 use FECore\ConversationAutoReply;
 use FECore\UpdateStartEndDate;
+use FECore\RestrictLogin;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -33,5 +34,6 @@ class Actions {
 		CustomOrderStatus::init();
 		ConversationAutoReply::init();
 		UpdateStartEndDate::init();
+		RestrictLogin::init();
 	}
 }
