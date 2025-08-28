@@ -11,9 +11,9 @@ class CheckActiveStatus {
         $self = new self();
 
         // AJAX for logged-in users
-//         add_action('wp_ajax_frohub/check_active_status', array($self, 'check_active_status'));
-//         // AJAX for non-logged-in users (if you want to allow checking without login)
-//         add_action('wp_ajax_nopriv_frohub/check_active_status', array($self, 'check_active_status'));
+        add_action('wp_ajax_frohub/check_active_status', array($self, 'check_active_status'));
+        // AJAX for non-logged-in users (if you want to allow checking without login)
+        add_action('wp_ajax_nopriv_frohub/check_active_status', array($self, 'check_active_status'));
     }
 
     public function check_active_status() {
