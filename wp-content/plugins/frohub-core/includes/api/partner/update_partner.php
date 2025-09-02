@@ -69,6 +69,7 @@ class UpdatePartner {
             'frohub_refund_policy' => sanitize_textarea_field($data['frohubRefundPolicy']),
             'auto_message'       => intval($data['auto_message']),
             'auto_message_text' => sanitize_textarea_field($data['auto_message_text']),
+            'hide_phone'        => intval($data['hide_phone']),
         ];
 
         foreach ($acf_fields as $key => $value) {

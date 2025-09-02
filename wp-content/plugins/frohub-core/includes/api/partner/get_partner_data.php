@@ -93,7 +93,8 @@ class GetPartnerData {
             'stripeUserId'       => $stripe_data['stripe_user_id'] ?? '',
             'stripeConnected'    => !empty($stripe_data['stripe_user_id']),
             'showStripeWarning'  => empty($stripe_data['stripe_user_id']),
-            'unreadConversations' => $unreadConversations,
+            'unreadConversations' => $unreadConversations,,
+            'hide_phone' => get_field('hide_phone',$partner_post_id);
         ];
 
         return rest_ensure_response($partner_data);
