@@ -3,7 +3,7 @@ export async function uploadImageDirect(file) {
     formData.append('file', file);
 
     try {
-        const response = await fetch('https://frohubecomm.mystagingwebsite.com/wp-json/frohub/v1/upload-comment-image', {
+        const response = await fetch(`${frohub_settings.site_url}/wp-json/frohub/v1/upload-comment-image`, {
             method: 'POST',
             headers: {
                 'Authorization': 'Basic YOUR_BASIC_AUTH_HERE',  // Optional: If required
