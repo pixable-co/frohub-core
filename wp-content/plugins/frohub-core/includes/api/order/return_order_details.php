@@ -57,6 +57,7 @@ class ReturnOrderDetails {
         $query_args = [
             'post_type'   => 'shop_order',
             'post_status' => 'any',
+            'numberposts'    => -1, // -1 = get all
             'meta_query'  => [
                 [
                     'key'     => 'partner_id',
