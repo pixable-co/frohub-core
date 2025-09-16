@@ -53,19 +53,30 @@ class ReturnOrderDetails {
             return rest_ensure_response(['error' => 'Partner ID is required.'], 400);
         }
     
-        // Query orders with the matching partner_id meta field
+        // Get current year dynamically
+        $current_year = date('Y');
+
+        // Query orders with the matching partner_id meta field, only from this year
         $query_args = [
-            'post_type'   => 'shop_order',
-            'post_status' => 'any',
-            'numberposts'    => -1, // -1 = get all
-            'meta_query'  => [
-                [
-                    'key'     => 'partner_id',
-                    'value'   => $partner_id,
-                    'compare' => '=',
-                ],
+        'post_type'      => 'shop_order',
+        'post_status'    => 'any',
+        'numberposts'    => -1, // get all results, no limit
+        'orderby'        => 'date',
+        'order'          => 'DESC',
+        'meta_query'     => [
+            [
+                'key'     => 'partner_id',
+                'value'   => $partner_id,
+                'compare' => '=',
             ],
+        ],
+        'date_query'     => [
+            [
+                'year' => $current_year, // filter to current year
+            ],
+        ],
         ];
+
     
         $orders = get_posts($query_args);
     
