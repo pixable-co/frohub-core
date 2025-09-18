@@ -50,13 +50,15 @@ class PayoutPartners {
                     'value'   => 'Queued',
                     'compare' => '='
                 ),
-				array(
-					'key'     => 'scheduled_date',
-					'value'   => $today, // formatted as Ymd
-					'compare' => '='
-				)
+                array(
+                    'key'     => 'scheduled_date',
+                    'value'   => $today,
+                    'compare' => '=',
+                    'type'    => 'DATE' // or 'NUMERIC' if it's stored as Ymd number
+                ),
             )
         );
+
 
         $payout_query = new \WP_Query($query_args);
         $payout_data = [];
