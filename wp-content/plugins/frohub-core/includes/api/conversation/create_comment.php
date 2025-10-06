@@ -52,51 +52,6 @@ class CreateComment {
         return new \WP_REST_Response(['success' => true, 'url' => $url], 200);
     }
 
-//     public function upload_comment_image() {
-//         check_ajax_referer('fpserver_nonce');
-//         if (!is_user_logged_in()) {
-//             wp_send_json_error(['message' => 'User not logged in.']);
-//         }
-//         if (empty($_FILES['file'])) {
-//             wp_send_json_error(['message' => 'No file uploaded.']);
-//         }
-//
-//         $file = $_FILES['file'];
-//         $basicAuth = get_field('frohub_ecommerce_basic_authentication', 'option');
-//
-//         $curl = curl_init();
-//         $cfile = curl_file_create($file['tmp_name'], $file['type'], $file['name']);
-//
-//         $data = ['file' => $cfile];
-//
-//         curl_setopt_array($curl, [
-//             CURLOPT_URL => 'https://frohubecomm.mystagingwebsite.com/wp-json/frohub/v1/upload-comment-image',
-//             CURLOPT_RETURNTRANSFER => true,
-//             CURLOPT_POST => true,
-//             CURLOPT_POSTFIELDS => $data,
-//             CURLOPT_HTTPHEADER => [
-//                 'Authorization: ' . $basicAuth
-//             ],
-//         ]);
-//
-//         $response = curl_exec($curl);
-//         $error = curl_error($curl);
-//         curl_close($curl);
-//
-//         if ($error) {
-//             wp_send_json_error(['message' => 'cURL error: ' . $error]);
-//         }
-//
-//         $response_body = json_decode($response, true);
-//         if (!empty($response_body['success']) && !empty($response_body['url'])) {
-//             wp_send_json_success(['url' => $response_body['url']]);
-//         } else {
-//             wp_send_json_error(['message' => $response_body['error'] ?? 'Unknown error']);
-//         }
-//
-//         wp_die();
-//     }
-
     /**
      * Handles the creation of a comment for a conversation post.
      *
@@ -175,13 +130,41 @@ class CreateComment {
              update_comment_meta($comment_id, 'partner', $partner_id);
          }
 
-         if (!empty($sent_from)) {
-             update_comment_meta($comment_id, 'sent_from', $sent_from);
-             $previous_unread_count = (int) get_post_meta($post_id, 'unread_count_customer', true);
-             $new_unread_count = $previous_unread_count + 1;
-             update_post_meta($post_id, 'read_by_customer', 0);
-             update_post_meta($post_id, 'unread_count_customer', $new_unread_count);
-         }
+        if (!empty($sent_from)) {
+            update_comment_meta($comment_id, 'sent_from', $sent_from);
+            if ($sent_from === 'partner') {
+                $post_author_id = get_post_field('post_author', $post_id);
+                $client_user = get_userdata($post_author_id);
+
+                $partner_name = '';
+                    if ($partner_id) {
+                    $partner_post = get_post($partner_id);
+                    $partner_name = $partner_post ? $partner_post->post_title : $author_name;
+                    } else {
+                      $partner_name = $author_name;
+                }
+
+                // Construct message URL
+                $message_url = get_permalink($post_id);
+
+                // Prepare webhook payload
+                $webhook_data = array(
+                    'client_first_name' => $client_user ? $client_user->first_name : ($client_user ? $client_user->display_name : ''),
+                    'client_email'      => $client_user ? $client_user->user_email : '',
+                    'partner_name'      => $partner_name,
+                    'message_url'       => $message_url,
+                );
+
+                // Send webhook
+                $this->send_zoho_webhook($webhook_data);
+            }
+
+            // Update unread count for customer
+            $previous_unread_count = (int) get_post_meta($post_id, 'unread_count_customer', true);
+            $new_unread_count = $previous_unread_count + 1;
+            update_post_meta($post_id, 'read_by_customer', 0);
+            update_post_meta($post_id, 'unread_count_customer', $new_unread_count);
+        }
 
          // Get comment object
          $comment_obj = get_comment($comment_id);
@@ -202,5 +185,24 @@ class CreateComment {
              'partner_id'  => !empty($stored_partner_id) ? $stored_partner_id : ($partner_id ? $partner_id : null)
          ], 200);
      }
+
+   private function send_zoho_webhook($data) {
+        $webhook_url = 'https://flow.zoho.eu/20103370577/flow/webhook/incoming?zapikey=1001.e8f1a41dc6f62936e42c704e8a87ebf8.d91d65975ef9e153f09f9e7584aca3e6&isdebug=false';
+
+        $response = wp_remote_post($webhook_url, array(
+            'headers' => array(
+                'Content-Type' => 'application/json',
+            ),
+            'body'    => json_encode($data),
+            'timeout' => 15,
+        ));
+
+        if (is_wp_error($response)) {
+            error_log('Zoho webhook failed: ' . $response->get_error_message());
+            return false;
+        }
+
+        return true;
+    }
 
 }
