@@ -86,8 +86,25 @@ class BroadcastMessage {
 
             update_field('partner', $partner_post_id, 'comment_' . $comment_id);
 
+//             if ($comment_id) {
+//                 $comments_created[] = $comment_id;
+//             }
+
             if ($comment_id) {
                 $comments_created[] = $comment_id;
+                $post_author_id = get_post_field('post_author', $conversation_id);
+                $client_user = get_userdata($post_author_id);
+                $message_url = get_permalink($conversation_id);
+
+                $webhook_data = array(
+                    'client_first_name' => $client_user ? $client_user->first_name : ($client_user ? $client_user->display_name : ''),
+                    'client_email'      => $client_user ? $client_user->user_email : '',
+                    'partner_name'      => $author_name,
+                    'message_url'       => $message_url,
+                );
+
+                // Send webhook
+                $this->send_zoho_webhook($webhook_data);
             }
         }
 
@@ -96,5 +113,24 @@ class BroadcastMessage {
         } else {
             return new \WP_REST_Response(['success' => false, 'message' => 'Failed to create comments'], 500);
         }
+    }
+
+    private function send_zoho_webhook($data) {
+        $webhook_url = 'https://flow.zoho.eu/20103370577/flow/webhook/incoming?zapikey=1001.e8f1a41dc6f62936e42c704e8a87ebf8.d91d65975ef9e153f09f9e7584aca3e6&isdebug=false';
+
+        $response = wp_remote_post($webhook_url, array(
+            'headers' => array(
+                'Content-Type' => 'application/json',
+            ),
+            'body'    => json_encode($data),
+            'timeout' => 15,
+        ));
+
+        if (is_wp_error($response)) {
+            error_log('Zoho webhook failed: ' . $response->get_error_message());
+            return false;
+        }
+
+        return true;
     }
 }
